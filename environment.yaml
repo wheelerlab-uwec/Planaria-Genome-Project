@@ -1,0 +1,27 @@
+name: planaria-env
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - nanoplot
+  - porechop
+  - filtlong
+  - flye
+  - raven
+  - medaka
+  - minimap2
+  - racon
+  - purge_dups
+  - tgs-gapcloser
+  - links
+  - busco
+  - quast
+  - multiqc
+  - blobtools
+  - kraken2
+  - bwa
+  - samtools
+  - bcftools
+  - picard
+
