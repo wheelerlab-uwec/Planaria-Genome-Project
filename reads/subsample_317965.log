@@ -1,0 +1,6 @@
+Starting subsampling at Mon Sep 29 12:49:25 CDT 2025
+Finished subsampling at Mon Sep 29 14:03:37 CDT 2025
+Output file size:
+-rw-r--r-- 1 wheelenj SFU_Users 5.5G Sep 29 14:03 planaria_test_subset.fastq.gz
+Number of reads in output:
+1000000
