@@ -1,0 +1,2 @@
+Module	Section	Sample Name	Source
+NanoStat	all_sections	NanoStats	/data/users/willetse0745/Planaria-Genome-Project/fastq_planaria/qc/NanoStats.txt
