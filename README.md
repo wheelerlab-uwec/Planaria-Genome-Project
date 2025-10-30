@@ -22,3 +22,8 @@ git clone https://github.com/fenderglass/Flye
 cd Flye
 make
 ```
+## Installing other tools
+Use pypi.org to find tool
+```
+uv add 'tool'
+```
