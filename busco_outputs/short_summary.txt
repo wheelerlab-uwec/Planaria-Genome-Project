@@ -1,0 +1,30 @@
+# BUSCO version is: 6.0.0 
+# The lineage dataset is: eukaryota_odb10 (Creation date: 2024-01-08, number of genomes: 70, number of BUSCOs: 255)
+# Summarized benchmarking in BUSCO notation for file /data/groups/wheelenj/sequencing/20250916_M009242/test_assembly/flye_output/assembly.fasta
+# BUSCO was run in mode: euk_genome_min
+# Gene predictor used: miniprot
+
+	***** Results: *****
+
+	C:31.4%[S:29.0%,D:2.4%],F:9.8%,M:58.8%,n:255,E:37.5%	   
+	80	Complete BUSCOs (C)	(of which 30 contain internal stop codons)		   
+	74	Complete and single-copy BUSCOs (S)	   
+	6	Complete and duplicated BUSCOs (D)	   
+	25	Fragmented BUSCOs (F)			   
+	150	Missing BUSCOs (M)			   
+	255	Total BUSCO groups searched		   
+
+Assembly Statistics:
+	15138	Number of scaffolds
+	15138	Number of contigs
+	440718210	Total length
+	0.000%	Percent gaps
+	42 kbp	Scaffold N50
+	42 kbp	Contigs N50
+
+
+Dependencies and versions:
+	hmmsearch: 3.4
+	bbtools: None
+	miniprot_index: 0.18-r281
+	miniprot_align: 0.18-r281
