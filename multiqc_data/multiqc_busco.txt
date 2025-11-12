@@ -1,0 +1,2 @@
+Sample	lineage_dataset	complete	complete_single_copy	complete_duplicated	fragmented	missing	total
+busco_test | short_summary.specific.metazoa_odb10.busco_test	metazoa_odb10	270.0	245.0	25.0	76.0	608.0	954.0

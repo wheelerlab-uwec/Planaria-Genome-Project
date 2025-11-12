@@ -1,15 +1,47 @@
 {
-    "report_multiqc_command": "/data/users/willetse0745/.conda/envs/planaria-env/bin/multiqc fastq_planaria/.",
+    "report_multiqc_command": "/data/users/willetse0745/.conda/envs/planaria-env/bin/multiqc fastq_planaria/. trimmed_fastq/qc/. /data/groups/wheelenj/sequencing/20250916_M009242/busco_test/short_summary.specific.metazoa_odb10.busco_test.txt --force --verbose --dirs --dirs-depth 1 --force",
     "report_data_sources": {
+        "BUSCO": {
+            "all_sections": {
+                "busco_test | short_summary.specific.metazoa_odb10.busco_test": "/data/groups/wheelenj/sequencing/20250916_M009242/busco_test/short_summary.specific.metazoa_odb10.busco_test.txt"
+            }
+        },
         "NanoStat": {
             "all_sections": {
-                "NanoStats": "/data/users/willetse0745/Planaria-Genome-Project/fastq_planaria/qc/NanoStats.txt"
+                "qc | NanoStats": "/data/users/willetse0745/Planaria-Genome-Project/trimmed_fastq/qc/NanoStats_trimmed.txt",
+                "qc | NanoStats_raw": "/data/users/willetse0745/Planaria-Genome-Project/fastq_planaria/qc/NanoStats_raw.txt"
             }
         }
     },
     "report_general_stats_data": {
+        "busco": {
+            "busco_test | short_summary.specific.metazoa_odb10.busco_test": {
+                "lineage_dataset": "metazoa_odb10",
+                "complete": 270.0,
+                "complete_single_copy": 245.0,
+                "complete_duplicated": 25.0,
+                "fragmented": 76.0,
+                "missing": 608.0,
+                "total": 954.0
+            }
+        },
         "nanostat": {
-            "NanoStats": {
+            "qc | NanoStats": {
+                "Mean read length_fastq": 13166.5,
+                "Mean read quality_fastq": 18.4,
+                "Median read length_fastq": 9585.0,
+                "Median read quality_fastq": 20.7,
+                "Number of reads_fastq": 372003.0,
+                "Read length N50_fastq": 16392.0,
+                "STDEV read length_fastq": 10887.9,
+                "Total bases_fastq": 4897987557.0,
+                ">Q10_fastq": 371920.0,
+                ">Q15_fastq": 333279.0,
+                ">Q20_fastq": 214252.0,
+                ">Q25_fastq": 14012.0,
+                ">Q30_fastq": 6.0
+            },
+            "qc | NanoStats_raw": {
                 "Mean read length_fastq": 6122.5,
                 "Mean read quality_fastq": 16.7,
                 "Median read length_fastq": 3033.0,
@@ -27,6 +59,61 @@
         }
     },
     "report_general_stats_headers": {
+        "busco": {
+            "complete": {
+                "title": "Complete BUSCOs",
+                "description": "Number of complete BUSCOs",
+                "min": 0,
+                "hidden": true,
+                "namespace": "BUSCO",
+                "clean_rid": "busco-complete",
+                "rid": "busco-complete",
+                "scale": "GnBu",
+                "placement": 1000
+            },
+            "complete_single_copy": {
+                "title": "Complete and single-copy BUSCOs",
+                "description": "Number of complete and single-copy BUSCOs",
+                "min": 0,
+                "namespace": "BUSCO",
+                "clean_rid": "busco-complete_single_copy",
+                "rid": "busco-complete_single_copy",
+                "scale": "GnBu",
+                "placement": 1000
+            },
+            "complete_duplicated": {
+                "title": "Complete and duplicated BUSCOs",
+                "description": "Number of complete and duplicated BUSCOs",
+                "min": 0,
+                "hidden": true,
+                "namespace": "BUSCO",
+                "clean_rid": "busco-complete_duplicated",
+                "rid": "busco-complete_duplicated",
+                "scale": "GnBu",
+                "placement": 1000
+            },
+            "fragmented": {
+                "title": "Fragmented BUSCOs",
+                "description": "Number of fragmented BUSCOs",
+                "min": 0,
+                "hidden": true,
+                "namespace": "BUSCO",
+                "clean_rid": "busco-fragmented",
+                "rid": "busco-fragmented",
+                "scale": "GnBu",
+                "placement": 1000
+            },
+            "missing": {
+                "title": "Missing BUSCOs",
+                "description": "Number of missing BUSCOs",
+                "min": 0,
+                "namespace": "BUSCO",
+                "clean_rid": "busco-missing",
+                "rid": "busco-missing",
+                "scale": "GnBu",
+                "placement": 1000
+            }
+        },
         "nanostat": {
             "Active channels_fastq": {
                 "title": "Active channels",
@@ -161,29 +248,308 @@
             }
         }
     },
-    "report_creation_date": "2025-10-09, 17:40 CDT",
+    "report_creation_date": "2025-11-12, 12:18 CST",
     "report_plot_data": {
+        "busco_plot_metazoa_odb10": {
+            "id": "busco_plot_metazoa_odb10",
+            "anchor": "busco_plot_metazoa_odb10",
+            "plot_type": "bar plot",
+            "layout": {
+                "autosize": true,
+                "height": 300,
+                "hoverlabel": {
+                    "namelength": -1,
+                    "bgcolor": "rgba(255, 255, 255, 0.8)",
+                    "font": {
+                        "color": "black"
+                    }
+                },
+                "margin": {
+                    "b": 65,
+                    "l": 60,
+                    "pad": 5,
+                    "r": 15,
+                    "t": 50
+                },
+                "showlegend": true,
+                "template": {
+                    "layout": {
+                        "colorway": [
+                            "#7cb5ec",
+                            "#434348",
+                            "#90ed7d",
+                            "#f7a35c",
+                            "#8085e9",
+                            "#f15c80",
+                            "#e4d354",
+                            "#2b908f",
+                            "#f45b5b",
+                            "#91e8e1"
+                        ],
+                        "font": {
+                            "family": "'Lucida Grande', 'Open Sans', verdana, arial, sans-serif"
+                        },
+                        "modebar": {
+                            "activecolor": "rgba(0, 0, 0, 1)",
+                            "bgcolor": "rgba(0, 0, 0, 0)",
+                            "color": "rgba(0, 0, 0, 0.5)"
+                        },
+                        "paper_bgcolor": "white",
+                        "plot_bgcolor": "white",
+                        "title": {
+                            "font": {
+                                "size": 20
+                            }
+                        },
+                        "xaxis": {
+                            "color": "rgba(0,0,0,0.3)",
+                            "gridcolor": "rgba(0,0,0,0.05)",
+                            "tickfont": {
+                                "color": "rgba(0,0,0,1)",
+                                "size": 10
+                            },
+                            "zerolinecolor": "rgba(0,0,0,0.05)"
+                        },
+                        "yaxis": {
+                            "color": "rgba(0,0,0,0.3)",
+                            "gridcolor": "rgba(0,0,0,0.05)",
+                            "tickfont": {
+                                "color": "rgba(0,0,0,1)",
+                                "size": 10
+                            },
+                            "zerolinecolor": "rgba(0,0,0,0.05)"
+                        }
+                    }
+                },
+                "title": {
+                    "text": "BUSCO Assessment Results: metazoa_odb10",
+                    "x": 0.5,
+                    "xanchor": "center"
+                },
+                "xaxis": {
+                    "automargin": true
+                },
+                "yaxis": {
+                    "automargin": true,
+                    "showgrid": false,
+                    "categoryorder": "trace",
+                    "type": "category"
+                },
+                "barmode": "relative",
+                "bargroupgap": 0,
+                "bargap": 0.2,
+                "legend": {
+                    "tracegroupgap": 0,
+                    "traceorder": "normal"
+                },
+                "hovermode": "y unified"
+            },
+            "datasets": [
+                {
+                    "plot_id": "busco_plot_metazoa_odb10",
+                    "label": "1",
+                    "uid": "busco_plot_metazoa_odb10",
+                    "dconfig": {
+                        "title": "BUSCO Assessment Results: metazoa_odb10"
+                    },
+                    "layout": {
+                        "title": {
+                            "text": "BUSCO Assessment Results: metazoa_odb10"
+                        },
+                        "xaxis": {
+                            "title": {
+                                "text": "# BUSCOs"
+                            },
+                            "hoverformat": ",.2f",
+                            "ticksuffix": "",
+                            "autorangeoptions": {
+                                "minallowed": 0,
+                                "maxallowed": 954.0
+                            }
+                        },
+                        "yaxis": {
+                            "title": null,
+                            "hoverformat": null,
+                            "ticksuffix": ""
+                        },
+                        "showlegend": true
+                    },
+                    "trace_params": {
+                        "hovertemplate": "<b></b>%{meta}: <b>%{x}</b><extra></extra>",
+                        "orientation": "h",
+                        "marker": {
+                            "line": {
+                                "width": 0
+                            }
+                        },
+                        "textposition": "inside",
+                        "insidetextanchor": "start"
+                    },
+                    "pct_range": {
+                        "xaxis": {
+                            "min": 0,
+                            "max": 100
+                        },
+                        "yaxis": {
+                            "min": 0,
+                            "max": 100
+                        }
+                    },
+                    "n_series": 1,
+                    "cats": [
+                        {
+                            "name": "Complete and single-copy BUSCOs",
+                            "color": "rgb(49,163,84)",
+                            "data": [
+                                245.0
+                            ],
+                            "data_pct": [
+                                25.681341719077565
+                            ]
+                        },
+                        {
+                            "name": "Fragmented BUSCOs",
+                            "color": "rgb(254,232,200)",
+                            "data": [
+                                76.0
+                            ],
+                            "data_pct": [
+                                7.966457023060797
+                            ]
+                        },
+                        {
+                            "name": "Complete and duplicated BUSCOs",
+                            "color": "rgb(253,187,132)",
+                            "data": [
+                                25.0
+                            ],
+                            "data_pct": [
+                                2.6205450733752618
+                            ]
+                        },
+                        {
+                            "name": "Missing BUSCOs",
+                            "color": "rgb(227,74,51)",
+                            "data": [
+                                608.0
+                            ],
+                            "data_pct": [
+                                63.731656184486376
+                            ]
+                        }
+                    ],
+                    "samples": [
+                        "busco_test | short_summary.specific.metazoa_odb10.busco_test"
+                    ],
+                    "cats_clustered": null,
+                    "samples_clustered": null
+                }
+            ],
+            "pconfig": {
+                "id": "busco_plot_metazoa_odb10",
+                "title": "BUSCO Assessment Results: metazoa_odb10",
+                "subtitle": null,
+                "anchor": null,
+                "table_title": null,
+                "height": null,
+                "width": null,
+                "square": false,
+                "logswitch": false,
+                "logswitch_active": false,
+                "logswitch_label": "Log10",
+                "cpswitch": true,
+                "cpswitch_c_active": true,
+                "cpswitch_counts_label": "Number of BUSCOs",
+                "cpswitch_percent_label": "Percentages",
+                "xLog": null,
+                "yLog": null,
+                "xlog": false,
+                "ylog": false,
+                "data_labels": [],
+                "xTitle": null,
+                "yTitle": null,
+                "xlab": null,
+                "ylab": "# BUSCOs",
+                "xsuffix": null,
+                "ysuffix": null,
+                "tt_suffix": null,
+                "xLabFormat": null,
+                "yLabFormat": null,
+                "xLabelFormat": null,
+                "yLabelFormat": null,
+                "xlab_format": null,
+                "ylab_format": null,
+                "tt_label": null,
+                "xDecimals": null,
+                "yDecimals": null,
+                "decimalPlaces": null,
+                "x_decimals": null,
+                "y_decimals": null,
+                "tt_decimals": null,
+                "xmin": null,
+                "xmax": null,
+                "ymin": null,
+                "ymax": null,
+                "xFloor": null,
+                "xCeiling": null,
+                "yFloor": null,
+                "yCeiling": null,
+                "x_clipmin": null,
+                "x_clipmax": null,
+                "y_clipmin": null,
+                "y_clipmax": null,
+                "save_data_file": true,
+                "showlegend": null,
+                "xMinRange": null,
+                "yMinRange": null,
+                "x_minrange": null,
+                "y_minrange": null,
+                "xPlotBands": null,
+                "yPlotBands": null,
+                "xPlotLines": null,
+                "yPlotLines": null,
+                "x_bands": null,
+                "y_bands": null,
+                "x_lines": null,
+                "y_lines": null,
+                "series_label": "samples",
+                "flat_if_very_large": true,
+                "stacking": "relative",
+                "hide_empty": null,
+                "hide_zero_cats": true,
+                "sort_samples": true,
+                "cluster_samples": false,
+                "cluster_method": "complete",
+                "cluster_switch_clustered_active": true,
+                "use_legend": null,
+                "suffix": null,
+                "lab_format": null
+            },
+            "add_log_tab": false,
+            "add_pct_tab": true,
+            "l_active": false,
+            "p_active": false,
+            "pct_axis_update": {
+                "ticksuffix": "%",
+                "hoverformat": ".1f"
+            },
+            "axis_controlled_by_switches": [
+                "xaxis"
+            ],
+            "square": false,
+            "flat": false,
+            "defer_render": false,
+            "section_anchor": null,
+            "module_anchor": null,
+            "sort_switch_sorted_active": false,
+            "cluster_switch_clustered_active": true
+        },
         "nanostat_fastq_stats_table": {
             "id": "nanostat_fastq_stats_table",
             "anchor": "nanostat_fastq_stats_table",
             "plot_type": "violin plot",
             "layout": {
                 "autosize": true,
-                "colorway": [
-                    "#7cb5ec",
-                    "#434348",
-                    "#90ed7d",
-                    "#f7a35c",
-                    "#8085e9",
-                    "#f15c80",
-                    "#e4d354",
-                    "#2b908f",
-                    "#f45b5b",
-                    "#91e8e1"
-                ],
-                "font": {
-                    "family": "'Lucida Grande', 'Open Sans', verdana, arial, sans-serif"
-                },
                 "height": 500,
                 "hoverlabel": {
                     "namelength": -1
@@ -195,40 +561,77 @@
                     "r": 15,
                     "t": 50
                 },
-                "modebar": {
-                    "activecolor": "rgba(0, 0, 0, 1)",
-                    "bgcolor": "rgba(0, 0, 0, 0)",
-                    "color": "rgba(0, 0, 0, 0.5)"
-                },
-                "paper_bgcolor": "white",
-                "plot_bgcolor": "white",
                 "showlegend": false,
+                "template": {
+                    "layout": {
+                        "colorway": [
+                            "#7cb5ec",
+                            "#434348",
+                            "#90ed7d",
+                            "#f7a35c",
+                            "#8085e9",
+                            "#f15c80",
+                            "#e4d354",
+                            "#2b908f",
+                            "#f45b5b",
+                            "#91e8e1"
+                        ],
+                        "font": {
+                            "family": "'Lucida Grande', 'Open Sans', verdana, arial, sans-serif"
+                        },
+                        "modebar": {
+                            "activecolor": "rgba(0, 0, 0, 1)",
+                            "bgcolor": "rgba(0, 0, 0, 0)",
+                            "color": "rgba(0, 0, 0, 0.5)"
+                        },
+                        "paper_bgcolor": "white",
+                        "plot_bgcolor": "white",
+                        "title": {
+                            "font": {
+                                "size": 20
+                            }
+                        },
+                        "xaxis": {
+                            "color": "rgba(0,0,0,0.3)",
+                            "gridcolor": "rgba(0,0,0,0.05)",
+                            "tickfont": {
+                                "color": "rgba(0,0,0,1)",
+                                "size": 10
+                            },
+                            "zerolinecolor": "rgba(0,0,0,0.05)"
+                        },
+                        "yaxis": {
+                            "color": "rgba(0,0,0,0.3)",
+                            "gridcolor": "rgba(0,0,0,0.05)",
+                            "tickfont": {
+                                "color": "rgba(0,0,0,1)",
+                                "size": 10
+                            },
+                            "zerolinecolor": "rgba(0,0,0,0.05)"
+                        }
+                    }
+                },
                 "title": {
-                    "font": {
-                        "size": 20
-                    },
                     "text": "NanoStat fastq",
                     "x": 0.5,
                     "xanchor": "center"
                 },
                 "xaxis": {
                     "automargin": false,
-                    "color": "rgba(0,0,0,0.3)",
-                    "gridcolor": "rgba(0,0,0,0.1)",
                     "tickfont": {
-                        "color": "rgba(0,0,0,0.5)",
-                        "size": 9
+                        "size": 9,
+                        "color": "rgba(0,0,0,0.5)"
                     },
+                    "gridcolor": "rgba(0,0,0,0.1)",
                     "zerolinecolor": "rgba(0,0,0,0.1)"
                 },
                 "yaxis": {
                     "automargin": true,
-                    "color": "rgba(0,0,0,0.3)",
-                    "gridcolor": "rgba(0,0,0,0.1)",
                     "tickfont": {
-                        "color": "rgba(0,0,0,0.5)",
-                        "size": 9
+                        "size": 9,
+                        "color": "rgba(0,0,0,0.5)"
                     },
+                    "gridcolor": "rgba(0,0,0,0.1)",
                     "zerolinecolor": "rgba(0,0,0,0.1)"
                 },
                 "violingap": 0,
@@ -245,11 +648,12 @@
                     "uid": "nanostat_fastq_stats_table",
                     "dconfig": {
                         "ylab": "",
-                        "title": "NanoStat fastq"
+                        "title": "NanoStat fastq",
+                        "subtitle": "2 samples"
                     },
                     "layout": {
                         "title": {
-                            "text": "NanoStat fastq"
+                            "text": "NanoStat fastq<br><sup>2 samples</sup>"
                         },
                         "xaxis": {
                             "hoverformat": null,
@@ -308,7 +712,7 @@
                             "max": 100
                         }
                     },
-                    "n_samples": 1,
+                    "n_series": 2,
                     "metrics": [
                         "nanostat-Median_read_length_fastq",
                         "nanostat-Mean_read_length_fastq",
@@ -324,14 +728,14 @@
                             "description": "Median read length (bp)",
                             "suffix": " bp",
                             "dmin": 0,
-                            "dmax": 6122.5,
+                            "dmax": 13166.5,
                             "hidden": false,
                             "xaxis": {
                                 "ticksuffix": " bp",
                                 "tickvals": null,
                                 "range": [
-                                    -30.6125,
-                                    6153.2655625
+                                    -65.8325,
+                                    13232.6616625
                                 ]
                             },
                             "show_only_outliers": false,
@@ -345,14 +749,14 @@
                             "description": "Mean read length (bp)",
                             "suffix": " bp",
                             "dmin": 0,
-                            "dmax": 6122.5,
+                            "dmax": 13166.5,
                             "hidden": true,
                             "xaxis": {
                                 "ticksuffix": " bp",
                                 "tickvals": null,
                                 "range": [
-                                    -30.6125,
-                                    6153.2655625
+                                    -65.8325,
+                                    13232.6616625
                                 ]
                             },
                             "show_only_outliers": false,
@@ -366,14 +770,14 @@
                             "description": "Read length N50",
                             "suffix": " bp",
                             "dmin": 0,
-                            "dmax": 13039.0,
+                            "dmax": 16392.0,
                             "hidden": false,
                             "xaxis": {
                                 "ticksuffix": " bp",
                                 "tickvals": null,
                                 "range": [
-                                    -65.19500000000001,
-                                    13104.520975
+                                    -81.96000000000001,
+                                    16474.3698
                                 ]
                             },
                             "show_only_outliers": false,
@@ -387,14 +791,14 @@
                             "description": "Median read quality (Phred scale)",
                             "suffix": "",
                             "dmin": 0,
-                            "dmax": 18.6,
+                            "dmax": 20.7,
                             "hidden": false,
                             "xaxis": {
                                 "ticksuffix": null,
                                 "tickvals": null,
                                 "range": [
-                                    -0.09300000000000001,
-                                    18.693465
+                                    -0.1035,
+                                    20.8040175
                                 ]
                             },
                             "show_only_outliers": false,
@@ -408,14 +812,14 @@
                             "description": "Mean read quality (Phred scale)",
                             "suffix": "",
                             "dmin": 0,
-                            "dmax": 18.6,
+                            "dmax": 20.7,
                             "hidden": true,
                             "xaxis": {
                                 "ticksuffix": null,
                                 "tickvals": null,
                                 "range": [
-                                    -0.09300000000000001,
-                                    18.693465
+                                    -0.1035,
+                                    20.8040175
                                 ]
                             },
                             "show_only_outliers": false,
@@ -469,25 +873,32 @@
                     },
                     "violin_value_by_sample_by_metric": {
                         "nanostat-Median_read_length_fastq": {
-                            "NanoStats": 3033.0
+                            "qc | NanoStats": 9585.0,
+                            "qc | NanoStats_raw": 3033.0
                         },
                         "nanostat-Mean_read_length_fastq": {
-                            "NanoStats": 6122.5
+                            "qc | NanoStats": 13166.5,
+                            "qc | NanoStats_raw": 6122.5
                         },
                         "nanostat-Read_length_N50_fastq": {
-                            "NanoStats": 13039.0
+                            "qc | NanoStats": 16392.0,
+                            "qc | NanoStats_raw": 13039.0
                         },
                         "nanostat-Median_read_quality_fastq": {
-                            "NanoStats": 18.6
+                            "qc | NanoStats": 20.7,
+                            "qc | NanoStats_raw": 18.6
                         },
                         "nanostat-Mean_read_quality_fastq": {
-                            "NanoStats": 16.7
+                            "qc | NanoStats": 18.4,
+                            "qc | NanoStats_raw": 16.7
                         },
                         "nanostat-Number_of_reads_fastq": {
-                            "NanoStats": 1000.0
+                            "qc | NanoStats": 372.003,
+                            "qc | NanoStats_raw": 1000.0
                         },
                         "nanostat-Total_bases_fastq": {
-                            "NanoStats": 6122.479214999999
+                            "qc | NanoStats": 4897.9875569999995,
+                            "qc | NanoStats_raw": 6122.479214999999
                         }
                     },
                     "scatter_value_by_sample_by_metric": {
@@ -500,7 +911,8 @@
                         "nanostat-Total_bases_fastq": {}
                     },
                     "all_samples": [
-                        "NanoStats"
+                        "qc | NanoStats",
+                        "qc | NanoStats_raw"
                     ],
                     "scatter_trace_params": {
                         "mode": "markers",
@@ -585,6 +997,7 @@
                             "x_lines": null,
                             "y_lines": null,
                             "series_label": "samples",
+                            "flat_if_very_large": false,
                             "namespace": "NanoStat",
                             "save_file": false,
                             "raw_data_fn": null,
@@ -615,7 +1028,7 @@
                                         "colour": null,
                                         "color": null,
                                         "max": null,
-                                        "dmax": 6122.5,
+                                        "dmax": 13166.5,
                                         "min": null,
                                         "dmin": 0,
                                         "ceiling": null,
@@ -666,7 +1079,7 @@
                                         "colour": null,
                                         "color": null,
                                         "max": null,
-                                        "dmax": 6122.5,
+                                        "dmax": 13166.5,
                                         "min": null,
                                         "dmin": 0,
                                         "ceiling": null,
@@ -717,7 +1130,7 @@
                                         "colour": null,
                                         "color": null,
                                         "max": null,
-                                        "dmax": 13039.0,
+                                        "dmax": 16392.0,
                                         "min": null,
                                         "dmin": 0,
                                         "ceiling": null,
@@ -768,7 +1181,7 @@
                                         "colour": null,
                                         "color": null,
                                         "max": null,
-                                        "dmax": 18.6,
+                                        "dmax": 20.7,
                                         "min": null,
                                         "dmin": 0,
                                         "ceiling": null,
@@ -819,7 +1232,7 @@
                                         "colour": null,
                                         "color": null,
                                         "max": null,
-                                        "dmax": 18.6,
+                                        "dmax": 20.7,
                                         "min": null,
                                         "dmin": 0,
                                         "ceiling": null,
@@ -962,9 +1375,51 @@
                                     }
                                 },
                                 "rows_by_sgroup": {
-                                    "NanoStats": [
+                                    "qc | NanoStats": [
                                         {
-                                            "sample": "NanoStats",
+                                            "sample": "qc | NanoStats",
+                                            "data": {
+                                                "Mean read length_fastq": {
+                                                    "raw": 13166.5,
+                                                    "mod": 13166.5,
+                                                    "fmt": "13,166"
+                                                },
+                                                "Mean read quality_fastq": {
+                                                    "raw": 18.4,
+                                                    "mod": 18.4,
+                                                    "fmt": "18.4"
+                                                },
+                                                "Median read length_fastq": {
+                                                    "raw": 9585.0,
+                                                    "mod": 9585.0,
+                                                    "fmt": "9,585"
+                                                },
+                                                "Median read quality_fastq": {
+                                                    "raw": 20.7,
+                                                    "mod": 20.7,
+                                                    "fmt": "20.7"
+                                                },
+                                                "Number of reads_fastq": {
+                                                    "raw": 372003.0,
+                                                    "mod": 372.003,
+                                                    "fmt": "372.0"
+                                                },
+                                                "Read length N50_fastq": {
+                                                    "raw": 16392.0,
+                                                    "mod": 16392.0,
+                                                    "fmt": "16,392"
+                                                },
+                                                "Total bases_fastq": {
+                                                    "raw": 4897987557.0,
+                                                    "mod": 4897.9875569999995,
+                                                    "fmt": "4,898.0"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "qc | NanoStats_raw": [
+                                        {
+                                            "sample": "qc | NanoStats_raw",
                                             "data": {
                                                 "Mean read length_fastq": {
                                                     "raw": 6122.5,
@@ -1112,6 +1567,7 @@
                 "x_lines": null,
                 "y_lines": null,
                 "series_label": "samples",
+                "flat_if_very_large": false,
                 "namespace": "NanoStat",
                 "save_file": false,
                 "raw_data_fn": null,
@@ -1146,7 +1602,7 @@
             "no_violin": false,
             "show_table": true,
             "show_table_by_default": true,
-            "n_samples": 1,
+            "n_samples": 2,
             "table_anchor": "nanostat_fastq_stats_table_table"
         },
         "nanostat_quality_dist": {
@@ -1155,21 +1611,6 @@
             "plot_type": "bar plot",
             "layout": {
                 "autosize": true,
-                "colorway": [
-                    "#7cb5ec",
-                    "#434348",
-                    "#90ed7d",
-                    "#f7a35c",
-                    "#8085e9",
-                    "#f15c80",
-                    "#e4d354",
-                    "#2b908f",
-                    "#f45b5b",
-                    "#91e8e1"
-                ],
-                "font": {
-                    "family": "'Lucida Grande', 'Open Sans', verdana, arial, sans-serif"
-                },
                 "height": 300,
                 "hoverlabel": {
                     "namelength": -1,
@@ -1185,41 +1626,66 @@
                     "r": 15,
                     "t": 50
                 },
-                "modebar": {
-                    "activecolor": "rgba(0, 0, 0, 1)",
-                    "bgcolor": "rgba(0, 0, 0, 0)",
-                    "color": "rgba(0, 0, 0, 0.5)"
-                },
-                "paper_bgcolor": "white",
-                "plot_bgcolor": "white",
                 "showlegend": true,
+                "template": {
+                    "layout": {
+                        "colorway": [
+                            "#7cb5ec",
+                            "#434348",
+                            "#90ed7d",
+                            "#f7a35c",
+                            "#8085e9",
+                            "#f15c80",
+                            "#e4d354",
+                            "#2b908f",
+                            "#f45b5b",
+                            "#91e8e1"
+                        ],
+                        "font": {
+                            "family": "'Lucida Grande', 'Open Sans', verdana, arial, sans-serif"
+                        },
+                        "modebar": {
+                            "activecolor": "rgba(0, 0, 0, 1)",
+                            "bgcolor": "rgba(0, 0, 0, 0)",
+                            "color": "rgba(0, 0, 0, 0.5)"
+                        },
+                        "paper_bgcolor": "white",
+                        "plot_bgcolor": "white",
+                        "title": {
+                            "font": {
+                                "size": 20
+                            }
+                        },
+                        "xaxis": {
+                            "color": "rgba(0,0,0,0.3)",
+                            "gridcolor": "rgba(0,0,0,0.05)",
+                            "tickfont": {
+                                "color": "rgba(0,0,0,1)",
+                                "size": 10
+                            },
+                            "zerolinecolor": "rgba(0,0,0,0.05)"
+                        },
+                        "yaxis": {
+                            "color": "rgba(0,0,0,0.3)",
+                            "gridcolor": "rgba(0,0,0,0.05)",
+                            "tickfont": {
+                                "color": "rgba(0,0,0,1)",
+                                "size": 10
+                            },
+                            "zerolinecolor": "rgba(0,0,0,0.05)"
+                        }
+                    }
+                },
                 "title": {
-                    "font": {
-                        "size": 20
-                    },
                     "text": "NanoStat: Reads by quality",
                     "x": 0.5,
                     "xanchor": "center"
                 },
                 "xaxis": {
-                    "automargin": true,
-                    "color": "rgba(0,0,0,0.3)",
-                    "gridcolor": "rgba(0,0,0,0.05)",
-                    "tickfont": {
-                        "color": "rgba(0,0,0,1)",
-                        "size": 10
-                    },
-                    "zerolinecolor": "rgba(0,0,0,0.05)"
+                    "automargin": true
                 },
                 "yaxis": {
                     "automargin": true,
-                    "color": "rgba(0,0,0,0.3)",
-                    "gridcolor": "rgba(0,0,0,0.05)",
-                    "tickfont": {
-                        "color": "rgba(0,0,0,1)",
-                        "size": 10
-                    },
-                    "zerolinecolor": "rgba(0,0,0,0.05)",
                     "showgrid": false,
                     "categoryorder": "trace",
                     "type": "category"
@@ -1239,11 +1705,12 @@
                     "label": "1",
                     "uid": "nanostat_quality_dist",
                     "dconfig": {
-                        "title": "NanoStat: Reads by quality"
+                        "title": "NanoStat: Reads by quality",
+                        "subtitle": "2 bars"
                     },
                     "layout": {
                         "title": {
-                            "text": "NanoStat: Reads by quality"
+                            "text": "NanoStat: Reads by quality<br><sup>2 bars</sup>"
                         },
                         "xaxis": {
                             "title": {
@@ -1284,72 +1751,87 @@
                             "max": 100
                         }
                     },
-                    "n_samples": 1,
+                    "n_series": 2,
                     "cats": [
                         {
                             "name": "Reads >Q30",
-                            "color": "0,104,55",
+                            "color": "rgba(0,104,55,1)",
                             "data": [
-                                497.0
+                                497.0,
+                                6.0
                             ],
                             "data_pct": [
-                                0.04970000000000001
+                                0.04970000000000001,
+                                0.0016128902186272691
                             ]
                         },
                         {
                             "name": "Reads Q25-30",
-                            "color": "77,177,93",
+                            "color": "rgba(76,176,92,1)",
                             "data": [
-                                19962.0
+                                19962.0,
+                                14006.0
                             ],
                             "data_pct": [
-                                1.9962
+                                1.9962,
+                                3.7650234003489222
                             ]
                         },
                         {
                             "name": "Reads Q20-25",
-                            "color": "183,224,117",
+                            "color": "rgba(183,224,117,1)",
                             "data": [
-                                351895.0
+                                351895.0,
+                                200240.0
                             ],
                             "data_pct": [
-                                35.1895
+                                35.1895,
+                                53.82752289632072
                             ]
                         },
                         {
                             "name": "Reads Q15-20",
-                            "color": "256,256,191",
+                            "color": "rgba(255,255,191,1.0)",
                             "data": [
-                                416937.0
+                                416937.0,
+                                119027.0
                             ],
                             "data_pct": [
-                                41.6937
+                                41.6937,
+                                31.996247342091326
                             ]
                         },
                         {
                             "name": "Reads Q10-15",
-                            "color": "253,191,111",
+                            "color": "rgba(253,190,111,1)",
                             "data": [
-                                204495.0
+                                204495.0,
+                                38641.0
                             ],
                             "data_pct": [
-                                20.4495
+                                20.4495,
+                                10.387281822996052
                             ]
                         },
                         {
                             "name": "Reads <Q10",
-                            "color": "234,89,58",
+                            "color": "rgba(234,88,57,1)",
                             "data": [
-                                6214.0
+                                6214.0,
+                                83.0
                             ],
                             "data_pct": [
-                                0.6214
+                                0.6214,
+                                0.022311648024343888
                             ]
                         }
                     ],
                     "samples": [
-                        "NanoStats"
-                    ]
+                        "qc | NanoStats_raw",
+                        "qc | NanoStats"
+                    ],
+                    "cats_clustered": null,
+                    "samples_clustered": null
                 }
             ],
             "pconfig": {
@@ -1420,10 +1902,14 @@
                 "x_lines": null,
                 "y_lines": null,
                 "series_label": "samples",
+                "flat_if_very_large": true,
                 "stacking": "relative",
                 "hide_empty": null,
                 "hide_zero_cats": true,
                 "sort_samples": true,
+                "cluster_samples": false,
+                "cluster_method": "complete",
+                "cluster_switch_clustered_active": true,
                 "use_legend": null,
                 "suffix": null,
                 "lab_format": null
@@ -1443,7 +1929,9 @@
             "flat": false,
             "defer_render": false,
             "section_anchor": null,
-            "module_anchor": null
+            "module_anchor": null,
+            "sort_switch_sorted_active": false,
+            "cluster_switch_clustered_active": true
         },
         "general_stats_table": {
             "id": "general_stats_table",
@@ -1451,21 +1939,6 @@
             "plot_type": "violin plot",
             "layout": {
                 "autosize": true,
-                "colorway": [
-                    "#7cb5ec",
-                    "#434348",
-                    "#90ed7d",
-                    "#f7a35c",
-                    "#8085e9",
-                    "#f15c80",
-                    "#e4d354",
-                    "#2b908f",
-                    "#f45b5b",
-                    "#91e8e1"
-                ],
-                "font": {
-                    "family": "'Lucida Grande', 'Open Sans', verdana, arial, sans-serif"
-                },
                 "height": 500,
                 "hoverlabel": {
                     "namelength": -1
@@ -1477,40 +1950,77 @@
                     "r": 15,
                     "t": 50
                 },
-                "modebar": {
-                    "activecolor": "rgba(0, 0, 0, 1)",
-                    "bgcolor": "rgba(0, 0, 0, 0)",
-                    "color": "rgba(0, 0, 0, 0.5)"
-                },
-                "paper_bgcolor": "white",
-                "plot_bgcolor": "white",
                 "showlegend": false,
+                "template": {
+                    "layout": {
+                        "colorway": [
+                            "#7cb5ec",
+                            "#434348",
+                            "#90ed7d",
+                            "#f7a35c",
+                            "#8085e9",
+                            "#f15c80",
+                            "#e4d354",
+                            "#2b908f",
+                            "#f45b5b",
+                            "#91e8e1"
+                        ],
+                        "font": {
+                            "family": "'Lucida Grande', 'Open Sans', verdana, arial, sans-serif"
+                        },
+                        "modebar": {
+                            "activecolor": "rgba(0, 0, 0, 1)",
+                            "bgcolor": "rgba(0, 0, 0, 0)",
+                            "color": "rgba(0, 0, 0, 0.5)"
+                        },
+                        "paper_bgcolor": "white",
+                        "plot_bgcolor": "white",
+                        "title": {
+                            "font": {
+                                "size": 20
+                            }
+                        },
+                        "xaxis": {
+                            "color": "rgba(0,0,0,0.3)",
+                            "gridcolor": "rgba(0,0,0,0.05)",
+                            "tickfont": {
+                                "color": "rgba(0,0,0,1)",
+                                "size": 10
+                            },
+                            "zerolinecolor": "rgba(0,0,0,0.05)"
+                        },
+                        "yaxis": {
+                            "color": "rgba(0,0,0,0.3)",
+                            "gridcolor": "rgba(0,0,0,0.05)",
+                            "tickfont": {
+                                "color": "rgba(0,0,0,1)",
+                                "size": 10
+                            },
+                            "zerolinecolor": "rgba(0,0,0,0.05)"
+                        }
+                    }
+                },
                 "title": {
-                    "font": {
-                        "size": 20
-                    },
                     "text": "General Statistics",
                     "x": 0.5,
                     "xanchor": "center"
                 },
                 "xaxis": {
                     "automargin": false,
-                    "color": "rgba(0,0,0,0.3)",
-                    "gridcolor": "rgba(0,0,0,0.1)",
                     "tickfont": {
-                        "color": "rgba(0,0,0,0.5)",
-                        "size": 9
+                        "size": 9,
+                        "color": "rgba(0,0,0,0.5)"
                     },
+                    "gridcolor": "rgba(0,0,0,0.1)",
                     "zerolinecolor": "rgba(0,0,0,0.1)"
                 },
                 "yaxis": {
                     "automargin": true,
-                    "color": "rgba(0,0,0,0.3)",
-                    "gridcolor": "rgba(0,0,0,0.1)",
                     "tickfont": {
-                        "color": "rgba(0,0,0,0.5)",
-                        "size": 9
+                        "size": 9,
+                        "color": "rgba(0,0,0,0.5)"
                     },
+                    "gridcolor": "rgba(0,0,0,0.1)",
                     "zerolinecolor": "rgba(0,0,0,0.1)"
                 },
                 "violingap": 0,
@@ -1527,11 +2037,12 @@
                     "uid": "general_stats_table",
                     "dconfig": {
                         "ylab": "",
-                        "title": "General Statistics"
+                        "title": "General Statistics",
+                        "subtitle": "3 samples"
                     },
                     "layout": {
                         "title": {
-                            "text": "General Statistics"
+                            "text": "General Statistics<br><sup>3 samples</sup>"
                         },
                         "xaxis": {
                             "hoverformat": null,
@@ -1590,8 +2101,13 @@
                             "max": 100
                         }
                     },
-                    "n_samples": 1,
+                    "n_series": 3,
                     "metrics": [
+                        "busco-complete",
+                        "busco-complete_single_copy",
+                        "busco-complete_duplicated",
+                        "busco-fragmented",
+                        "busco-missing",
                         "nanostat-Median_read_length_fastq",
                         "nanostat-Mean_read_length_fastq",
                         "nanostat-Read_length_N50_fastq",
@@ -1601,25 +2117,130 @@
                         "nanostat-Total_bases_fastq"
                     ],
                     "header_by_metric": {
+                        "busco-complete": {
+                            "title": "Complete BUSCOs",
+                            "description": "Number of complete BUSCOs",
+                            "suffix": "",
+                            "dmin": 0.0,
+                            "dmax": 270.0,
+                            "hidden": true,
+                            "xaxis": {
+                                "ticksuffix": null,
+                                "tickvals": null,
+                                "range": [
+                                    -1.35,
+                                    271.35675
+                                ]
+                            },
+                            "show_only_outliers": false,
+                            "show_points": true,
+                            "namespace": "BUSCO",
+                            "color": "55,126,184",
+                            "hoverformat": ".2f"
+                        },
+                        "busco-complete_single_copy": {
+                            "title": "Complete and single-copy BUSCOs",
+                            "description": "Number of complete and single-copy BUSCOs",
+                            "suffix": "",
+                            "dmin": 0.0,
+                            "dmax": 245.0,
+                            "hidden": false,
+                            "xaxis": {
+                                "ticksuffix": null,
+                                "tickvals": null,
+                                "range": [
+                                    -1.225,
+                                    246.231125
+                                ]
+                            },
+                            "show_only_outliers": false,
+                            "show_points": true,
+                            "namespace": "BUSCO",
+                            "color": "55,126,184",
+                            "hoverformat": ".2f"
+                        },
+                        "busco-complete_duplicated": {
+                            "title": "Complete and duplicated BUSCOs",
+                            "description": "Number of complete and duplicated BUSCOs",
+                            "suffix": "",
+                            "dmin": 0.0,
+                            "dmax": 25.0,
+                            "hidden": true,
+                            "xaxis": {
+                                "ticksuffix": null,
+                                "tickvals": null,
+                                "range": [
+                                    -0.125,
+                                    25.125625
+                                ]
+                            },
+                            "show_only_outliers": false,
+                            "show_points": true,
+                            "namespace": "BUSCO",
+                            "color": "55,126,184",
+                            "hoverformat": ".2f"
+                        },
+                        "busco-fragmented": {
+                            "title": "Fragmented BUSCOs",
+                            "description": "Number of fragmented BUSCOs",
+                            "suffix": "",
+                            "dmin": 0.0,
+                            "dmax": 76.0,
+                            "hidden": true,
+                            "xaxis": {
+                                "ticksuffix": null,
+                                "tickvals": null,
+                                "range": [
+                                    -0.38,
+                                    76.3819
+                                ]
+                            },
+                            "show_only_outliers": false,
+                            "show_points": true,
+                            "namespace": "BUSCO",
+                            "color": "55,126,184",
+                            "hoverformat": ".2f"
+                        },
+                        "busco-missing": {
+                            "title": "Missing BUSCOs",
+                            "description": "Number of missing BUSCOs",
+                            "suffix": "",
+                            "dmin": 0.0,
+                            "dmax": 608.0,
+                            "hidden": false,
+                            "xaxis": {
+                                "ticksuffix": null,
+                                "tickvals": null,
+                                "range": [
+                                    -3.04,
+                                    611.0552
+                                ]
+                            },
+                            "show_only_outliers": false,
+                            "show_points": true,
+                            "namespace": "BUSCO",
+                            "color": "55,126,184",
+                            "hoverformat": ".2f"
+                        },
                         "nanostat-Median_read_length_fastq": {
                             "title": "Median length",
                             "description": "Median read length (bp) (FASTQ)",
                             "suffix": " bp",
                             "dmin": 0,
-                            "dmax": 6122.5,
+                            "dmax": 13166.5,
                             "hidden": true,
                             "xaxis": {
                                 "ticksuffix": " bp",
                                 "tickvals": null,
                                 "range": [
-                                    -30.6125,
-                                    6153.2655625
+                                    -65.8325,
+                                    13232.6616625
                                 ]
                             },
                             "show_only_outliers": false,
                             "show_points": true,
                             "namespace": "NanoStat",
-                            "color": null,
+                            "color": "77,175,74",
                             "hoverformat": ".2f"
                         },
                         "nanostat-Mean_read_length_fastq": {
@@ -1627,20 +2248,20 @@
                             "description": "Mean read length (bp) (FASTQ)",
                             "suffix": " bp",
                             "dmin": 0,
-                            "dmax": 6122.5,
+                            "dmax": 13166.5,
                             "hidden": true,
                             "xaxis": {
                                 "ticksuffix": " bp",
                                 "tickvals": null,
                                 "range": [
-                                    -30.6125,
-                                    6153.2655625
+                                    -65.8325,
+                                    13232.6616625
                                 ]
                             },
                             "show_only_outliers": false,
                             "show_points": true,
                             "namespace": "NanoStat",
-                            "color": null,
+                            "color": "77,175,74",
                             "hoverformat": ".2f"
                         },
                         "nanostat-Read_length_N50_fastq": {
@@ -1648,20 +2269,20 @@
                             "description": "Read length N50 (FASTQ)",
                             "suffix": " bp",
                             "dmin": 0,
-                            "dmax": 13039.0,
+                            "dmax": 16392.0,
                             "hidden": false,
                             "xaxis": {
                                 "ticksuffix": " bp",
                                 "tickvals": null,
                                 "range": [
-                                    -65.19500000000001,
-                                    13104.520975
+                                    -81.96000000000001,
+                                    16474.3698
                                 ]
                             },
                             "show_only_outliers": false,
                             "show_points": true,
                             "namespace": "NanoStat",
-                            "color": null,
+                            "color": "77,175,74",
                             "hoverformat": ".2f"
                         },
                         "nanostat-Median_read_quality_fastq": {
@@ -1669,20 +2290,20 @@
                             "description": "Median read quality (Phred scale) (FASTQ)",
                             "suffix": "",
                             "dmin": 0,
-                            "dmax": 18.6,
+                            "dmax": 20.7,
                             "hidden": true,
                             "xaxis": {
                                 "ticksuffix": null,
                                 "tickvals": null,
                                 "range": [
-                                    -0.09300000000000001,
-                                    18.693465
+                                    -0.1035,
+                                    20.8040175
                                 ]
                             },
                             "show_only_outliers": false,
                             "show_points": true,
                             "namespace": "NanoStat",
-                            "color": null,
+                            "color": "77,175,74",
                             "hoverformat": ".2f"
                         },
                         "nanostat-Mean_read_quality_fastq": {
@@ -1690,20 +2311,20 @@
                             "description": "Mean read quality (Phred scale) (FASTQ)",
                             "suffix": "",
                             "dmin": 0,
-                            "dmax": 18.6,
+                            "dmax": 20.7,
                             "hidden": true,
                             "xaxis": {
                                 "ticksuffix": null,
                                 "tickvals": null,
                                 "range": [
-                                    -0.09300000000000001,
-                                    18.693465
+                                    -0.1035,
+                                    20.8040175
                                 ]
                             },
                             "show_only_outliers": false,
                             "show_points": true,
                             "namespace": "NanoStat",
-                            "color": null,
+                            "color": "77,175,74",
                             "hoverformat": ".2f"
                         },
                         "nanostat-Number_of_reads_fastq": {
@@ -1724,7 +2345,7 @@
                             "show_only_outliers": false,
                             "show_points": true,
                             "namespace": "NanoStat",
-                            "color": null,
+                            "color": "77,175,74",
                             "hoverformat": ".2f"
                         },
                         "nanostat-Total_bases_fastq": {
@@ -1745,34 +2366,61 @@
                             "show_only_outliers": false,
                             "show_points": true,
                             "namespace": "NanoStat",
-                            "color": null,
+                            "color": "77,175,74",
                             "hoverformat": ".2f"
                         }
                     },
                     "violin_value_by_sample_by_metric": {
+                        "busco-complete": {
+                            "busco_test | short_summary.specific.metazoa_odb10.busco_test": 270.0
+                        },
+                        "busco-complete_single_copy": {
+                            "busco_test | short_summary.specific.metazoa_odb10.busco_test": 245.0
+                        },
+                        "busco-complete_duplicated": {
+                            "busco_test | short_summary.specific.metazoa_odb10.busco_test": 25.0
+                        },
+                        "busco-fragmented": {
+                            "busco_test | short_summary.specific.metazoa_odb10.busco_test": 76.0
+                        },
+                        "busco-missing": {
+                            "busco_test | short_summary.specific.metazoa_odb10.busco_test": 608.0
+                        },
                         "nanostat-Median_read_length_fastq": {
-                            "NanoStats": 3033.0
+                            "qc | NanoStats": 9585.0,
+                            "qc | NanoStats_raw": 3033.0
                         },
                         "nanostat-Mean_read_length_fastq": {
-                            "NanoStats": 6122.5
+                            "qc | NanoStats": 13166.5,
+                            "qc | NanoStats_raw": 6122.5
                         },
                         "nanostat-Read_length_N50_fastq": {
-                            "NanoStats": 13039.0
+                            "qc | NanoStats": 16392.0,
+                            "qc | NanoStats_raw": 13039.0
                         },
                         "nanostat-Median_read_quality_fastq": {
-                            "NanoStats": 18.6
+                            "qc | NanoStats": 20.7,
+                            "qc | NanoStats_raw": 18.6
                         },
                         "nanostat-Mean_read_quality_fastq": {
-                            "NanoStats": 16.7
+                            "qc | NanoStats": 18.4,
+                            "qc | NanoStats_raw": 16.7
                         },
                         "nanostat-Number_of_reads_fastq": {
-                            "NanoStats": 1000.0
+                            "qc | NanoStats": 372.003,
+                            "qc | NanoStats_raw": 1000.0
                         },
                         "nanostat-Total_bases_fastq": {
-                            "NanoStats": 6122.479214999999
+                            "qc | NanoStats": 4897.9875569999995,
+                            "qc | NanoStats_raw": 6122.479214999999
                         }
                     },
                     "scatter_value_by_sample_by_metric": {
+                        "busco-complete": {},
+                        "busco-complete_single_copy": {},
+                        "busco-complete_duplicated": {},
+                        "busco-fragmented": {},
+                        "busco-missing": {},
                         "nanostat-Median_read_length_fastq": {},
                         "nanostat-Mean_read_length_fastq": {},
                         "nanostat-Read_length_N50_fastq": {},
@@ -1782,13 +2430,15 @@
                         "nanostat-Total_bases_fastq": {}
                     },
                     "all_samples": [
-                        "NanoStats"
+                        "busco_test | short_summary.specific.metazoa_odb10.busco_test",
+                        "qc | NanoStats",
+                        "qc | NanoStats_raw"
                     ],
                     "scatter_trace_params": {
                         "mode": "markers",
                         "marker": {
                             "size": 4,
-                            "color": "#0b79e6"
+                            "color": "black"
                         },
                         "showlegend": false,
                         "hovertemplate": "<b>%{text}</b>: %{x}<extra></extra>",
@@ -1867,6 +2517,7 @@
                             "x_lines": null,
                             "y_lines": null,
                             "series_label": "samples",
+                            "flat_if_very_large": false,
                             "namespace": "",
                             "save_file": true,
                             "raw_data_fn": "multiqc_general_stats",
@@ -1883,6 +2534,299 @@
                             "rows_are_samples": true
                         },
                         "section_by_id": {
+                            "busco": {
+                                "column_by_key": {
+                                    "complete": {
+                                        "rid": "busco-complete",
+                                        "clean_rid": "busco-complete",
+                                        "title": "Complete BUSCOs",
+                                        "description": "Number of complete BUSCOs",
+                                        "scale": "GnBu",
+                                        "hidden": true,
+                                        "placement": 1000.0,
+                                        "namespace": "BUSCO",
+                                        "colour": null,
+                                        "color": "55,126,184",
+                                        "max": null,
+                                        "dmax": 270.0,
+                                        "min": 0.0,
+                                        "dmin": 0.0,
+                                        "ceiling": null,
+                                        "floor": null,
+                                        "minRange": null,
+                                        "minrange": null,
+                                        "shared_key": null,
+                                        "tt_decimals": null,
+                                        "suffix": null,
+                                        "cond_formatting_colours": [
+                                            {
+                                                "blue": "#337ab7"
+                                            },
+                                            {
+                                                "lbue": "#5bc0de"
+                                            },
+                                            {
+                                                "pass": "#5cb85c"
+                                            },
+                                            {
+                                                "warn": "#f0ad4e"
+                                            },
+                                            {
+                                                "fail": "#d9534f"
+                                            },
+                                            {
+                                                "male": "#5bc0de"
+                                            },
+                                            {
+                                                "female": "#d9534f"
+                                            }
+                                        ],
+                                        "cond_formatting_rules": {},
+                                        "bgcols": {},
+                                        "bars_zero_centrepoint": false,
+                                        "modify": null,
+                                        "format": null
+                                    },
+                                    "complete_single_copy": {
+                                        "rid": "busco-complete_single_copy",
+                                        "clean_rid": "busco-complete_single_copy",
+                                        "title": "Complete and single-copy BUSCOs",
+                                        "description": "Number of complete and single-copy BUSCOs",
+                                        "scale": "GnBu",
+                                        "hidden": false,
+                                        "placement": 1000.0,
+                                        "namespace": "BUSCO",
+                                        "colour": null,
+                                        "color": "55,126,184",
+                                        "max": null,
+                                        "dmax": 245.0,
+                                        "min": 0.0,
+                                        "dmin": 0.0,
+                                        "ceiling": null,
+                                        "floor": null,
+                                        "minRange": null,
+                                        "minrange": null,
+                                        "shared_key": null,
+                                        "tt_decimals": null,
+                                        "suffix": null,
+                                        "cond_formatting_colours": [
+                                            {
+                                                "blue": "#337ab7"
+                                            },
+                                            {
+                                                "lbue": "#5bc0de"
+                                            },
+                                            {
+                                                "pass": "#5cb85c"
+                                            },
+                                            {
+                                                "warn": "#f0ad4e"
+                                            },
+                                            {
+                                                "fail": "#d9534f"
+                                            },
+                                            {
+                                                "male": "#5bc0de"
+                                            },
+                                            {
+                                                "female": "#d9534f"
+                                            }
+                                        ],
+                                        "cond_formatting_rules": {},
+                                        "bgcols": {},
+                                        "bars_zero_centrepoint": false,
+                                        "modify": null,
+                                        "format": null
+                                    },
+                                    "complete_duplicated": {
+                                        "rid": "busco-complete_duplicated",
+                                        "clean_rid": "busco-complete_duplicated",
+                                        "title": "Complete and duplicated BUSCOs",
+                                        "description": "Number of complete and duplicated BUSCOs",
+                                        "scale": "GnBu",
+                                        "hidden": true,
+                                        "placement": 1000.0,
+                                        "namespace": "BUSCO",
+                                        "colour": null,
+                                        "color": "55,126,184",
+                                        "max": null,
+                                        "dmax": 25.0,
+                                        "min": 0.0,
+                                        "dmin": 0.0,
+                                        "ceiling": null,
+                                        "floor": null,
+                                        "minRange": null,
+                                        "minrange": null,
+                                        "shared_key": null,
+                                        "tt_decimals": null,
+                                        "suffix": null,
+                                        "cond_formatting_colours": [
+                                            {
+                                                "blue": "#337ab7"
+                                            },
+                                            {
+                                                "lbue": "#5bc0de"
+                                            },
+                                            {
+                                                "pass": "#5cb85c"
+                                            },
+                                            {
+                                                "warn": "#f0ad4e"
+                                            },
+                                            {
+                                                "fail": "#d9534f"
+                                            },
+                                            {
+                                                "male": "#5bc0de"
+                                            },
+                                            {
+                                                "female": "#d9534f"
+                                            }
+                                        ],
+                                        "cond_formatting_rules": {},
+                                        "bgcols": {},
+                                        "bars_zero_centrepoint": false,
+                                        "modify": null,
+                                        "format": null
+                                    },
+                                    "fragmented": {
+                                        "rid": "busco-fragmented",
+                                        "clean_rid": "busco-fragmented",
+                                        "title": "Fragmented BUSCOs",
+                                        "description": "Number of fragmented BUSCOs",
+                                        "scale": "GnBu",
+                                        "hidden": true,
+                                        "placement": 1000.0,
+                                        "namespace": "BUSCO",
+                                        "colour": null,
+                                        "color": "55,126,184",
+                                        "max": null,
+                                        "dmax": 76.0,
+                                        "min": 0.0,
+                                        "dmin": 0.0,
+                                        "ceiling": null,
+                                        "floor": null,
+                                        "minRange": null,
+                                        "minrange": null,
+                                        "shared_key": null,
+                                        "tt_decimals": null,
+                                        "suffix": null,
+                                        "cond_formatting_colours": [
+                                            {
+                                                "blue": "#337ab7"
+                                            },
+                                            {
+                                                "lbue": "#5bc0de"
+                                            },
+                                            {
+                                                "pass": "#5cb85c"
+                                            },
+                                            {
+                                                "warn": "#f0ad4e"
+                                            },
+                                            {
+                                                "fail": "#d9534f"
+                                            },
+                                            {
+                                                "male": "#5bc0de"
+                                            },
+                                            {
+                                                "female": "#d9534f"
+                                            }
+                                        ],
+                                        "cond_formatting_rules": {},
+                                        "bgcols": {},
+                                        "bars_zero_centrepoint": false,
+                                        "modify": null,
+                                        "format": null
+                                    },
+                                    "missing": {
+                                        "rid": "busco-missing",
+                                        "clean_rid": "busco-missing",
+                                        "title": "Missing BUSCOs",
+                                        "description": "Number of missing BUSCOs",
+                                        "scale": "GnBu",
+                                        "hidden": false,
+                                        "placement": 1000.0,
+                                        "namespace": "BUSCO",
+                                        "colour": null,
+                                        "color": "55,126,184",
+                                        "max": null,
+                                        "dmax": 608.0,
+                                        "min": 0.0,
+                                        "dmin": 0.0,
+                                        "ceiling": null,
+                                        "floor": null,
+                                        "minRange": null,
+                                        "minrange": null,
+                                        "shared_key": null,
+                                        "tt_decimals": null,
+                                        "suffix": null,
+                                        "cond_formatting_colours": [
+                                            {
+                                                "blue": "#337ab7"
+                                            },
+                                            {
+                                                "lbue": "#5bc0de"
+                                            },
+                                            {
+                                                "pass": "#5cb85c"
+                                            },
+                                            {
+                                                "warn": "#f0ad4e"
+                                            },
+                                            {
+                                                "fail": "#d9534f"
+                                            },
+                                            {
+                                                "male": "#5bc0de"
+                                            },
+                                            {
+                                                "female": "#d9534f"
+                                            }
+                                        ],
+                                        "cond_formatting_rules": {},
+                                        "bgcols": {},
+                                        "bars_zero_centrepoint": false,
+                                        "modify": null,
+                                        "format": null
+                                    }
+                                },
+                                "rows_by_sgroup": {
+                                    "busco_test | short_summary.specific.metazoa_odb10.busco_test": [
+                                        {
+                                            "sample": "busco_test | short_summary.specific.metazoa_odb10.busco_test",
+                                            "data": {
+                                                "complete": {
+                                                    "raw": 270.0,
+                                                    "mod": 270.0,
+                                                    "fmt": "270.0"
+                                                },
+                                                "complete_single_copy": {
+                                                    "raw": 245.0,
+                                                    "mod": 245.0,
+                                                    "fmt": "245.0"
+                                                },
+                                                "complete_duplicated": {
+                                                    "raw": 25.0,
+                                                    "mod": 25.0,
+                                                    "fmt": "25.0"
+                                                },
+                                                "fragmented": {
+                                                    "raw": 76.0,
+                                                    "mod": 76.0,
+                                                    "fmt": "76.0"
+                                                },
+                                                "missing": {
+                                                    "raw": 608.0,
+                                                    "mod": 608.0,
+                                                    "fmt": "608.0"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
                             "nanostat": {
                                 "column_by_key": {
                                     "Median read length_fastq": {
@@ -1895,9 +2839,9 @@
                                         "placement": 1000.0,
                                         "namespace": "NanoStat",
                                         "colour": null,
-                                        "color": null,
+                                        "color": "77,175,74",
                                         "max": null,
-                                        "dmax": 6122.5,
+                                        "dmax": 13166.5,
                                         "min": null,
                                         "dmin": 0,
                                         "ceiling": null,
@@ -1946,9 +2890,9 @@
                                         "placement": 1000.0,
                                         "namespace": "NanoStat",
                                         "colour": null,
-                                        "color": null,
+                                        "color": "77,175,74",
                                         "max": null,
-                                        "dmax": 6122.5,
+                                        "dmax": 13166.5,
                                         "min": null,
                                         "dmin": 0,
                                         "ceiling": null,
@@ -1997,9 +2941,9 @@
                                         "placement": 1000.0,
                                         "namespace": "NanoStat",
                                         "colour": null,
-                                        "color": null,
+                                        "color": "77,175,74",
                                         "max": null,
-                                        "dmax": 13039.0,
+                                        "dmax": 16392.0,
                                         "min": null,
                                         "dmin": 0,
                                         "ceiling": null,
@@ -2048,9 +2992,9 @@
                                         "placement": 1000.0,
                                         "namespace": "NanoStat",
                                         "colour": null,
-                                        "color": null,
+                                        "color": "77,175,74",
                                         "max": null,
-                                        "dmax": 18.6,
+                                        "dmax": 20.7,
                                         "min": null,
                                         "dmin": 0,
                                         "ceiling": null,
@@ -2099,9 +3043,9 @@
                                         "placement": 1000.0,
                                         "namespace": "NanoStat",
                                         "colour": null,
-                                        "color": null,
+                                        "color": "77,175,74",
                                         "max": null,
-                                        "dmax": 18.6,
+                                        "dmax": 20.7,
                                         "min": null,
                                         "dmin": 0,
                                         "ceiling": null,
@@ -2150,7 +3094,7 @@
                                         "placement": 1000.0,
                                         "namespace": "NanoStat",
                                         "colour": null,
-                                        "color": null,
+                                        "color": "77,175,74",
                                         "max": null,
                                         "dmax": 1000.0,
                                         "min": 0.0,
@@ -2201,7 +3145,7 @@
                                         "placement": 1000.0,
                                         "namespace": "NanoStat",
                                         "colour": null,
-                                        "color": null,
+                                        "color": "77,175,74",
                                         "max": null,
                                         "dmax": 6122.479214999999,
                                         "min": 0.0,
@@ -2244,9 +3188,51 @@
                                     }
                                 },
                                 "rows_by_sgroup": {
-                                    "NanoStats": [
+                                    "qc | NanoStats": [
                                         {
-                                            "sample": "NanoStats",
+                                            "sample": "qc | NanoStats",
+                                            "data": {
+                                                "Mean read length_fastq": {
+                                                    "raw": 13166.5,
+                                                    "mod": 13166.5,
+                                                    "fmt": "13,166"
+                                                },
+                                                "Mean read quality_fastq": {
+                                                    "raw": 18.4,
+                                                    "mod": 18.4,
+                                                    "fmt": "18.4"
+                                                },
+                                                "Median read length_fastq": {
+                                                    "raw": 9585.0,
+                                                    "mod": 9585.0,
+                                                    "fmt": "9,585"
+                                                },
+                                                "Median read quality_fastq": {
+                                                    "raw": 20.7,
+                                                    "mod": 20.7,
+                                                    "fmt": "20.7"
+                                                },
+                                                "Number of reads_fastq": {
+                                                    "raw": 372003.0,
+                                                    "mod": 372.003,
+                                                    "fmt": "372.0"
+                                                },
+                                                "Read length N50_fastq": {
+                                                    "raw": 16392.0,
+                                                    "mod": 16392.0,
+                                                    "fmt": "16,392"
+                                                },
+                                                "Total bases_fastq": {
+                                                    "raw": 4897987557.0,
+                                                    "mod": 4897.9875569999995,
+                                                    "fmt": "4,898.0"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "qc | NanoStats_raw": [
+                                        {
+                                            "sample": "qc | NanoStats_raw",
                                             "data": {
                                                 "Mean read length_fastq": {
                                                     "raw": 6122.5,
@@ -2293,30 +3279,50 @@
                             "1000.0": [
                                 [
                                     0,
+                                    "complete"
+                                ],
+                                [
+                                    0,
+                                    "complete_single_copy"
+                                ],
+                                [
+                                    0,
+                                    "complete_duplicated"
+                                ],
+                                [
+                                    0,
+                                    "fragmented"
+                                ],
+                                [
+                                    0,
+                                    "missing"
+                                ],
+                                [
+                                    1,
                                     "Median read length_fastq"
                                 ],
                                 [
-                                    0,
+                                    1,
                                     "Mean read length_fastq"
                                 ],
                                 [
-                                    0,
+                                    1,
                                     "Read length N50_fastq"
                                 ],
                                 [
-                                    0,
+                                    1,
                                     "Median read quality_fastq"
                                 ],
                                 [
-                                    0,
+                                    1,
                                     "Mean read quality_fastq"
                                 ],
                                 [
-                                    0,
+                                    1,
                                     "Number of reads_fastq"
                                 ],
                                 [
-                                    0,
+                                    1,
                                     "Total bases_fastq"
                                 ]
                             ]
@@ -2394,6 +3400,7 @@
                 "x_lines": null,
                 "y_lines": null,
                 "series_label": "samples",
+                "flat_if_very_large": false,
                 "namespace": "",
                 "save_file": true,
                 "raw_data_fn": "multiqc_general_stats",
@@ -2428,29 +3435,61 @@
             "no_violin": false,
             "show_table": true,
             "show_table_by_default": true,
-            "n_samples": 1,
+            "n_samples": 3,
             "table_anchor": "general_stats_table_table"
         }
     },
     "config_analysis_dir": [
-        "fastq_planaria/."
+        "fastq_planaria/.",
+        "trimmed_fastq/qc/.",
+        "/data/groups/wheelenj/sequencing/20250916_M009242/busco_test/short_summary.specific.metazoa_odb10.busco_test.txt"
     ],
     "config_git_hash": null,
     "config_intro_text": null,
     "config_report_comment": null,
     "config_report_header_info": null,
-    "config_script_path": "/data/users/willetse0745/.conda/envs/planaria-env/lib/python3.13/site-packages/multiqc",
-    "config_short_version": "1.29",
+    "config_script_path": "/data/users/willetse0745/.conda/envs/planaria-env/lib/python3.12/site-packages/multiqc",
+    "config_short_version": "1.31",
     "config_subtitle": null,
     "config_title": null,
-    "config_version": "1.29",
+    "config_version": "1.31",
     "config_output_dir": "/data/users/willetse0745/Planaria-Genome-Project",
+    "config_sample_names_rename": [],
+    "config_sample_names_rename_buttons": [],
     "config_analysis_dir_abs": [
-        "/data/users/willetse0745/Planaria-Genome-Project/fastq_planaria"
+        "/data/users/willetse0745/Planaria-Genome-Project/fastq_planaria",
+        "/data/users/willetse0745/Planaria-Genome-Project/trimmed_fastq/qc",
+        "/data/groups/wheelenj/sequencing/20250916_M009242/busco_test/short_summary.specific.metazoa_odb10.busco_test.txt"
     ],
     "report_saved_raw_data": {
+        "multiqc_busco": {
+            "busco_test | short_summary.specific.metazoa_odb10.busco_test": {
+                "lineage_dataset": "metazoa_odb10",
+                "complete": 270.0,
+                "complete_single_copy": 245.0,
+                "complete_duplicated": 25.0,
+                "fragmented": 76.0,
+                "missing": 608.0,
+                "total": 954.0
+            }
+        },
         "multiqc_nanostat": {
-            "NanoStats": {
+            "qc | NanoStats": {
+                "Mean read length_fastq": 13166.5,
+                "Mean read quality_fastq": 18.4,
+                "Median read length_fastq": 9585.0,
+                "Median read quality_fastq": 20.7,
+                "Number of reads_fastq": 372003.0,
+                "Read length N50_fastq": 16392.0,
+                "STDEV read length_fastq": 10887.9,
+                "Total bases_fastq": 4897987557.0,
+                ">Q10_fastq": 371920.0,
+                ">Q15_fastq": 333279.0,
+                ">Q20_fastq": 214252.0,
+                ">Q25_fastq": 14012.0,
+                ">Q30_fastq": 6.0
+            },
+            "qc | NanoStats_raw": {
                 "Mean read length_fastq": 6122.5,
                 "Mean read quality_fastq": 16.7,
                 "Median read length_fastq": 3033.0,
@@ -2467,7 +3506,23 @@
             }
         },
         "multiqc_general_stats": {
-            "NanoStats": {
+            "busco_test | short_summary.specific.metazoa_odb10.busco_test": {
+                "busco-complete": 270.0,
+                "busco-complete_single_copy": 245.0,
+                "busco-complete_duplicated": 25.0,
+                "busco-fragmented": 76.0,
+                "busco-missing": 608.0
+            },
+            "qc | NanoStats": {
+                "nanostat-Median_read_length_fastq": 9585.0,
+                "nanostat-Mean_read_length_fastq": 13166.5,
+                "nanostat-Read_length_N50_fastq": 16392.0,
+                "nanostat-Median_read_quality_fastq": 20.7,
+                "nanostat-Mean_read_quality_fastq": 18.4,
+                "nanostat-Number_of_reads_fastq": 372.003,
+                "nanostat-Total_bases_fastq": 4897.9875569999995
+            },
+            "qc | NanoStats_raw": {
                 "nanostat-Median_read_length_fastq": 3033.0,
                 "nanostat-Mean_read_length_fastq": 6122.5,
                 "nanostat-Read_length_N50_fastq": 13039.0,

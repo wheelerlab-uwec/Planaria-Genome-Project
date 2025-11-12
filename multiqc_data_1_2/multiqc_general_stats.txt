@@ -1,2 +1,0 @@
-Sample	nanostat-Median_read_length_fastq	nanostat-Mean_read_length_fastq	nanostat-Read_length_N50_fastq	nanostat-Median_read_quality_fastq	nanostat-Mean_read_quality_fastq	nanostat-Number_of_reads_fastq	nanostat-Total_bases_fastq
-NanoStats	9585.0	13166.5	16392.0	20.7	18.4	372.003	4897.9875569999995

@@ -1,0 +1,2 @@
+Sample	Complete and single-copy BUSCOs	Fragmented BUSCOs	Complete and duplicated BUSCOs	Missing BUSCOs
+busco_test | short_summary.specific.metazoa_odb10.busco_test	245.0	76.0	25.0	608.0

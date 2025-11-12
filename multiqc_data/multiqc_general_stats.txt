@@ -1,2 +1,4 @@
-Sample	nanostat-Median_read_length_fastq	nanostat-Mean_read_length_fastq	nanostat-Read_length_N50_fastq	nanostat-Median_read_quality_fastq	nanostat-Mean_read_quality_fastq	nanostat-Number_of_reads_fastq	nanostat-Total_bases_fastq
-NanoStats	3033.0	6122.5	13039.0	18.6	16.7	1000.0	6122.479214999999
+Sample	busco-complete	busco-complete_single_copy	busco-complete_duplicated	busco-fragmented	busco-missing	nanostat-Median_read_length_fastq	nanostat-Mean_read_length_fastq	nanostat-Read_length_N50_fastq	nanostat-Median_read_quality_fastq	nanostat-Mean_read_quality_fastq	nanostat-Number_of_reads_fastq	nanostat-Total_bases_fastq
+busco_test | short_summary.specific.metazoa_odb10.busco_test	270.0	245.0	25.0	76.0	608.0							
+qc | NanoStats						9585.0	13166.5	16392.0	20.7	18.4	372.003	4897.9875569999995
+qc | NanoStats_raw						3033.0	6122.5	13039.0	18.6	16.7	1000.0	6122.479214999999

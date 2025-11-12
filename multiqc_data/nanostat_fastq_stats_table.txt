@@ -1,2 +1,3 @@
 Sample	Median length	Mean length	Read N50	Median Qual	Mean Qual	# Reads (K)	Total Bases (Mb)
-NanoStats	3033.0	6122.5	13039.0	18.6	16.7	1000.0	6122.479214999999
+qc | NanoStats	9585.0	13166.5	16392.0	20.7	18.4	372.003	4897.9875569999995
+qc | NanoStats_raw	3033.0	6122.5	13039.0	18.6	16.7	1000.0	6122.479214999999

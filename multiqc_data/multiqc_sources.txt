@@ -1,2 +1,4 @@
 Module	Section	Sample Name	Source
-NanoStat	all_sections	NanoStats	/data/users/willetse0745/Planaria-Genome-Project/fastq_planaria/qc/NanoStats.txt
+BUSCO	all_sections	busco_test | short_summary.specific.metazoa_odb10.busco_test	/data/groups/wheelenj/sequencing/20250916_M009242/busco_test/short_summary.specific.metazoa_odb10.busco_test.txt
+NanoStat	all_sections	qc | NanoStats	/data/users/willetse0745/Planaria-Genome-Project/trimmed_fastq/qc/NanoStats_trimmed.txt
+NanoStat	all_sections	qc | NanoStats_raw	/data/users/willetse0745/Planaria-Genome-Project/fastq_planaria/qc/NanoStats_raw.txt
