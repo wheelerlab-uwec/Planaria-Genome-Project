@@ -1,0 +1,30 @@
+# BUSCO version is: 6.0.0 
+# The lineage dataset is: metazoa_odb10 (Creation date: 2024-01-08, number of genomes: 65, number of BUSCOs: 954)
+# Summarized benchmarking in BUSCO notation for file /data/groups/wheelenj/sequencing/20250916_M009242/test_assembly/flye_output/assembly.fasta
+# BUSCO was run in mode: euk_genome_min
+# Gene predictor used: miniprot
+
+	***** Results: *****
+
+	C:28.3%[S:25.7%,D:2.6%],F:8.0%,M:63.7%,n:954,E:33.7%	   
+	270	Complete BUSCOs (C)	(of which 91 contain internal stop codons)		   
+	245	Complete and single-copy BUSCOs (S)	   
+	25	Complete and duplicated BUSCOs (D)	   
+	76	Fragmented BUSCOs (F)			   
+	608	Missing BUSCOs (M)			   
+	954	Total BUSCO groups searched		   
+
+Assembly Statistics:
+	15138	Number of scaffolds
+	15138	Number of contigs
+	440718210	Total length
+	0.000%	Percent gaps
+	42 kbp	Scaffold N50
+	42 kbp	Contigs N50
+
+
+Dependencies and versions:
+	hmmsearch: 3.4
+	bbtools: None
+	miniprot_index: 0.18-r281
+	miniprot_align: 0.18-r281
