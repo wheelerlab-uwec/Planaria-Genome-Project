@@ -1,0 +1,46 @@
+# Input data
+input_reads: "data/combined_flowcells.fastq" # need to change to follow what ours is in the cluster
+
+# Genome parameters
+genome_size: "1g"  # Estimated genome size (adjust: 500m, 1g, 1.5g, etc.)
+
+filtlong:
+  min_length: 1000           # Minimum read length (bp)
+  keep_percent: 30           # Keep top X% of reads by quality
+  target_bases: 120000000000 # Target 120 GB (120 billion bases) for ~120x coverage
+  min_mean_q: 8              # Minimum mean quality score
+
+flye:
+  iterations: 3              # Number of polishing iterations (2-3 recommended)
+
+medaka:
+  model: "r941_min_high_g360"  # Model for your flowcell/basecaller
+  # Other common models:
+  # - r941_min_sup_g507 (super accuracy)
+  # - r1041_e82_400bps_sup_g615 (R10.4 flowcells)
+
+racon:
+  rounds: 3                  # Number of Racon polishing rounds (2-4 recommended)
+
+busco:
+  lineage: "metazoa_odb10" # BUSCO lineage dataset
+
+threads:
+  flye: 48
+  medaka: 64
+  racon: 64
+  busco: 64
+  purge_dups: 32
+
+memory:  # in MB
+  flye: 200000      # 200 GB
+  medaka: 128000    # 128 GB
+  racon: 128000     # 128 GB
+
+# ============================================================================
+# HPC Cluster Configuration (if using)
+# ============================================================================
+# Uncomment and adjust for your cluster
+# cluster:
+#   partition: "high_mem"
+#   account: "your_account"

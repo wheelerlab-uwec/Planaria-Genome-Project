@@ -1,0 +1,93 @@
+# ============================================================================
+# HPC Cluster Configuration for SLURM
+# ============================================================================
+
+__default__:
+  partition: "general"
+  time: "24:00:00"
+  mem: "32G"
+  cpus: 8
+  output: "logs/slurm-%j.out"
+  error: "logs/slurm-%j.err"
+
+# ============================================================================
+# Rule-Specific Cluster Settings
+# ============================================================================
+
+initial_qc:
+  partition: "general"
+  time: "04:00:00"
+  mem: "32G"
+  cpus: 8
+
+filtlong:
+  partition: "general"
+  time: "48:00:00"
+  mem: "64G"
+  cpus: 16
+
+filtered_qc:
+  partition: "general"
+  time: "04:00:00"
+  mem: "32G"
+  cpus: 8
+
+flye_assembly:
+  partition: "high_mem"
+  time: "72:00:00"
+  mem: "200G"
+  cpus: 48
+
+busco_initial:
+  partition: "general"
+  time: "12:00:00"
+  mem: "64G"
+  cpus: 64
+
+medaka_polish:
+  partition: "high_mem"
+  time: "48:00:00"
+  mem: "128G"
+  cpus: 64
+
+busco_medaka:
+  partition: "general"
+  time: "12:00:00"
+  mem: "64G"
+  cpus: 64
+
+racon_round:
+  partition: "high_mem"
+  time: "12:00:00"
+  mem: "128G"
+  cpus: 64
+
+racon_final:
+  partition: "general"
+  time: "00:10:00"
+  mem: "4G"
+  cpus: 1
+
+busco_racon:
+  partition: "general"
+  time: "12:00:00"
+  mem: "64G"
+  cpus: 64
+
+purge_dups:
+  partition: "general"
+  time: "24:00:00"
+  mem: "64G"
+  cpus: 32
+
+busco_final:
+  partition: "general"
+  time: "12:00:00"
+  mem: "64G"
+  cpus: 64
+
+busco_plot:
+  partition: "general"
+  time: "01:00:00"
+  mem: "8G"
+  cpus: 4

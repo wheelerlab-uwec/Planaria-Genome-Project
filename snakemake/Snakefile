@@ -1,0 +1,331 @@
+configfile: "config.yaml"
+
+rule all:
+    input:
+        # QC reports
+        "results/qc/initial_qc/NanoStats.txt",
+        "results/qc/filtered_qc/NanoStats.txt",
+        
+        # Assembly outputs
+        "results/assembly/flye/assembly.fasta",
+        
+        # Polished assemblies
+        "results/polished/medaka/consensus.fasta",
+        "results/polished/racon/final_racon_polished.fasta",
+        
+        # Final purged assembly
+        "results/final/purged_assembly.fasta",
+        
+        # BUSCO results at each stage
+        "results/busco/initial/short_summary.txt",
+        "results/busco/medaka/short_summary.txt",
+        "results/busco/racon/short_summary.txt",
+        "results/busco/final/short_summary.txt",
+        
+        # Comparison plot
+        "results/busco/busco_figure.png"
+
+rule initial_qc:
+    input:
+        reads = config["input_reads"] # check config.yaml for change to input_reads -- need path to cluster
+    output:
+        stats = "results/qc/initial_qc/NanoStats.txt"
+    params:
+        outdir = "results/qc/initial_qc"
+    threads: 8
+    resources:
+        mem_mb = 32000,
+        runtime = 240  # 4 hours
+    log:
+        "logs/initial_qc.log"
+    shell:
+        """
+        NanoPlot --fastq {input.reads} \
+                 --outdir {params.outdir} \
+                 --threads {threads} \
+                 --plots kde hex 2> {log}
+        """
+
+rule filtlong:
+    input:
+        reads = config["input_reads"] # will change as done in the initial_qc
+    output:
+        filtered = "results/filtered/filtered_reads.fastq.gz"
+    params:
+        min_length = config["filtlong"]["min_length"],
+        keep_percent = config["filtlong"]["keep_percent"],
+        target_bases = config["filtlong"]["target_bases"],
+        min_mean_q = config["filtlong"]["min_mean_q"]
+    threads: 16
+    resources:
+        mem_mb = 64000,
+        runtime = 2880  # 48 hours
+    log:
+        "logs/filtlong.log"
+    shell:
+        """
+        filtlong --min_length {params.min_length} \
+                 --keep_percent {params.keep_percent} \
+                 --target_bases {params.target_bases} \
+                 --min_mean_q {params.min_mean_q} \
+                 {input.reads} 2> {log} | gzip > {output.filtered}
+        """
+
+rule filtered_qc:
+    input:
+        reads = "results/filtered/filtered_reads.fastq.gz"
+    output:
+        stats = "results/qc/filtered_qc/NanoStats.txt"
+    params:
+        outdir = "results/qc/filtered_qc"
+    threads: 8
+    resources:
+        mem_mb = 32000,
+        runtime = 240
+    log:
+        "logs/filtered_qc.log"
+    shell:
+        """
+        NanoPlot --fastq {input.reads} \
+                 --outdir {params.outdir} \
+                 --threads {threads} \
+                 --plots kde 2> {log}
+        """
+
+rule flye_assembly:
+    input:
+        reads = "results/filtered/filtered_reads.fastq.gz"
+    output:
+        assembly = "results/assembly/flye/assembly.fasta",
+        info = "results/assembly/flye/assembly_info.txt"
+    params:
+        outdir = "results/assembly/flye",
+        genome_size = config["genome_size"],
+        iterations = config["flye"]["iterations"]
+    threads: config["threads"]["flye"]
+    resources:
+        mem_mb = config["memory"]["flye"],
+        runtime = 4320  # 72 hours
+    log:
+        "logs/flye_assembly.log"
+    shell:
+        """
+        flye --nano-raw {input.reads} \
+             --out-dir {params.outdir} \
+             --threads {threads} \
+             --genome-size {params.genome_size} \
+             --iterations {params.iterations} \
+             --scaffold 2> {log}
+        """
+
+rule busco_initial:
+    input:
+        assembly = "results/assembly/flye/assembly.fasta"
+    output:
+        summary = "results/busco/initial/short_summary.txt"
+    params:
+        lineage = config["busco"]["lineage"],
+        outdir = "results/busco/initial",
+        mode = "genome"
+    threads: config["threads"]["busco"]
+    resources:
+        mem_mb = 64000,
+        runtime = 720  # 12 hours
+    log:
+        "logs/busco_initial.log"
+    shell:
+        """
+        busco -i {input.assembly} \
+              -l {params.lineage} \
+              -o $(basename {params.outdir}) \
+              -m {params.mode} \
+              --cpu {threads} \
+              --out_path $(dirname {params.outdir}) 2> {log}
+        
+        # Find and copy the summary file
+        find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \;
+        """
+
+rule medaka_polish:
+    input:
+        assembly = "results/assembly/flye/assembly.fasta",
+        reads = "results/filtered/filtered_reads.fastq.gz"
+    output:
+        polished = "results/polished/medaka/consensus.fasta"
+    params:
+        outdir = "results/polished/medaka",
+        model = config["medaka"]["model"]
+    threads: config["threads"]["medaka"]
+    resources:
+        mem_mb = config["memory"]["medaka"],
+        runtime = 2880  # 48 hours
+    log:
+        "logs/medaka_polish.log"
+    shell:
+        """
+        medaka_consensus -i {input.reads} \
+                         -d {input.assembly} \
+                         -o {params.outdir} \
+                         -t {threads} \
+                         -m {params.model} 2> {log}
+        """
+
+rule busco_medaka:
+    input:
+        assembly = "results/polished/medaka/consensus.fasta"
+    output:
+        summary = "results/busco/medaka/short_summary.txt"
+    params:
+        lineage = config["busco"]["lineage"],
+        outdir = "results/busco/medaka",
+        mode = "genome"
+    threads: config["threads"]["busco"]
+    resources:
+        mem_mb = 64000,
+        runtime = 720
+    log:
+        "logs/busco_medaka.log"
+    shell:
+        """
+        busco -i {input.assembly} \
+              -l {params.lineage} \
+              -o $(basename {params.outdir}) \
+              -m {params.mode} \
+              --cpu {threads} \
+              --out_path $(dirname {params.outdir}) 2> {log}
+        
+        find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \;
+        """
+
+rule racon_round:
+    input:
+        assembly = lambda wildcards: "results/polished/medaka/consensus.fasta" if wildcards.round == "1" 
+                   else f"results/polished/racon/round{int(wildcards.round)-1}.fasta",
+        reads = "results/filtered/filtered_reads.fastq.gz"
+    output:
+        polished = "results/polished/racon/round{round}.fasta",
+        alignment = temp("results/polished/racon/aligned_round{round}.sam")
+    threads: config["threads"]["racon"]
+    resources:
+        mem_mb = config["memory"]["racon"],
+        runtime = 720  # 12 hours per round
+    log:
+        "logs/racon_round{round}.log"
+    shell:
+        """
+        # Align reads
+        minimap2 -ax map-ont -t {threads} {input.assembly} {input.reads} > {output.alignment} 2> {log}
+        
+        # Polish with Racon
+        racon -t {threads} {input.reads} {output.alignment} {input.assembly} > {output.polished} 2>> {log}
+        """
+
+rule racon_final:
+    input:
+        expand("results/polished/racon/round{round}.fasta", 
+               round=range(1, config["racon"]["rounds"] + 1))
+    output:
+        final = "results/polished/racon/final_racon_polished.fasta"
+    params:
+        last_round = config["racon"]["rounds"]
+    shell:
+        """
+        cp results/polished/racon/round{params.last_round}.fasta {output.final}
+        """
+
+rule busco_racon:
+    input:
+        assembly = "results/polished/racon/final_racon_polished.fasta"
+    output:
+        summary = "results/busco/racon/short_summary.txt"
+    params:
+        lineage = config["busco"]["lineage"],
+        outdir = "results/busco/racon",
+        mode = "genome"
+    threads: config["threads"]["busco"]
+    resources:
+        mem_mb = 64000,
+        runtime = 720
+    log:
+        "logs/busco_racon.log"
+    shell:
+        """
+        busco -i {input.assembly} \
+              -l {params.lineage} \
+              -o $(basename {params.outdir}) \
+              -m {params.mode} \
+              --cpu {threads} \
+              --out_path $(dirname {params.outdir}) 2> {log}
+        
+        find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \;
+        """
+
+rule purge_dups:
+    input:
+        assembly = "results/polished/racon/final_racon_polished.fasta",
+        reads = "results/filtered/filtered_reads.fastq.gz"
+    output:
+        purged = "results/final/purged_assembly.fasta"
+    params:
+        outdir = "results/final"
+    threads: config["threads"]["purge_dups"]
+    resources:
+        mem_mb = 64000,
+        runtime = 1440  # 24 hours
+    log:
+        "logs/purge_dups.log"
+    shell:
+        """
+        # This is a placeholder - customize based on purge_dups workflow
+        # For now, just copy the assembly
+        mkdir -p {params.outdir}
+        cp {input.assembly} {output.purged}
+        
+        echo "NOTE: purge_dups not yet implemented - using Racon output" > {log}
+        """
+
+rule busco_final:
+    input:
+        assembly = "results/final/purged_assembly.fasta"
+    output:
+        summary = "results/busco/final/short_summary.txt"
+    params:
+        lineage = config["busco"]["lineage"],
+        outdir = "results/busco/final",
+        mode = "genome"
+    threads: config["threads"]["busco"]
+    resources:
+        mem_mb = 64000,
+        runtime = 720
+    log:
+        "logs/busco_final.log"
+    shell:
+        """
+        busco -i {input.assembly} \
+              -l {params.lineage} \
+              -o $(basename {params.outdir}) \
+              -m {params.mode} \
+              --cpu {threads} \
+              --out_path $(dirname {params.outdir}) 2> {log}
+        
+        find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \;
+        """
+
+rule busco_plot:
+    input:
+        summaries = [
+            "results/busco/initial/short_summary.txt",
+            "results/busco/medaka/short_summary.txt",
+            "results/busco/racon/short_summary.txt",
+            "results/busco/final/short_summary.txt"
+        ]
+    output:
+        plot = "results/busco/busco_figure.png"
+    params:
+        busco_dir = "results/busco"
+    log:
+        "logs/busco_plot.log"
+    shell:
+        """
+        generate_plot.py -wd {params.busco_dir} 2> {log}
+        """
