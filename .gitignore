@@ -7,5 +7,13 @@ test_assembly/medaka_polish/*
 minimap2_subsample/*
 racon_subsample/*
 
+# snakemake
+snakemake/.snakemake
+snakemake/logs
+snakemake/results
+snakemake/busco_downloads
+snakemake/nohup.out
+snakemake/dag.pdf
+
 
 

@@ -35,11 +35,11 @@ rule initial_qc:
     threads: 8
     resources:
         mem_mb = 32000,
-        runtime = 240  # 4 hours
+        # runtime = 240  # 4 hours
     log:
         "logs/initial_qc.log"
     shell:
-        """
+        r"""
         NanoPlot --fastq {input.reads} \
                  --outdir {params.outdir} \
                  --threads {threads} \
@@ -54,19 +54,18 @@ rule filtlong:
     params:
         min_length = config["filtlong"]["min_length"],
         keep_percent = config["filtlong"]["keep_percent"],
-        target_bases = config["filtlong"]["target_bases"],
+        # target_bases = config["filtlong"]["target_bases"],
         min_mean_q = config["filtlong"]["min_mean_q"]
     threads: 16
     resources:
         mem_mb = 64000,
-        runtime = 2880  # 48 hours
+        # runtime = 2880  # 48 hours
     log:
         "logs/filtlong.log"
     shell:
         """
         filtlong --min_length {params.min_length} \
                  --keep_percent {params.keep_percent} \
-                 --target_bases {params.target_bases} \
                  --min_mean_q {params.min_mean_q} \
                  {input.reads} 2> {log} | gzip > {output.filtered}
         """
@@ -81,7 +80,7 @@ rule filtered_qc:
     threads: 8
     resources:
         mem_mb = 32000,
-        runtime = 240
+        # runtime = 240
     log:
         "logs/filtered_qc.log"
     shell:
@@ -105,7 +104,7 @@ rule flye_assembly:
     threads: config["threads"]["flye"]
     resources:
         mem_mb = config["memory"]["flye"],
-        runtime = 4320  # 72 hours
+        # runtime = 4320  # 72 hours
     log:
         "logs/flye_assembly.log"
     shell:
@@ -130,7 +129,7 @@ rule busco_initial:
     threads: config["threads"]["busco"]
     resources:
         mem_mb = 64000,
-        runtime = 720  # 12 hours
+        # runtime = 720  # 12 hours
     log:
         "logs/busco_initial.log"
     shell:
@@ -139,6 +138,7 @@ rule busco_initial:
               -l {params.lineage} \
               -o $(basename {params.outdir}) \
               -m {params.mode} \
+              -f \
               --cpu {threads} \
               --out_path $(dirname {params.outdir}) 2> {log}
         
@@ -154,11 +154,11 @@ rule medaka_polish:
         polished = "results/polished/medaka/consensus.fasta"
     params:
         outdir = "results/polished/medaka",
-        model = config["medaka"]["model"]
+        # model = config["medaka"]["model"]
     threads: config["threads"]["medaka"]
     resources:
         mem_mb = config["memory"]["medaka"],
-        runtime = 2880  # 48 hours
+        # runtime = 2880  # 48 hours
     log:
         "logs/medaka_polish.log"
     shell:
@@ -166,8 +166,7 @@ rule medaka_polish:
         medaka_consensus -i {input.reads} \
                          -d {input.assembly} \
                          -o {params.outdir} \
-                         -t {threads} \
-                         -m {params.model} 2> {log}
+                         -t {threads} 2> {log}
         """
 
 rule busco_medaka:
@@ -182,7 +181,7 @@ rule busco_medaka:
     threads: config["threads"]["busco"]
     resources:
         mem_mb = 64000,
-        runtime = 720
+        # runtime = 720
     log:
         "logs/busco_medaka.log"
     shell:
@@ -191,6 +190,7 @@ rule busco_medaka:
               -l {params.lineage} \
               -o $(basename {params.outdir}) \
               -m {params.mode} \
+              -f \
               --cpu {threads} \
               --out_path $(dirname {params.outdir}) 2> {log}
         
@@ -208,7 +208,7 @@ rule racon_round:
     threads: config["threads"]["racon"]
     resources:
         mem_mb = config["memory"]["racon"],
-        runtime = 720  # 12 hours per round
+        # runtime = 720  # 12 hours per round
     log:
         "logs/racon_round{round}.log"
     shell:
@@ -217,7 +217,7 @@ rule racon_round:
         minimap2 -ax map-ont -t {threads} {input.assembly} {input.reads} > {output.alignment} 2> {log}
         
         # Polish with Racon
-        racon -t {threads} {input.reads} {output.alignment} {input.assembly} > {output.polished} 2>> {log}
+        /data/users/wheelenj/GitHub/Planaria-Genome-Project/racon/build/bin/racon -t {threads} {input.reads} {output.alignment} {input.assembly} > {output.polished} 2>> {log}
         """
 
 rule racon_final:
@@ -245,7 +245,7 @@ rule busco_racon:
     threads: config["threads"]["busco"]
     resources:
         mem_mb = 64000,
-        runtime = 720
+        # runtime = 720
     log:
         "logs/busco_racon.log"
     shell:
@@ -254,6 +254,7 @@ rule busco_racon:
               -l {params.lineage} \
               -o $(basename {params.outdir}) \
               -m {params.mode} \
+              -f \
               --cpu {threads} \
               --out_path $(dirname {params.outdir}) 2> {log}
         
@@ -271,7 +272,7 @@ rule purge_dups:
     threads: config["threads"]["purge_dups"]
     resources:
         mem_mb = 64000,
-        runtime = 1440  # 24 hours
+        # runtime = 1440  # 24 hours
     log:
         "logs/purge_dups.log"
     shell:
@@ -296,7 +297,7 @@ rule busco_final:
     threads: config["threads"]["busco"]
     resources:
         mem_mb = 64000,
-        runtime = 720
+        # runtime = 720
     log:
         "logs/busco_final.log"
     shell:
@@ -305,6 +306,7 @@ rule busco_final:
               -l {params.lineage} \
               -o $(basename {params.outdir}) \
               -m {params.mode} \
+              -f \
               --cpu {threads} \
               --out_path $(dirname {params.outdir}) 2> {log}
         
