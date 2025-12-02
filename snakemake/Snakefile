@@ -37,7 +37,7 @@ rule initial_qc:
         mem_mb = 32000,
         # runtime = 240  # 4 hours
     log:
-        "logs/initial_qc.log"
+        "logs/initial_qc/run.log"
     shell:
         r"""
         NanoPlot --fastq {input.reads} \
@@ -61,7 +61,7 @@ rule filtlong:
         mem_mb = 64000,
         # runtime = 2880  # 48 hours
     log:
-        "logs/filtlong.log"
+        "logs/filtlong/run.log"
     shell:
         """
         filtlong --min_length {params.min_length} \
@@ -82,7 +82,7 @@ rule filtered_qc:
         mem_mb = 32000,
         # runtime = 240
     log:
-        "logs/filtered_qc.log"
+        "logs/filtered_qc/run.log"
     shell:
         """
         NanoPlot --fastq {input.reads} \
@@ -106,7 +106,7 @@ rule flye_assembly:
         mem_mb = config["memory"]["flye"],
         # runtime = 4320  # 72 hours
     log:
-        "logs/flye_assembly.log"
+        "logs/flye_assembly/run.log"
     shell:
         """
         flye --nano-raw {input.reads} \
@@ -131,7 +131,7 @@ rule busco_initial:
         mem_mb = 64000,
         # runtime = 720  # 12 hours
     log:
-        "logs/busco_initial.log"
+        "logs/busco_initial/run.log"
     shell:
         """
         busco -i {input.assembly} \
@@ -160,7 +160,7 @@ rule medaka_polish:
         mem_mb = config["memory"]["medaka"],
         # runtime = 2880  # 48 hours
     log:
-        "logs/medaka_polish.log"
+        "logs/medaka_polish/run.log"
     shell:
         """
         medaka_consensus -i {input.reads} \
@@ -183,7 +183,7 @@ rule busco_medaka:
         mem_mb = 64000,
         # runtime = 720
     log:
-        "logs/busco_medaka.log"
+        "logs/busco_medaka/run.log"
     shell:
         """
         busco -i {input.assembly} \
@@ -210,7 +210,7 @@ rule racon_round:
         mem_mb = config["memory"]["racon"],
         # runtime = 720  # 12 hours per round
     log:
-        "logs/racon_round{round}.log"
+        "logs/racon_round/run{round}.log"
     shell:
         """
         # Align reads
@@ -247,7 +247,7 @@ rule busco_racon:
         mem_mb = 64000,
         # runtime = 720
     log:
-        "logs/busco_racon.log"
+        "logs/busco_racon/run.log"
     shell:
         """
         busco -i {input.assembly} \
@@ -274,7 +274,7 @@ rule purge_dups:
         mem_mb = 64000,
         # runtime = 1440  # 24 hours
     log:
-        "logs/purge_dups.log"
+        "logs/purge_dups/run.log"
     shell:
         """
         # This is a placeholder - customize based on purge_dups workflow
@@ -299,7 +299,7 @@ rule busco_final:
         mem_mb = 64000,
         # runtime = 720
     log:
-        "logs/busco_final.log"
+        "logs/busco_final/run.log"
     shell:
         """
         busco -i {input.assembly} \
