@@ -27,7 +27,7 @@ rule all:
         # Final QC/reports
         "results/reports/multiqc_report.html",
         "results/reports/snakemake_report.html",
-        "results/reports/quast_report.html",
+        "results/reports/quast/report.html",
         "results/reports/assembly_statistics_comparison.tsv",
 
 rule initial_qc:
