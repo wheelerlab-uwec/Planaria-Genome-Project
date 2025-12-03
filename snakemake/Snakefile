@@ -485,7 +485,6 @@ rule multiqc_report:
                 --comment "Complete pipeline QC including NanoPlot and BUSCO results" 2> {log}
         """
 
-
 rule report:
     input:
         "results/busco/final/short_summary.txt"
