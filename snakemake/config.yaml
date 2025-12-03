@@ -7,7 +7,7 @@ genome_size: "1g"  # Estimated genome size (adjust: 500m, 1g, 1.5g, etc.)
 filtlong:
   min_length: 1000           # Minimum read length (bp)
   keep_percent: 80           # Keep top X% of reads by quality
-  # target_bases: 120000000000 # Target 120 GB (120 billion bases) for ~120x coverage
+  target_bases: 120000000000 # Target 120 GB (120 billion bases) for ~120x coverage
   min_mean_q: 8              # Minimum mean quality score
 
 flye:
