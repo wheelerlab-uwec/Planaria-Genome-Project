@@ -15,6 +15,7 @@ rule all:
         
         # Final purged assembly
         "results/final/purged_assembly.fasta",
+        "results/final/haplotigs.fasta",
         
         # BUSCO results at each stage
         "results/busco/initial/short_summary.txt",
@@ -22,12 +23,12 @@ rule all:
         "results/busco/racon/short_summary.txt",
         "results/busco/final/short_summary.txt",
         
-        # Comparison plot
-        "results/busco/busco_figure.png"
+        # MultiQC report
+        "results/multiqc/multiqc_report.html"
 
 rule initial_qc:
     input:
-        reads = config["input_reads"] # check config.yaml for change to input_reads -- need path to cluster
+        reads = config["input_reads"]
     output:
         stats = "results/qc/initial_qc/NanoStats.txt"
     params:
@@ -35,11 +36,11 @@ rule initial_qc:
     threads: 8
     resources:
         mem_mb = 32000,
-        # runtime = 240  # 4 hours
+        runtime = 240  # 4 hours
     log:
         "logs/initial_qc.log"
     shell:
-        r"""
+        """
         NanoPlot --fastq {input.reads} \
                  --outdir {params.outdir} \
                  --threads {threads} \
@@ -48,24 +49,25 @@ rule initial_qc:
 
 rule filtlong:
     input:
-        reads = config["input_reads"] # will change as done in the initial_qc
+        reads = config["input_reads"]
     output:
         filtered = "results/filtered/filtered_reads.fastq.gz"
     params:
         min_length = config["filtlong"]["min_length"],
         keep_percent = config["filtlong"]["keep_percent"],
-        # target_bases = config["filtlong"]["target_bases"],
+        target_bases = config["filtlong"]["target_bases"],
         min_mean_q = config["filtlong"]["min_mean_q"]
     threads: 16
     resources:
         mem_mb = 64000,
-        # runtime = 2880  # 48 hours
+        runtime = 2880  # 48 hours
     log:
         "logs/filtlong.log"
     shell:
         """
         filtlong --min_length {params.min_length} \
                  --keep_percent {params.keep_percent} \
+                 --target_bases {params.target_bases} \
                  --min_mean_q {params.min_mean_q} \
                  {input.reads} 2> {log} | gzip > {output.filtered}
         """
@@ -80,7 +82,7 @@ rule filtered_qc:
     threads: 8
     resources:
         mem_mb = 32000,
-        # runtime = 240
+        runtime = 240
     log:
         "logs/filtered_qc.log"
     shell:
@@ -104,7 +106,7 @@ rule flye_assembly:
     threads: config["threads"]["flye"]
     resources:
         mem_mb = config["memory"]["flye"],
-        # runtime = 4320  # 72 hours
+        runtime = 4320  # 72 hours
     log:
         "logs/flye_assembly.log"
     shell:
@@ -129,7 +131,7 @@ rule busco_initial:
     threads: config["threads"]["busco"]
     resources:
         mem_mb = 64000,
-        # runtime = 720  # 12 hours
+        runtime = 720  # 12 hours
     log:
         "logs/busco_initial.log"
     shell:
@@ -138,7 +140,6 @@ rule busco_initial:
               -l {params.lineage} \
               -o $(basename {params.outdir}) \
               -m {params.mode} \
-              -f \
               --cpu {threads} \
               --out_path $(dirname {params.outdir}) 2> {log}
         
@@ -154,11 +155,11 @@ rule medaka_polish:
         polished = "results/polished/medaka/consensus.fasta"
     params:
         outdir = "results/polished/medaka",
-        # model = config["medaka"]["model"]
+        model = config["medaka"]["model"]
     threads: config["threads"]["medaka"]
     resources:
         mem_mb = config["memory"]["medaka"],
-        # runtime = 2880  # 48 hours
+        runtime = 2880  # 48 hours
     log:
         "logs/medaka_polish.log"
     shell:
@@ -166,7 +167,8 @@ rule medaka_polish:
         medaka_consensus -i {input.reads} \
                          -d {input.assembly} \
                          -o {params.outdir} \
-                         -t {threads} 2> {log}
+                         -t {threads} \
+                         -m {params.model} 2> {log}
         """
 
 rule busco_medaka:
@@ -181,7 +183,7 @@ rule busco_medaka:
     threads: config["threads"]["busco"]
     resources:
         mem_mb = 64000,
-        # runtime = 720
+        runtime = 720
     log:
         "logs/busco_medaka.log"
     shell:
@@ -190,7 +192,6 @@ rule busco_medaka:
               -l {params.lineage} \
               -o $(basename {params.outdir}) \
               -m {params.mode} \
-              -f \
               --cpu {threads} \
               --out_path $(dirname {params.outdir}) 2> {log}
         
@@ -208,7 +209,7 @@ rule racon_round:
     threads: config["threads"]["racon"]
     resources:
         mem_mb = config["memory"]["racon"],
-        # runtime = 720  # 12 hours per round
+        runtime = 720  # 12 hours per round
     log:
         "logs/racon_round{round}.log"
     shell:
@@ -217,7 +218,7 @@ rule racon_round:
         minimap2 -ax map-ont -t {threads} {input.assembly} {input.reads} > {output.alignment} 2> {log}
         
         # Polish with Racon
-        /data/users/wheelenj/GitHub/Planaria-Genome-Project/racon/build/bin/racon -t {threads} {input.reads} {output.alignment} {input.assembly} > {output.polished} 2>> {log}
+        racon -t {threads} {input.reads} {output.alignment} {input.assembly} > {output.polished} 2>> {log}
         """
 
 rule racon_final:
@@ -245,7 +246,7 @@ rule busco_racon:
     threads: config["threads"]["busco"]
     resources:
         mem_mb = 64000,
-        # runtime = 720
+        runtime = 720
     log:
         "logs/busco_racon.log"
     shell:
@@ -254,35 +255,123 @@ rule busco_racon:
               -l {params.lineage} \
               -o $(basename {params.outdir}) \
               -m {params.mode} \
-              -f \
               --cpu {threads} \
               --out_path $(dirname {params.outdir}) 2> {log}
         
         find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \;
         """
 
-rule purge_dups:
+rule minimap_self_alignment:
     input:
-        assembly = "results/polished/racon/final_racon_polished.fasta",
+        assembly = "results/polished/racon/final_racon_polished.fasta"
+    output:
+        paf = temp("results/final/purge_dups/assembly_self.paf.gz")
+    threads: config["threads"]["purge_dups"]
+    resources:
+        mem_mb = 32000,
+        runtime = 480  # 8 hours
+    log:
+        "logs/purge_dups_minimap.log"
+    shell:
+        """
+        mkdir -p results/final/purge_dups
+        minimap2 -xasm5 -DP -t {threads} {input.assembly} {input.assembly} 2> {log} | \
+        gzip -c - > {output.paf}
+        """
+
+rule pbcstat:
+    input:
+        paf = "results/final/purge_dups/assembly_self.paf.gz"
+    output:
+        pbcstat = "results/final/purge_dups/PB.base.cov",
+        stat = "results/final/purge_dups/PB.stat"
+    params:
+        prefix = "results/final/purge_dups/PB"
+    log:
+        "logs/purge_dups_pbcstat.log"
+    shell:
+        """
+        pbcstat {input.paf} 2> {log}
+        mv PB.base.cov {output.pbcstat}
+        mv PB.stat {output.stat}
+        """
+
+rule calcuts:
+    input:
+        stat = "results/final/purge_dups/PB.stat"
+    output:
+        cutoffs = "results/final/purge_dups/cutoffs"
+    log:
+        "logs/purge_dups_calcuts.log"
+    shell:
+        """
+        calcuts {input.stat} > {output.cutoffs} 2> {log}
+        """
+
+rule split_assembly:
+    input:
+        assembly = "results/polished/racon/final_racon_polished.fasta"
+    output:
+        split = "results/final/purge_dups/assembly.split.fasta"
+    log:
+        "logs/purge_dups_split.log"
+    shell:
+        """
+        split_fa {input.assembly} > {output.split} 2> {log}
+        """
+
+rule minimap_reads_to_split:
+    input:
+        assembly = "results/final/purge_dups/assembly.split.fasta",
         reads = "results/filtered/filtered_reads.fastq.gz"
     output:
-        purged = "results/final/purged_assembly.fasta"
-    params:
-        outdir = "results/final"
+        paf = temp("results/final/purge_dups/split.paf.gz")
     threads: config["threads"]["purge_dups"]
     resources:
         mem_mb = 64000,
-        # runtime = 1440  # 24 hours
+        runtime = 720  # 12 hours
     log:
-        "logs/purge_dups.log"
+        "logs/purge_dups_minimap_reads.log"
     shell:
         """
-        # This is a placeholder - customize based on purge_dups workflow
-        # For now, just copy the assembly
-        mkdir -p {params.outdir}
-        cp {input.assembly} {output.purged}
+        minimap2 -xmap-ont -t {threads} {input.assembly} {input.reads} 2> {log} | \
+        gzip -c - > {output.paf}
+        """
+
+rule purge_dups:
+    input:
+        paf = "results/final/purge_dups/split.paf.gz",
+        base_cov = "results/final/purge_dups/PB.base.cov",
+        cutoffs = "results/final/purge_dups/cutoffs"
+    output:
+        bed = "results/final/purge_dups/dups.bed"
+    log:
+        "logs/purge_dups_purge.log"
+    shell:
+        """
+        purge_dups -2 -T {input.cutoffs} -c {input.base_cov} {input.paf} > {output.bed} 2> {log}
+        """
+
+rule get_seqs:
+    input:
+        assembly = "results/polished/racon/final_racon_polished.fasta",
+        bed = "results/final/purge_dups/dups.bed"
+    output:
+        purged = "results/final/purged_assembly.fasta",
+        haplotigs = "results/final/haplotigs.fasta"
+    log:
+        "logs/purge_dups_getseqs.log"
+    shell:
+        """
+        get_seqs -e {input.bed} {input.assembly} 2> {log}
         
-        echo "NOTE: purge_dups not yet implemented - using Racon output" > {log}
+        # Move outputs to final locations
+        mv purged.fa {output.purged}
+        mv hap.fa {output.haplotigs}
+        
+        echo "Purging complete!" >> {log}
+        echo "Purged assembly: {output.purged}" >> {log}
+        echo "Haplotigs: {output.haplotigs}" >> {log}
         """
 
 rule busco_final:
@@ -297,7 +386,7 @@ rule busco_final:
     threads: config["threads"]["busco"]
     resources:
         mem_mb = 64000,
-        # runtime = 720
+        runtime = 720
     log:
         "logs/busco_final.log"
     shell:
@@ -306,28 +395,38 @@ rule busco_final:
               -l {params.lineage} \
               -o $(basename {params.outdir}) \
               -m {params.mode} \
-              -f \
               --cpu {threads} \
               --out_path $(dirname {params.outdir}) 2> {log}
         
         find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \;
         """
 
-rule busco_plot:
+rule multiqc_report:
     input:
         summaries = [
             "results/busco/initial/short_summary.txt",
             "results/busco/medaka/short_summary.txt",
             "results/busco/racon/short_summary.txt",
             "results/busco/final/short_summary.txt"
-        ]
+        ],
+        qc_initial = "results/qc/initial_qc/NanoStats.txt",
+        qc_filtered = "results/qc/filtered_qc/NanoStats.txt"
     output:
-        plot = "results/busco/busco_figure.png"
+        report = "results/multiqc/multiqc_report.html"
     params:
-        busco_dir = "results/busco"
+        search_dir = "results",
+        outdir = "results/multiqc"
+    threads: 4
+    resources:
+        mem_mb = 8000,
+        runtime = 60
     log:
-        "logs/busco_plot.log"
+        "logs/multiqc.log"
     shell:
         """
-        generate_plot.py -wd {params.busco_dir} 2> {log}
+        multiqc {params.search_dir} \
+                --outdir {params.outdir} \
+                --force \
+                --title "Girardia dorotocephala Genome Assembly Report" \
+                --comment "Complete pipeline QC including NanoPlot and BUSCO results" 2> {log}
         """

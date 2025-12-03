@@ -1,5 +1,5 @@
 # Input data
-input_reads: "/data/groups/wheelenj/sequencing/20250916_M009242/planaria_test_subset.fastq.gz" # need to change to follow what ours is in the cluster
+input_reads: "/data/groups/wheelenj/sequencing/20250916_M009242/planaria_all_reads.fastq.gz"
 
 # Genome parameters
 genome_size: "1g"  # Estimated genome size (adjust: 500m, 1g, 1.5g, etc.)
@@ -37,10 +37,3 @@ memory:  # in MB
   medaka: 128000    # 128 GB
   racon: 128000     # 128 GB
 
-# ============================================================================
-# HPC Cluster Configuration (if using)
-# ============================================================================
-# Uncomment and adjust for your cluster
-# cluster:
-#   partition: "high_mem"
-#   account: "your_account"
