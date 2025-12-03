@@ -144,7 +144,7 @@ rule busco_initial:
               --out_path $(dirname {params.outdir}) 2> {log}
         
         # Find and copy the summary file
-        find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \;
+        find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \\;
         """
 
 rule medaka_polish:
@@ -195,7 +195,7 @@ rule busco_medaka:
               --cpu {threads} \
               --out_path $(dirname {params.outdir}) 2> {log}
         
-        find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \;
+        find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \\;
         """
 
 rule racon_round:
@@ -258,7 +258,7 @@ rule busco_racon:
               --cpu {threads} \
               --out_path $(dirname {params.outdir}) 2> {log}
         
-        find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \;
+        find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \\;
         """
 
 rule minimap_self_alignment:
@@ -398,7 +398,7 @@ rule busco_final:
               --cpu {threads} \
               --out_path $(dirname {params.outdir}) 2> {log}
         
-        find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \;
+        find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \\;
         """
 
 rule multiqc_report:
