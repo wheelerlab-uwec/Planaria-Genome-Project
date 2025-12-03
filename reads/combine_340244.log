@@ -1,0 +1,7 @@
+Starting concatenation at Tue Dec  2 22:08:09 CST 2025
+Combining all reads from both flow cells...
+Finished concatenation at Tue Dec  2 22:17:05 CST 2025
+Output file size:
+-rw-r--r-- 1 willetse0745 SFU_Users 188G Dec  2 22:17 planaria_all_reads.fastq.gz
+Number of reads in output:
+31547165
