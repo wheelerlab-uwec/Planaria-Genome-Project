@@ -416,6 +416,7 @@ rule quast:
         report = "results/reports/quast/report.html"
     params:
         outdir = "results/reports/quast/"
+    threads: 8
     log:
         "logs/quast/run.log"
     shell:
