@@ -20,7 +20,7 @@ set-resources:
       mem_mb: 32000
       
     flye_assembly:
-      partition: week
+      partition: month
       mem_mb: 200000
 
     medaka_polish:
