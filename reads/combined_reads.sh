@@ -13,8 +13,8 @@ source $(conda info --base)/etc/profile.d/conda.sh
 conda activate biol343
 
 # Set variables
-FC1="/data/groups/wheelenj/sequencing/20250916_M009242/4650P/Planaria1/20250909_1219_3B_PBE82635_fbdcc6f4/fastq_pass/*.fastq.gz"
-FC2="/data/groups/wheelenj/sequencing/20250916_M009242/4651P/Planaria2/20250909_1354_3C_PBE69031_20f7cd5b/fastq_pass/*.fastq.gz"
+FC1="/data/groups/wheelenj/sequencing/20250916_M009242/4650P/Planaria1/20250909_1219_3B_PBE82635_fbdcc6f4/fastq_pass"
+FC2="/data/groups/wheelenj/sequencing/20250916_M009242/4651P/Planaria2/20250909_1354_3C_PBE69031_20f7cd5b/fastq_pass"
 OUTFILE="planaria_all_reads.fastq.gz"
 
 # Run concatenation
