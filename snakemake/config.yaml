@@ -13,8 +13,8 @@ filtlong:
 flye:
   iterations: 2              # Number of polishing iterations (2-3 recommended)
 
-# medaka:
-  # model: "r941_min_high_g360"  # Model for your flowcell/basecaller
+medaka:
+  model: "r941_min_high_g360"  # Model for your flowcell/basecaller
   # Other common models:
   # - r941_min_sup_g507 (super accuracy)
   # - r1041_e82_400bps_sup_g615 (R10.4 flowcells)
