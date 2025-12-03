@@ -11,37 +11,22 @@ cluster-generic-submit-cmd:
     --gpus={resources.gpus}
 default-resources:
   - partition=week
-  - mem_mb=200000
+  - mem_mb=64000
+  - threads=16
   - gpus=0
 set-resources:
     initial_qc:
       partition: week
       mem_mb: 32000
-
-    filtlong:
-      partition: week
-      mem_mb: 64000
-
-    filtered_qc:
-      partition: week
-      mem_mb: 64000
-
+      
     flye_assembly:
       partition: week
       mem_mb: 200000
-
-    busco_initial:
-      partition: week
-      mem_mb: 64000
 
     medaka_polish:
       partition: GPU
       gpus: 1
       mem_mb: 128000
-
-    busco_medaka:
-      partition: week
-      mem_mb: 64000
 
     racon_round:
       partition: week
@@ -50,26 +35,6 @@ set-resources:
     racon_final:
       partition: week
       mem_mb: 128000
-
-    busco_racon:
-      partition: week
-      mem_mb: 64000
-
-    purge_dups:
-      partition: week
-      mem_mb: 64000
-
-    busco_final:
-      partition: week
-      mem_mb: 64000
-
-    busco_plot:
-      partition: week
-      mem_mb: 64000
-    
-    multiqc_report:
-      partition: week
-      mem_mb: 64000
 
 restart-times: 1
 max-jobs-per-second: 10

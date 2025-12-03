@@ -27,8 +27,9 @@ threads:
   flye: 64
   medaka: 64
   racon: 64
-  busco: 64
+  busco: 32
   purge_dups: 32
+  seqkit: 32
 
 memory:  # in MB
   flye: 200000
