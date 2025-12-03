@@ -8,6 +8,7 @@ cluster-generic-submit-cmd:
     --job-name=smk-{rule}-{wildcards}
     --output=logs/{rule}/{rule}-{wildcards}-%j.out
     --parsable
+    --gpus={resources.gpus}
 default-resources:
   - partition=week
   - mem_mb=200000
@@ -34,7 +35,8 @@ set-resources:
       mem_mb: 64000
 
     medaka_polish:
-      partition: week
+      partition: GPU
+      gpus: 1
       mem_mb: 128000
 
     busco_medaka:

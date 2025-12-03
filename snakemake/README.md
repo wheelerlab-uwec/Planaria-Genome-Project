@@ -22,8 +22,8 @@ To run the Snakemake workflow:
 
 6. After confirming, run the workflow using the custom executor that tailors Slurm resources:
 
-    `snakemake --profile executor`
+    `snakemake --profile executor/`
     
     Or, to run all jobs in the background:
 
-    `nohup snakemake --profile executor &`
+    `nohup snakemake --profile executor/ &`

@@ -10,20 +10,24 @@ rule all:
         "results/assembly/flye/assembly.fasta",
         
         # Polished assemblies
-        "results/polished/medaka/consensus.fasta",
         "results/polished/racon/final_racon_polished.fasta",
+        "results/polished/medaka/consensus.fasta",
         
         # Final purged assembly
         "results/final/purged_assembly.fasta",
         
         # BUSCO results at each stage
         "results/busco/initial/short_summary.txt",
-        "results/busco/medaka/short_summary.txt",
         "results/busco/racon/short_summary.txt",
+        "results/busco/medaka/short_summary.txt",
         "results/busco/final/short_summary.txt",
         
         # Comparison plot
-        "results/busco/busco_figure.png"
+        "results/busco/busco_figure.png",
+
+        # Final QC/report
+        "results/multiqc_report.html",
+        "results/report.html"
 
 rule initial_qc:
     input:
@@ -146,60 +150,9 @@ rule busco_initial:
         find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \;
         """
 
-rule medaka_polish:
-    input:
-        assembly = "results/assembly/flye/assembly.fasta",
-        reads = "results/filtered/filtered_reads.fastq.gz"
-    output:
-        polished = "results/polished/medaka/consensus.fasta"
-    params:
-        outdir = "results/polished/medaka",
-        # model = config["medaka"]["model"]
-    threads: config["threads"]["medaka"]
-    resources:
-        mem_mb = config["memory"]["medaka"],
-        # runtime = 2880  # 48 hours
-    log:
-        "logs/medaka_polish/run.log"
-    shell:
-        """
-        medaka_consensus -i {input.reads} \
-                         -d {input.assembly} \
-                         -o {params.outdir} \
-                         -t {threads} 2> {log}
-        """
-
-rule busco_medaka:
-    input:
-        assembly = "results/polished/medaka/consensus.fasta"
-    output:
-        summary = "results/busco/medaka/short_summary.txt"
-    params:
-        lineage = config["busco"]["lineage"],
-        outdir = "results/busco/medaka",
-        mode = "genome"
-    threads: config["threads"]["busco"]
-    resources:
-        mem_mb = 64000,
-        # runtime = 720
-    log:
-        "logs/busco_medaka/run.log"
-    shell:
-        """
-        busco -i {input.assembly} \
-              -l {params.lineage} \
-              -o $(basename {params.outdir}) \
-              -m {params.mode} \
-              -f \
-              --cpu {threads} \
-              --out_path $(dirname {params.outdir}) 2> {log}
-        
-        find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \;
-        """
-
 rule racon_round:
     input:
-        assembly = lambda wildcards: "results/polished/medaka/consensus.fasta" if wildcards.round == "1" 
+        assembly = lambda wildcards: "results/assembly/flye/assembly.fasta" if wildcards.round == "1" 
                    else f"results/polished/racon/round{int(wildcards.round)-1}.fasta",
         reads = "results/filtered/filtered_reads.fastq.gz"
     output:
@@ -261,9 +214,64 @@ rule busco_racon:
         find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \;
         """
 
-rule purge_dups:
+rule medaka_polish:
     input:
         assembly = "results/polished/racon/final_racon_polished.fasta",
+        reads = "results/filtered/filtered_reads.fastq.gz"
+    output:
+        polished = "results/polished/medaka/consensus.fasta"
+    params:
+        outdir = "results/polished/medaka",
+        model = config["medaka"]["model"],
+        batch_size = config["medaka"]["batch_size"]
+    threads: config["threads"]["medaka"]
+    resources:
+        mem_mb = config["memory"]["medaka"],
+        # runtime = 2880  # 48 hours
+    log:
+        "logs/medaka_polish/run.log"
+    shell:
+        """
+        medaka_consensus -i {input.reads} \
+                         -d {input.assembly} \
+                         -o {params.outdir} \
+                         -m {params.model} \
+                         -b {params.batch_size} \
+                         -f \
+                         -t {threads} 2> {log}
+        """
+
+rule busco_medaka:
+    input:
+        assembly = "results/polished/medaka/consensus.fasta"
+    output:
+        summary = "results/busco/medaka/short_summary.txt"
+    params:
+        lineage = config["busco"]["lineage"],
+        outdir = "results/busco/medaka",
+        mode = "genome"
+    threads: config["threads"]["busco"]
+    resources:
+        mem_mb = 64000,
+        # runtime = 720
+    log:
+        "logs/busco_medaka/run.log"
+    shell:
+        """
+        busco -i {input.assembly} \
+              -l {params.lineage} \
+              -o $(basename {params.outdir}) \
+              -m {params.mode} \
+              -f \
+              --cpu {threads} \
+              --out_path $(dirname {params.outdir}) 2> {log}
+        
+        find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \;
+        """
+
+rule purge_dups:
+    input:
+        assembly = "results/polished/medaka/consensus.fasta",
         reads = "results/filtered/filtered_reads.fastq.gz"
     output:
         purged = "results/final/purged_assembly.fasta"
@@ -282,7 +290,7 @@ rule purge_dups:
         mkdir -p {params.outdir}
         cp {input.assembly} {output.purged}
         
-        echo "NOTE: purge_dups not yet implemented - using Racon output" > {log}
+        echo "NOTE: purge_dups not yet implemented - using Medaka output" > {log}
         """
 
 rule busco_final:
@@ -317,8 +325,8 @@ rule busco_plot:
     input:
         summaries = [
             "results/busco/initial/short_summary.txt",
-            "results/busco/medaka/short_summary.txt",
             "results/busco/racon/short_summary.txt",
+            "results/busco/medaka/short_summary.txt",
             "results/busco/final/short_summary.txt"
         ]
     output:
@@ -326,8 +334,36 @@ rule busco_plot:
     params:
         busco_dir = "results/busco"
     log:
-        "logs/busco_plot.log"
+        "logs/busco_plot/run.log"
     shell:
         """
-        generate_plot.py -wd {params.busco_dir} 2> {log}
+        # Copy all short_summary JSON files to a plot directory
+        mkdir -p {params.busco_dir}/plot_input
+        cp {params.busco_dir}/*/short_summary.*.json {params.busco_dir}/plot_input/ 2> {log}
+        
+        # Generate the plot using BUSCO's built-in plotting function
+        busco --plot {params.busco_dir}/plot_input 2>> {log}
+        
+        # Move the generated plot to the expected output location
+        mv {params.busco_dir}/plot_input/busco_figure.png {output.plot} 2>> {log}
+        """
+
+rule multiqc:
+    input: 
+        "results/busco/final/short_summary.txt"
+    output: 
+        "multiqc_report.html"
+    shell:
+        """
+        multiqc .
+        """
+
+rule report:
+    input:
+        "results/busco/final/short_summary.txt"
+    output:
+        "results/report.html"
+    shell:
+        """
+        snakemake --report {output}
         """
