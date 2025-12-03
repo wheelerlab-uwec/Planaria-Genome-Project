@@ -2,38 +2,37 @@
 input_reads: "/data/groups/wheelenj/sequencing/20250916_M009242/planaria_all_reads.fastq.gz"
 
 # Genome parameters
-genome_size: "1g"  # Estimated genome size (adjust: 500m, 1g, 1.5g, etc.)
+genome_size: "1g"
 
 filtlong:
-  min_length: 1000           # Minimum read length (bp)
-  keep_percent: 80           # Keep top X% of reads by quality
-  target_bases: 120000000000 # Target 120 GB (120 billion bases) for ~120x coverage
-  min_mean_q: 8              # Minimum mean quality score
+  min_length: 1000
+  keep_percent: 80
+  # target_bases: 120000000000
+  min_mean_q: 8
 
 flye:
-  iterations: 2              # Number of polishing iterations (2-3 recommended)
+  iterations: 2
 
 medaka:
-  model: "r941_min_high_g360"  # Model for your flowcell/basecaller
-  # Other common models:
-  # - r941_min_sup_g507 (super accuracy)
-  # - r1041_e82_400bps_sup_g615 (R10.4 flowcells)
+  model: "r1041_e82_400bps_sup_g615" 
+  batch_size: 100
 
 racon:
-  rounds: 3                  # Number of Racon polishing rounds (2-4 recommended)
+  rounds: 3
 
 busco:
-  lineage: "metazoa_odb10" # BUSCO lineage dataset
+  lineage: "metazoa_odb10"
 
 threads:
   flye: 64
   medaka: 64
   racon: 64
-  busco: 64
+  busco: 32
   purge_dups: 32
+  seqkit: 32
 
 memory:  # in MB
-  flye: 200000      # 200 GB
-  medaka: 128000    # 128 GB
-  racon: 128000     # 128 GB
+  flye: 200000
+  medaka: 128000
+  racon: 128000
 
