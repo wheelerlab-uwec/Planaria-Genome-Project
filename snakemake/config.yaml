@@ -1,5 +1,5 @@
 # Input data
-input_reads: "/data/groups/wheelenj/sequencing/20250916_M009242/planaria_test_subset.fastq.gz"
+input_reads: "/data/groups/wheelenj/sequencing/20250916_M009242/planaria_all_reads.fastq.gz"
 
 # Genome parameters
 genome_size: "1g"

@@ -66,6 +66,11 @@ set-resources:
     busco_plot:
       partition: week
       mem_mb: 64000
+    
+    multiqc_report:
+      partition: week
+      mem_mb: 64000
+
 restart-times: 1
 max-jobs-per-second: 10
 max-status-checks-per-second: 1
