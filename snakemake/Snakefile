@@ -1,5 +1,13 @@
 configfile: "config.yaml"
 
+FC1 = config["flowcell1_dir"]
+FC2 = config["flowcell2_dir"]
+COMBINED = config.get("combined_fastq", "reads/planaria_all_reads.fastq.gz")
+
+import os, glob
+def list_fastqs(d):
+    return sorted(glob.glob(os.path.join(d, "*.fastq.gz")))
+
 rule all:
     input:
         # QC reports
@@ -27,12 +35,26 @@ rule all:
         # Final QC/reports
         "results/reports/multiqc_report.html",
         "results/reports/snakemake_report.html",
-        "results/reports/quast_report.html",
+        "results/reports/quast/report.html",
         "results/reports/assembly_statistics_comparison.tsv",
+
+rule combine_reads:
+    input:
+        list_fastqs(FC1) + list_fastqs(FC2)
+    output:
+        combined=COMBINED
+    shell:
+        r"""
+        echo "Starting concatenation at $(date)"
+        mkdir -p "$(dirname "{output.combined}")"
+        cat {input} > "{output.combined}"
+        echo "Finished concatenation at $(date)"
+        ls -lh "{output.combined}"
+        """
 
 rule initial_qc:
     input:
-        reads = config["input_reads"]
+        reads=rules.combine_reads.output.combined
     output:
         stats = "results/qc/initial_qc/NanoStats.txt"
     params:
@@ -93,6 +115,7 @@ rule flye_assembly:
         outdir = "results/assembly/flye",
         genome_size = config["genome_size"],
         iterations = config["flye"]["iterations"]
+        asm_coverage = config["flye"]["asm-coverage"]
     threads: config["threads"]["flye"]
     resources:
         mem_mb = config["memory"]["flye"],
@@ -105,6 +128,7 @@ rule flye_assembly:
              --threads {threads} \
              --genome-size {params.genome_size} \
              --iterations {params.iterations} \
+             --asm-coverage {params.asm_coverage} \
              --scaffold 2> {log}
         """
 

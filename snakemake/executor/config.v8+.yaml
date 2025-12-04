@@ -21,7 +21,7 @@ set-resources:
       
     flye_assembly:
       partition: month
-      mem_mb: 200000
+      mem_mb: 250000
 
     medaka_polish:
       partition: GPU

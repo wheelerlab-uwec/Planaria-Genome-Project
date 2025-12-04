@@ -1,5 +1,7 @@
 # Input data
-input_reads: "/data/groups/wheelenj/sequencing/20250916_M009242/planaria_all_reads.fastq.gz"
+flowcell1_dir: "/data/groups/wheelenj/sequencing/20250916_M009242/4650P/Planaria1/20250909_1219_3B_PBE82635_fbdcc6f4/fastq_pass"
+flowcell2_dir: "/data/groups/wheelenj/sequencing/20250916_M009242/4651P/Planaria2/20250909_1354_3C_PBE69031_20f7cd5b/fastq_pass"
+input_reads: "reads/planaria_all_reads.fastq.gz"
 
 # Genome parameters
 genome_size: "1g"
@@ -12,7 +14,8 @@ filtlong:
 
 flye:
   iterations: 2
-
+  asm-coverage: 80
+  
 medaka:
   model: "r1041_e82_400bps_sup_g615" 
   batch_size: 100
@@ -24,7 +27,7 @@ busco:
   lineage: "metazoa_odb10"
 
 threads:
-  flye: 64
+  flye: 24
   medaka: 64
   racon: 64
   busco: 32

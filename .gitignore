@@ -16,3 +16,4 @@ snakemake/nohup.out
 snakemake/dag.pdf
 snakemake/multiqc_data/
 snakemake/multiqc_report.html
+snakemake/reads/
