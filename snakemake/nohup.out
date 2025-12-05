@@ -1,0 +1,160 @@
+Using profile executor/ for setting default command line arguments.
+host: bose.hpc.uwec.edu
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided remote nodes: 500
+Job stats:
+job                       count
+----------------------  -------
+all                           1
+assembly_stats                4
+busco_final                   1
+busco_initial                 1
+busco_medaka                  1
+busco_plot                    1
+busco_racon                   1
+calcuts                       1
+compare_assembly_stats        1
+filtered_qc                   1
+filtlong                      1
+flye_assembly                 1
+get_seqs                      1
+initial_qc                    1
+medaka_polish                 1
+minimap_reads_to_split        1
+minimap_self_alignment        1
+multiqc_report                1
+pbcstat                       1
+purge_dups                    1
+quast                         1
+racon_final                   1
+racon_round                   3
+report                        1
+split_assembly                1
+total                        30
+
+Select jobs to execute...
+Execute 2 jobs...
+
+[Wed Dec  3 12:24:02 2025]
+rule initial_qc:
+    input: /data/groups/wheelenj/sequencing/20250916_M009242/planaria_all_reads.fastq.gz
+    output: results/qc/initial_qc/NanoStats.txt
+    log: logs/initial_qc/run.log
+    jobid: 1
+    reason: Missing output files: results/qc/initial_qc/NanoStats.txt
+    resources: mem_mb=32000, mem_mib=30518, disk_mb=384359, disk_mib=366554, tmpdir=<TBD>, partition=week, threads=16, gpus=0
+Shell command: 
+        NanoPlot --fastq /data/groups/wheelenj/sequencing/20250916_M009242/planaria_all_reads.fastq.gz                  --outdir results/qc/initial_qc                  --threads 1                  --plots kde hex 2> logs/initial_qc/run.log
+        
+Submitted job 1 with external jobid '340351'.
+
+[Wed Dec  3 12:24:03 2025]
+rule filtlong:
+    input: /data/groups/wheelenj/sequencing/20250916_M009242/planaria_all_reads.fastq.gz
+    output: results/filtered/filtered_reads.fastq.gz
+    log: logs/filtlong/run.log
+    jobid: 3
+    reason: Missing output files: results/filtered/filtered_reads.fastq.gz
+    resources: mem_mb=64000, mem_mib=61036, disk_mb=384359, disk_mib=366554, tmpdir=<TBD>, partition=week, threads=16, gpus=0
+Shell command: 
+        filtlong --min_length 1000                  --keep_percent 80                  --min_mean_q 8                  /data/groups/wheelenj/sequencing/20250916_M009242/planaria_all_reads.fastq.gz 2> logs/filtlong/run.log | gzip > results/filtered/filtered_reads.fastq.gz
+        
+Submitted job 3 with external jobid '340352'.
+[Wed Dec  3 15:19:16 2025]
+Finished jobid: 1 (Rule: initial_qc)
+1 of 30 steps (3%) done
+[Thu Dec  4 02:30:28 2025]
+Finished jobid: 3 (Rule: filtlong)
+2 of 30 steps (7%) done
+Select jobs to execute...
+Execute 2 jobs...
+
+[Thu Dec  4 02:30:28 2025]
+rule flye_assembly:
+    input: results/filtered/filtered_reads.fastq.gz
+    output: results/assembly/flye/assembly.fasta, results/assembly/flye/assembly_info.txt
+    log: logs/flye_assembly/run.log
+    jobid: 4
+    reason: Missing output files: results/assembly/flye/assembly.fasta; Input files updated by another job: results/filtered/filtered_reads.fastq.gz
+    threads: 64
+    resources: mem_mb=200000, mem_mib=190735, disk_mb=278410, disk_mib=265513, tmpdir=<TBD>, partition=month, threads=16, gpus=0
+Shell command: 
+        flye --nano-raw results/filtered/filtered_reads.fastq.gz              --out-dir results/assembly/flye              --threads 64              --genome-size 1g              --iterations 2              --scaffold 2> logs/flye_assembly/run.log
+        
+Submitted job 4 with external jobid '340581'.
+
+[Thu Dec  4 02:30:28 2025]
+rule filtered_qc:
+    input: results/filtered/filtered_reads.fastq.gz
+    output: results/qc/filtered_qc/NanoStats.txt
+    log: logs/filtered_qc/run.log
+    jobid: 2
+    reason: Missing output files: results/qc/filtered_qc/NanoStats.txt; Input files updated by another job: results/filtered/filtered_reads.fastq.gz
+    resources: mem_mb=64000, mem_mib=61036, disk_mb=278410, disk_mib=265513, tmpdir=<TBD>, partition=week, threads=16, gpus=0
+Shell command: 
+        NanoPlot --fastq results/filtered/filtered_reads.fastq.gz                  --outdir results/qc/filtered_qc                  --threads 1                  --plots kde 2> logs/filtered_qc/run.log
+        
+Submitted job 2 with external jobid '340582'.
+[Thu Dec  4 04:41:30 2025]
+Finished jobid: 2 (Rule: filtered_qc)
+3 of 30 steps (10%) done
+[Thu Dec  4 04:46:31 2025]
+Error in rule flye_assembly:
+    message: For further error details see the cluster/cloud log and the log files of the involved rule(s).
+    jobid: 4
+    input: results/filtered/filtered_reads.fastq.gz
+    output: results/assembly/flye/assembly.fasta, results/assembly/flye/assembly_info.txt
+    log: logs/flye_assembly/run.log (check log file(s) for error details)
+    shell:
+        
+        flye --nano-raw results/filtered/filtered_reads.fastq.gz              --out-dir results/assembly/flye              --threads 64              --genome-size 1g              --iterations 2              --scaffold 2> logs/flye_assembly/run.log
+        
+        (command exited with non-zero exit code)
+    external_jobid: 340581
+Trying to restart job 4.
+Select jobs to execute...
+Execute 1 jobs...
+
+[Thu Dec  4 04:46:31 2025]
+rule flye_assembly:
+    input: results/filtered/filtered_reads.fastq.gz
+    output: results/assembly/flye/assembly.fasta, results/assembly/flye/assembly_info.txt
+    log: logs/flye_assembly/run.log
+    jobid: 4
+    reason: Missing output files: results/assembly/flye/assembly.fasta; Input files updated by another job: results/filtered/filtered_reads.fastq.gz
+    threads: 64
+    resources: mem_mb=200000, mem_mib=190735, disk_mb=278410, disk_mib=265513, tmpdir=<TBD>, partition=month, threads=16, gpus=0
+Shell command: 
+        flye --nano-raw results/filtered/filtered_reads.fastq.gz              --out-dir results/assembly/flye              --threads 64              --genome-size 1g              --iterations 2              --scaffold 2> logs/flye_assembly/run.log
+        
+Submitted job 4 with external jobid '340587'.
+[Thu Dec  4 07:03:39 2025]
+Error in rule flye_assembly:
+    message: For further error details see the cluster/cloud log and the log files of the involved rule(s).
+    jobid: 4
+    input: results/filtered/filtered_reads.fastq.gz
+    output: results/assembly/flye/assembly.fasta, results/assembly/flye/assembly_info.txt
+    log: logs/flye_assembly/run.log (check log file(s) for error details)
+    shell:
+        
+        flye --nano-raw results/filtered/filtered_reads.fastq.gz              --out-dir results/assembly/flye              --threads 64              --genome-size 1g              --iterations 2              --scaffold 2> logs/flye_assembly/run.log
+        
+        (command exited with non-zero exit code)
+    external_jobid: 340587
+Exiting because a job execution failed. Look below for error messages
+[Thu Dec  4 07:03:49 2025]
+Error in rule flye_assembly:
+    message: None
+    jobid: 4
+    input: results/filtered/filtered_reads.fastq.gz
+    output: results/assembly/flye/assembly.fasta, results/assembly/flye/assembly_info.txt
+    log: logs/flye_assembly/run.log (check log file(s) for error details)
+    shell:
+        
+        flye --nano-raw results/filtered/filtered_reads.fastq.gz              --out-dir results/assembly/flye              --threads 64              --genome-size 1g              --iterations 2              --scaffold 2> logs/flye_assembly/run.log
+        
+        (command exited with non-zero exit code)
+Complete log(s): /data/users/willetse0745/Planaria-Genome-Project/snakemake/.snakemake/log/2025-12-03T122402.041749.snakemake.log
+WorkflowError:
+At least one job did not complete successfully.

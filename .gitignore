@@ -12,7 +12,7 @@ snakemake/.snakemake
 snakemake/logs
 snakemake/results
 snakemake/busco_downloads
-snakemake/nohup.out
+#snakemake/nohup.out
 snakemake/dag.pdf
 snakemake/multiqc_data/
 snakemake/multiqc_report.html
