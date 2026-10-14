@@ -21,3 +21,8 @@ snakemake/reads/
 # stray outputs
 /-/
 snakemake/gpu-stats-*.out
+ploidy_check/sites/
+ploidy_check/*.out
+ploidy_check/*.tsv
+ploidy_check/*.txt
+ploidy_check/*.png
