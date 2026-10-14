@@ -20,8 +20,8 @@ set-resources:
       mem_mb: 32000
       
     flye_assembly:
-      partition: month
-      mem_mb: 250000
+      partition: highmemory
+      mem_mb: 500000
 
     medaka_polish:
       partition: GPU
@@ -29,8 +29,8 @@ set-resources:
       mem_mb: 128000
 
     racon_round:
-      partition: week
-      mem_mb: 128000
+      partition: highmemory
+      mem_mb: 800000
 
     racon_final:
       partition: week

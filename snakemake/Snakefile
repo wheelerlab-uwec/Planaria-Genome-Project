@@ -1,5 +1,7 @@
 configfile: "config.yaml"
 
+RACON_ROUNDS = range(1, config["racon"]["rounds"] + 1)
+
 FC1 = config["flowcell1_dir"]
 FC2 = config["flowcell2_dir"]
 COMBINED = config.get("combined_fastq", "reads/planaria_all_reads.fastq.gz")
@@ -18,6 +20,7 @@ rule all:
         "results/assembly/flye/assembly.fasta",
         
         # Polished assemblies
+        expand("results/polished/racon/round{round}.fasta", round=RACON_ROUNDS),
         "results/polished/racon/final_racon_polished.fasta",
         "results/polished/medaka/consensus.fasta",
         
@@ -114,11 +117,9 @@ rule flye_assembly:
     params:
         outdir = "results/assembly/flye",
         genome_size = config["genome_size"],
-        iterations = config["flye"]["iterations"]
+        iterations = config["flye"]["iterations"],
         asm_coverage = config["flye"]["asm-coverage"]
     threads: config["threads"]["flye"]
-    resources:
-        mem_mb = config["memory"]["flye"],
     log:
         "logs/flye_assembly/run.log"
     shell:
@@ -129,6 +130,7 @@ rule flye_assembly:
              --genome-size {params.genome_size} \
              --iterations {params.iterations} \
              --asm-coverage {params.asm_coverage} \
+             --resume \
              --scaffold 2> {log}
         """
 
@@ -160,15 +162,16 @@ rule busco_initial:
 
 rule racon_round:
     input:
-        assembly = lambda wildcards: "results/assembly/flye/assembly.fasta" if wildcards.round == "1" 
-                   else f"results/polished/racon/round{int(wildcards.round)-1}.fasta",
+        assembly = lambda wildcards: (
+            "results/assembly/flye/assembly.fasta"
+            if int(wildcards.round) == 1
+            else f"results/polished/racon/round{int(wildcards.round)-1}.fasta"
+        ),
         reads = "results/filtered/filtered_reads.fastq.gz"
     output:
         polished = "results/polished/racon/round{round}.fasta",
         alignment = "results/polished/racon/aligned_round{round}.sam"
     threads: config["threads"]["racon"]
-    resources:
-        mem_mb = config["memory"]["racon"],
     log:
         "logs/racon_round/run{round}.log"
     shell:
@@ -182,8 +185,8 @@ rule racon_round:
 
 rule racon_final:
     input:
-        expand("results/polished/racon/round{round}.fasta", 
-               round=range(1, config["racon"]["rounds"] + 1))
+        expand("results/polished/racon/round{round}.fasta",
+               round=RACON_ROUNDS) 
     output:
         final = "results/polished/racon/final_racon_polished.fasta"
     params:
@@ -267,9 +270,21 @@ rule busco_medaka:
         find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \\;
         """
 
-rule minimap_self_alignment:
+rule split_assembly:
     input:
         assembly = "results/polished/medaka/consensus.fasta"
+    output:
+        split = "results/final/purge_dups/assembly.split.fasta"
+    log:
+        "logs/split_assembly/run.log"
+    shell:
+        """
+        split_fa {input.assembly} > {output.split} 2> {log}
+        """
+
+rule minimap_self_alignment:
+    input:
+        assembly = "results/final/purge_dups/assembly.split.fasta"
     output:
         paf = "results/final/purge_dups/assembly_self.paf.gz"
     threads: config["threads"]["purge_dups"]
@@ -278,13 +293,13 @@ rule minimap_self_alignment:
     shell:
         """
         mkdir -p results/final/purge_dups
-        minimap2 -x asm5 -DT -t {threads} {input.assembly} {input.assembly} 2> {log} | \
+        minimap2 -x asm5 -t {threads} {input.assembly} {input.assembly} 2> {log} | \
         gzip -c - > {output.paf}
         """
 
 rule pbcstat:
     input:
-        paf = "results/final/purge_dups/assembly_self.paf.gz"
+        paf = "results/final/purge_dups/split.paf.gz"
     output:
         pbcstat = "results/final/purge_dups/PB.base.cov",
         stat = "results/final/purge_dups/PB.stat",
@@ -313,18 +328,6 @@ rule calcuts:
         calcuts {input.stat} > {output.cutoffs} 2> {log}
         """
 
-rule split_assembly:
-    input:
-        assembly = "results/polished/medaka/consensus.fasta"
-    output:
-        split = "results/final/purge_dups/assembly.split.fasta"
-    log:
-        "logs/split_assembly/run.log"
-    shell:
-        """
-        split_fa {input.assembly} > {output.split} 2> {log}
-        """
-
 rule minimap_reads_to_split:
     input:
         assembly = "results/final/purge_dups/assembly.split.fasta",
@@ -336,13 +339,13 @@ rule minimap_reads_to_split:
         "logs/minimap_reads_to_split/run.log"
     shell:
         """
-        minimap2 -xmap-ont -t {threads} {input.assembly} {input.reads} 2> {log} | \
+        minimap2 -x map-ont -t {threads} {input.assembly} {input.reads} 2> {log} | \
         gzip -c - > {output.paf}
         """
 
 rule purge_dups:
     input:
-        paf = "results/final/purge_dups/split.paf.gz",
+        paf = "results/final/purge_dups/assembly_self.paf.gz",
         base_cov = "results/final/purge_dups/PB.base.cov",
         cutoffs = "results/final/purge_dups/cutoffs"
     output:
