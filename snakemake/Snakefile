@@ -27,6 +27,7 @@ rule all:
         # Final purged assembly
         "results/final/purged_assembly.fasta",
         "results/final/haplotigs.fasta",
+        "results/final/purge_dups/PB.cov.png",
         
         # BUSCO results at each stage
         "results/busco/initial/short_summary.txt",
@@ -270,11 +271,78 @@ rule busco_medaka:
         find {params.outdir} -name "short_summary*.txt" -exec cp {{}} {output.summary} \\;
         """
 
+# purge_dups (https://github.com/dfguan/purge_dups)
+# Read depth comes from reads mapped to the unsplit assembly; only the
+# self-alignment uses the split assembly.
+PURGE_DIR = "results/final/purge_dups"
+
+def calcuts_args():
+    cuts = config["purge_dups"].get("cutoffs") or {}
+    flags = {"lower": "-l", "mid": "-m", "upper": "-u"}
+    return " ".join(f"{flag} {cuts[key]}" for key, flag in flags.items() if cuts.get(key) is not None)
+
+rule minimap_reads_to_assembly:
+    input:
+        assembly = "results/polished/medaka/consensus.fasta",
+        reads = "results/filtered/filtered_reads.fastq.gz"
+    output:
+        paf = f"{PURGE_DIR}/reads.paf.gz"
+    threads: config["threads"]["purge_dups"]
+    log:
+        "logs/minimap_reads_to_assembly/run.log"
+    shell:
+        """
+        minimap2 -x map-ont -t {threads} {input.assembly} {input.reads} 2> {log} | \
+        gzip -c - > {output.paf}
+        """
+
+rule pbcstat:
+    input:
+        paf = f"{PURGE_DIR}/reads.paf.gz"
+    output:
+        base_cov = f"{PURGE_DIR}/PB.base.cov",
+        stat = f"{PURGE_DIR}/PB.stat"
+    params:
+        outdir = PURGE_DIR
+    log:
+        "logs/pbcstat/run.log"
+    shell:
+        """
+        pbcstat -O {params.outdir} {input.paf} 2> {log}
+        """
+
+rule calcuts:
+    input:
+        stat = f"{PURGE_DIR}/PB.stat"
+    output:
+        cutoffs = f"{PURGE_DIR}/cutoffs"
+    params:
+        args = calcuts_args()
+    log:
+        "logs/calcuts/run.log"
+    shell:
+        """
+        calcuts {params.args} {input.stat} > {output.cutoffs} 2> {log}
+        """
+
+rule purge_hist:
+    input:
+        stat = f"{PURGE_DIR}/PB.stat",
+        cutoffs = f"{PURGE_DIR}/cutoffs"
+    output:
+        plot = f"{PURGE_DIR}/PB.cov.png"
+    log:
+        "logs/purge_hist/run.log"
+    shell:
+        """
+        hist_plot.py -c {input.cutoffs} {input.stat} {output.plot} 2> {log}
+        """
+
 rule split_assembly:
     input:
         assembly = "results/polished/medaka/consensus.fasta"
     output:
-        split = "results/final/purge_dups/assembly.split.fasta"
+        split = f"{PURGE_DIR}/assembly.split.fasta"
     log:
         "logs/split_assembly/run.log"
     shell:
@@ -284,72 +352,26 @@ rule split_assembly:
 
 rule minimap_self_alignment:
     input:
-        assembly = "results/final/purge_dups/assembly.split.fasta"
+        assembly = f"{PURGE_DIR}/assembly.split.fasta"
     output:
-        paf = "results/final/purge_dups/assembly_self.paf.gz"
+        paf = f"{PURGE_DIR}/assembly_self.paf.gz"
     threads: config["threads"]["purge_dups"]
     log:
         "logs/minimap_self_alignment/run.log"
     shell:
         """
-        mkdir -p results/final/purge_dups
-        minimap2 -x asm5 -t {threads} {input.assembly} {input.assembly} 2> {log} | \
-        gzip -c - > {output.paf}
-        """
-
-rule pbcstat:
-    input:
-        paf = "results/final/purge_dups/split.paf.gz"
-    output:
-        pbcstat = "results/final/purge_dups/PB.base.cov",
-        stat = "results/final/purge_dups/PB.stat",
-        wig = "results/final/purge_dups/PB.cov.wig",
-    params:
-        prefix = "results/final/purge_dups/PB"
-    log:
-        "logs/pbcstat/run.log"
-    shell:
-        """
-        pbcstat {input.paf} 2> {log}
-        mv PB.base.cov {output.pbcstat}
-        mv PB.stat {output.stat}
-        mv PB.cov.wig {output.wig}
-        """
-
-rule calcuts:
-    input:
-        stat = "results/final/purge_dups/PB.stat"
-    output:
-        cutoffs = "results/final/purge_dups/cutoffs"
-    log:
-        "logs/calcuts/run.log"
-    shell:
-        """
-        calcuts {input.stat} > {output.cutoffs} 2> {log}
-        """
-
-rule minimap_reads_to_split:
-    input:
-        assembly = "results/final/purge_dups/assembly.split.fasta",
-        reads = "results/filtered/filtered_reads.fastq.gz"
-    output:
-        paf = "results/final/purge_dups/split.paf.gz"
-    threads: config["threads"]["purge_dups"]
-    log:
-        "logs/minimap_reads_to_split/run.log"
-    shell:
-        """
-        minimap2 -x map-ont -t {threads} {input.assembly} {input.reads} 2> {log} | \
+        # -D skips trivial self hits, -P keeps all chains (needed by purge_dups)
+        minimap2 -x asm5 -DP -t {threads} {input.assembly} {input.assembly} 2> {log} | \
         gzip -c - > {output.paf}
         """
 
 rule purge_dups:
     input:
-        paf = "results/final/purge_dups/assembly_self.paf.gz",
-        base_cov = "results/final/purge_dups/PB.base.cov",
-        cutoffs = "results/final/purge_dups/cutoffs"
+        paf = f"{PURGE_DIR}/assembly_self.paf.gz",
+        base_cov = f"{PURGE_DIR}/PB.base.cov",
+        cutoffs = f"{PURGE_DIR}/cutoffs"
     output:
-        bed = "results/final/purge_dups/dups.bed"
+        bed = f"{PURGE_DIR}/dups.bed"
     log:
         "logs/purge_dups/run.log"
     shell:
@@ -360,23 +382,20 @@ rule purge_dups:
 rule get_seqs:
     input:
         assembly = "results/polished/medaka/consensus.fasta",
-        bed = "results/final/purge_dups/dups.bed"
+        bed = f"{PURGE_DIR}/dups.bed"
     output:
         purged = "results/final/purged_assembly.fasta",
         haplotigs = "results/final/haplotigs.fasta"
+    params:
+        prefix = f"{PURGE_DIR}/gdor"
     log:
         "logs/get_seqs/run.log"
     shell:
         """
-        get_seqs -e {input.bed} {input.assembly} 2> {log}
-        
-        # Move outputs to final locations
-        mv purged.fa {output.purged}
-        mv hap.fa {output.haplotigs}
-        
-        echo "Purging complete!" >> {log}
-        echo "Purged assembly: {output.purged}" >> {log}
-        echo "Haplotigs: {output.haplotigs}" >> {log}
+        get_seqs -e -p {params.prefix} {input.bed} {input.assembly} 2> {log}
+        mv {params.prefix}.purged.fa {output.purged}
+        mv {params.prefix}.hap.fa {output.haplotigs}
+        cut -f4 {input.bed} | sort | uniq -c >> {log}
         """
 
 rule busco_final:
@@ -509,6 +528,7 @@ rule multiqc_report:
                 --outdir {params.outdir} \
                 --force \
                 --title "Girardia dorotocephala Genome Assembly Report" \
+                --filename multiqc_report.html \
                 --comment "Complete pipeline QC including NanoPlot and BUSCO results" 2> {log}
         """
 

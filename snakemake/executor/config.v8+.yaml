@@ -32,6 +32,10 @@ set-resources:
       partition: highmemory
       mem_mb: 800000
 
+    minimap_self_alignment:
+      partition: week
+      mem_mb: 128000
+
     racon_final:
       partition: week
       mem_mb: 128000

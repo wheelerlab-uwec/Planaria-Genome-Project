@@ -23,6 +23,14 @@ medaka:
 racon:
   rounds: 3
 
+purge_dups:
+  # Manual read-depth cutoffs for calcuts; set all to null to let calcuts pick.
+  # Check results/final/purge_dups/PB.cov.png before changing.
+  cutoffs:
+    lower: 5
+    mid: 86
+    upper: 306
+
 busco:
   lineage: "metazoa_odb10"
 
