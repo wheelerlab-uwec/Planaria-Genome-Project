@@ -439,9 +439,12 @@ rule busco_plot:
         "logs/busco_plot/run.log"
     shell:
         """
-        # Copy all short_summary JSON files to a plot directory
+        # Copy each stage's short_summary JSON into a fresh plot directory
+        rm -rf {params.busco_dir}/plot_input
         mkdir -p {params.busco_dir}/plot_input
-        cp {params.busco_dir}/*/short_summary.*.json {params.busco_dir}/plot_input/ 2> {log}
+        for f in {input.summaries}; do
+            cp $(dirname $f)/short_summary.*.json {params.busco_dir}/plot_input/ 2>> {log}
+        done
         
         # Generate the plot using BUSCO's built-in plotting function
         busco --plot {params.busco_dir}/plot_input 2>> {log}
