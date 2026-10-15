@@ -1,6 +1,6 @@
 # Methods: *Girardia dorotocephala* genome assembly
 
-Draft methods covering work completed through October 2026. Items marked **[TK]** still need a source. Steps marked *(in progress)* were running when this was written. The "Notes for revision" section at the end is for internal use, not for publication.
+Draft methods covering work completed through October 2026. Items marked **[TK]** still need a source. The "Notes for revision" section at the end is for internal use, not for publication.
 
 ## Animals and tissue preparation
 
@@ -55,7 +55,7 @@ The Flye assembly was polished with three rounds of Racon 1.5.0 (built from sour
 
 The Racon-polished assembly was then polished once with Medaka 2.1.1 (`medaka_consensus`) using all filtered reads, model `r1041_e82_400bps_sup_g615`, and batch size 100.
 
-## Haplotig and overlap purging *(in progress)*
+## Haplotig and overlap purging
 
 Duplicate haplotypes and overlapping contigs were removed from the Medaka assembly with purge_dups 1.2.6:
 1. Filtered reads were mapped to the unsplit assembly with minimap2 (`-x map-ont`).
@@ -64,6 +64,37 @@ Duplicate haplotypes and overlapping contigs were removed from the Medaka assemb
 4. The assembly was split at gaps with `split_fa` and aligned to itself with minimap2 (`-x asm5 -DP`).
 5. Duplicates were identified with `purge_dups -2` using the self-alignment, depth file and cutoffs.
 6. Haplotigs and overlaps at contig ends were removed with `get_seqs -e`, giving the primary (purged) assembly and a separate haplotig set.
+
+purge_dups flagged 1.17 Gb of sequence, as follows:
+
+| Class | Regions | Sequence |
+|---|---|---|
+| Haplotigs | 26,209 | 1,024 Mb |
+| Overlapping contig ends | 3,172 | 122 Mb |
+| Repeats | 660 | 23 Mb |
+| Low-coverage junk | 417 | 3.4 Mb |
+| High-coverage | 54 | 0.7 Mb |
+
+The removed sequence (1.16 Gb) was kept as a separate haplotig set.
+
+## Assembly results
+
+| Stage | Size (Gb) | Contigs | N50 (kb) | BUSCO C | S | D | F | M |
+|---|---|---|---|---|---|---|---|---|
+| Flye | 2.60 | 52,321 | 91.1 | 68.2% | 27.4% | 40.9% | 3.1% | 28.6% |
+| Racon (3 rounds) | 2.62 | 48,551 | 93.4 | 68.2% | 27.4% | 40.9% | 3.1% | 28.6% |
+| Medaka | 2.63 | 48,551 | 93.5 | 68.4% | 27.1% | 41.3% | 3.1% | 28.4% |
+| Purged (primary) | 1.47 | 21,045 | 131.7 | 66.1% | 54.1% | 12.1% | 3.9% | 30.0% |
+
+BUSCO columns: C = complete, S = complete and single-copy, D = complete and duplicated, F = fragmented, M = missing; metazoa_odb10, n = 954.
+
+The primary assembly is 1,465,713,240 bp in 21,045 contigs:
+- N50 131.7 kb (L50 = 3,399); N90 32.8 kb
+- largest contig 1.18 Mb
+- GC content 30.5%
+- 0.01 N per 100 kb
+
+Purging cut duplicated BUSCOs from 41.3% to 12.1%, while complete BUSCOs fell by only 2.3 percentage points. Across all stages, about one-third of BUSCO matches (32–34%) contained internal stop codons. This is consistent with residual indel errors in the consensus.
 
 ## Assembly evaluation
 
@@ -105,7 +136,9 @@ The workflow (Snakefile, configuration and executor profile) is at https://githu
 
 ## Notes for revision (internal; not for publication)
 
-- **Medaka model mismatch.** Reads were basecalled with `sup@v4.3.0`, but Medaka used `r1041_e82_400bps_sup_g615`. If Medaka is rerun, use the model that matches v4.3.0. Medaka also ran on the CPU despite being on a GPU node.
+- **Medaka model mismatch.** Reads were basecalled with `sup@v4.3.0`, but Medaka used `r1041_e82_400bps_sup_g615`. If Medaka is rerun, use the model that matches v4.3.0. Medaka also ran on the CPU: Slurm job 349398 held a GPU for 2 d 13 h but did not use it.
+- **Residual frameshifts.** The share of BUSCO matches with internal stop codons (~33%) is the same after Flye, Racon and Medaka, so none of the long-read polishing removed the indel errors. Short-read polishing or re-basecalling would be needed before gene annotation.
+- **Residual duplication.** 12.1% of BUSCOs are still duplicated after purging. These may be divergent haplotigs or real gene copies; this has not been checked.
 - **Flye read mode.** `--nano-raw` was used. `--nano-hq` is the recommended mode for Q18 SUP reads. Rerunning Flye is not planned because of the ~28-day runtime.
 - **Racon** had no measurable effect on BUSCO and can probably be dropped or described briefly.
 - **Ploidy and genotype mixture are unresolved.** The two read-depth peaks are at a ~1:4 ratio rather than the 1:2 expected for a diploid. The allele-frequency analysis could not separate real variants from ONT systematic error. A single-animal Illumina k-mer analysis (GenomeScope/Smudgeplot) would resolve this, if unused aliquots (10, 20, 30, 1 mg) are still at the UWBC.
