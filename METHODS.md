@@ -4,7 +4,7 @@ Draft methods covering work completed through October 2026. Items marked **[TK]*
 
 ## Animals and tissue preparation
 
-*Girardia dorotocephala* from a putatively clonal (asexual) laboratory line were provided by **[TK: collaborator, institution, line designation; the core's sample sheet calls the samples "MA-C2 Planaria Clonal Samples"]**. Animals arrived on approximately 5 June 2025. They were held in the shipping water for about one week to acclimate, and any unhealthy animals were removed. They were then kept in artificial pond water (APW) at **[TK: temperature]**. Animals were last fed on 20 June 2025 and starved for 5 days before tissue collection.
+*Girardia dorotocephala* of the asexual clonal line MA-C2 were provided by Labib Rouhana (University of Massachusetts Boston). Almazan et al. (2018) established the line from a single animal obtained from Carolina Biological Supply Company (item #132970) and reported a karyotype of 2n = 24 (twelve small chromosome pairs). The same line was used for the published *G. dorotocephala* transcriptome (BioProject PRJNA317859). Animals arrived on approximately 5 June 2025. They were held in the shipping water for about one week to acclimate, and any unhealthy animals were removed. They were then kept in artificial pond water (APW) at **[TK: temperature]**. Animals were last fed on 20 June 2025 and starved for 5 days before tissue collection.
 
 On 25 June 2025, mucus was removed with N-acetyl-L-cysteine (NAC), following Grohme et al. (2018). The stripping solution was 0.5% (w/v) NAC in 20 mM HEPES-NaOH (pH 7.25–7.4), with phenol red as a pH indicator, adjusted to pH > 7 with 1 M NaOH. Animals were inverted in the solution every 10–15 s for 10–15 min at room temperature and then rinsed in APW. They were divided into aliquots by approximate mass (~5 mg per animal):
 
@@ -123,6 +123,7 @@ The workflow (Snakefile, configuration and executor profile) is at https://githu
 
 ## References
 
+- Almazan EMH, Lesko SL, Markey MP, Rouhana L (2018). *Girardia dorotocephala* transcriptome sequence, assembly, and validation through characterization of piwi homologs and stem cell progeny markers. *Dev Biol* 433:433–447.
 - Grohme MA, Schloissnig S, Rozanski A, et al. (2018). The genome of *Schmidtea mediterranea* and the evolution of core cellular mechanisms. *Nature* 554:56–61.
 - Ivanković M, Brand JN, Pandolfini L, et al. (2024). A comparative analysis of planarian genomes reveals regulatory conservation in the face of rapid structural divergence. *Nat Commun* 15:8215.
 - Kolmogorov M, Yuan J, Lin Y, Pevzner PA (2019). Assembly of long, error-prone reads using repeat graphs. *Nat Biotechnol* 37:540–546. (Flye)
