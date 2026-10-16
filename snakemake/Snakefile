@@ -42,6 +42,11 @@ rule all:
         "results/reports/quast/report.html",
         "results/reports/assembly_statistics_comparison.tsv",
 
+        # Mitochondrial genome (rules/mito.smk)
+        "results/mito/mito_genome.fasta",
+        "results/mito/mitos/result.gff",
+        "results/mito/mito_summary.txt",
+
 rule combine_reads:
     input:
         list_fastqs(FC1) + list_fastqs(FC2)
@@ -545,3 +550,6 @@ rule report:
         """
         snakemake --report {output}
         """
+
+
+include: "rules/mito.smk"

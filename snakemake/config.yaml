@@ -41,3 +41,23 @@ threads:
   busco: 32
   purge_dups: 32
   seqkit: 32
+
+mito:
+  # Published Girardia mitogenomes used to find, orient and check ours
+  # (G. tigrina; Girardia sp. ER-2015)
+  references: ["MW972220.1", "KP090061.1"]
+  # Nuclear Flye contigs at or above this depth are searched for the mitogenome
+  seed_min_depth: 300
+  # Reads must be this mitochondrial (aligned fraction) and this long
+  min_aligned_frac: 0.8
+  min_read_length: 3000
+  # Longest/best reads up to ~250x of a 16 kb genome
+  target_bases: 4000000
+  genome_size: "16k"
+  # Plausible length range for the circular contig
+  min_length: 12000
+  max_length: 30000
+  medaka_model: "r1041_e82_400bps_sup_v4.3.0"
+  genetic_code: 9   # echinoderm and flatworm mitochondrial code
+  mitos_refseq: "refseq89m"
+  seq_name: "Gdor_MA-C2_mito"

@@ -36,3 +36,10 @@ polish_test/*
 smed_baseline/*
 !smed_baseline/download.sh
 !smed_baseline/run_busco.sbatch
+
+# Downloaded references (mito refs, MITOS2 data)
+snakemake/resources/
+
+# NCBI submission: keep scripts and metadata only
+ncbi_submission/**/*.out
+ncbi_submission/screen/results/
