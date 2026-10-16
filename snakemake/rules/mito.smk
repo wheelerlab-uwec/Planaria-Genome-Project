@@ -272,3 +272,112 @@ rule mito_summary:
         cut -f4 {input.bed} | tr '\\n' ' '; echo
         }} > {output} 2>> {log}
         """
+
+
+rule mito_qc:
+    # Checks that the assembled length is real and the consensus has settled:
+    # depth along the circle, reads spanning (nearly) the whole circle, the
+    # cox1-to-cox1 distance inside very long reads, a third Medaka round, and
+    # windows where reads disagree with the consensus (repeats, heteroplasmy).
+    input:
+        fasta = f"{MITO}/mito_genome.fasta",
+        reads = f"{MITO}/reads/mito_reads.fastq.gz",
+        sub = f"{MITO}/reads/mito_reads_subsampled.fastq.gz",
+        bed = f"{MITO}/mitos/result.bed"
+    output:
+        bam = f"{MITO}/qc/reads_vs_mito.bam",
+        depth = f"{MITO}/qc/depth_500bp.tsv",
+        repeats = f"{MITO}/qc/cox1_spacing_in_long_reads.tsv",
+        disagree = f"{MITO}/qc/low_agreement_1kb.tsv",
+        summary = f"{MITO}/qc/mito_qc.txt"
+    params:
+        outdir = f"{MITO}/qc",
+        model = config["mito"]["medaka_model"],
+        long = config["mito"]["qc_long_read"],
+        span = config["mito"]["qc_span"]
+    threads: 16
+    log:
+        "logs/mito_qc/run.log"
+    shell:
+        """
+        O={params.outdir}
+        minimap2 -ax map-ont -t {threads} {input.fasta} {input.reads} 2> {log} \
+            | samtools sort -@ 4 -o {output.bam} - 2>> {log}
+        samtools index {output.bam}
+        samtools depth -a {output.bam} \
+            | awk -v OFS='\\t' '{{w=int(($2-1)/500); s[w]+=$3; n[w]++}} END{{for(w in s) print w*500+1, int(s[w]/n[w])}}' \
+            | sort -k1,1n > {output.depth}
+
+        # cox1 copies inside reads longer than the genome; spacing = genome length
+        awk -v OFS='\\t' '$4=="cox1" {{print $1, $2, $3}}' {input.bed} > $O/cox1.bed
+        seqkit subseq --bed $O/cox1.bed {input.fasta} 2>> {log} > $O/cox1.fasta
+        seqkit seq -m {params.long} {input.reads} 2>> {log} | seqkit fq2fa > $O/long_reads.fasta
+        blastn -query $O/cox1.fasta -subject $O/long_reads.fasta -max_target_seqs 100000 -max_hsps 100 \
+               -outfmt '6 sseqid sstart send length pident' 2>> {log} \
+            | awk '$4>=1000' | sort -k1,1 -k2,2n \
+            | awk -v OFS='\\t' '$1==p {{d=$2-q; print $1, (d<0?-d:d)}} {{p=$1; q=$2}}' > {output.repeats}
+
+        # third Medaka round: how much does the consensus still move?
+        medaka_consensus -i {input.sub} -d {input.fasta} -o $O/polish3 -m {params.model} \
+                         -t 8 -f >> {log} 2>&1
+
+        # per-base agreement of reads with the consensus, summarised per 1 kb
+        samtools mpileup -f {input.fasta} -Q 0 -B -d 0 {output.bam} 2>> {log} \
+            | awk -v OFS='\\t' '$4>0 {{s=$5; m=gsub(/[.,]/,"",s); w=int(($2-1)/1000)*1000+1; n[w]++; if(m/$4<0.8) k[w]++}}
+                                END{{for(w in n) print w, k[w]+0}}' | sort -k1,1n > {output.disagree}
+
+        {{
+        echo "== Length"; seqkit fx2tab -n -l {input.fasta} | cut -f2
+        echo; echo "== Depth per 500 bp window (min / median / max)"
+        cut -f2 {output.depth} | sort -n | awk '{{a[NR]=$1}} END{{print a[1], a[int(NR/2)+1], a[NR]}}'
+        echo; echo "== Primary alignments spanning >= {params.span} bp of the reference"
+        samtools view -F 0x904 -q 20 {output.bam} \
+            | awk '{{n=0; c=$6; while(match(c,/[0-9]+[MD=X]/)){{n+=substr(c,RSTART,RLENGTH-1); c=substr(c,RSTART+RLENGTH)}} if(n>={params.span}) k++}} END{{print k+0}}'
+        echo; echo "== cox1-to-cox1 spacing in reads >= {params.long} bp (count per 500 bp bin)"
+        cut -f2 {output.repeats} | awk '{{print int($1/500)*500}}' | sort -n | uniq -c
+        echo; echo "== Medaka round 3 vs final (length; substitutions and indels)"
+        seqkit fx2tab -n -l $O/polish3/consensus.fasta | cut -f2
+        minimap2 -cx asm5 --cs {input.fasta} $O/polish3/consensus.fasta 2>> {log} \
+            | grep -o 'cs:Z:.*' | awk '{{s+=gsub(/\\*/,""); i+=gsub(/[+-]/,"")}} END{{print "substitutions", s+0, "indels", i+0}}'
+        echo; echo "== 1 kb windows with >= 20 positions where < 80% of reads agree"
+        awk '$2>=20' {output.disagree}
+        }} > {output.summary} 2>> {log}
+        rm -f $O/long_reads.fasta
+        """
+
+
+rule mito_barcode:
+    # Species check: our cox1 against every Girardia COI record in GenBank
+    input:
+        fasta = f"{MITO}/mito_genome.fasta",
+        bed = f"{MITO}/mitos/result.bed"
+    output:
+        db = "resources/mito/girardia_coi.fasta",
+        hits = f"{MITO}/qc/cox1_vs_girardia_coi.tsv",
+        summary = f"{MITO}/qc/cox1_barcode_by_species.tsv"
+    params:
+        query = config["mito"]["barcode_query"],
+        outdir = f"{MITO}/qc"
+    log:
+        "logs/mito_barcode/run.log"
+    shell:
+        """
+        E=https://eutils.ncbi.nlm.nih.gov/entrez/eutils
+        curl -sSf -G "$E/esearch.fcgi" --data-urlencode db=nuccore --data-urlencode retmax=5000 \
+             --data-urlencode "term={params.query}" 2> {log} \
+            | grep -o '<Id>[0-9]*' | cut -c5- | paste -sd, > {params.outdir}/coi_ids.txt
+        curl -sSf -X POST "$E/efetch.fcgi" --data "db=nuccore&rettype=fasta&retmode=text" \
+             --data "id=$(cat {params.outdir}/coi_ids.txt)" > {output.db} 2>> {log}
+        echo "COI records: $(grep -c '>' {output.db})" >> {log}
+        awk -v OFS='\\t' '$4=="cox1" {{print $1, $2, $3}}' {input.bed} > {params.outdir}/cox1_barcode.bed
+        seqkit subseq --bed {params.outdir}/cox1_barcode.bed {input.fasta} 2>> {log} > {params.outdir}/cox1_barcode.fasta
+        # accession, identity, aligned length, species (from the FASTA title)
+        blastn -query {params.outdir}/cox1_barcode.fasta -subject {output.db} -max_target_seqs 5000 \
+               -outfmt '6 sseqid pident length' 2>> {log} \
+            | awk '$3>=300' | sort -k2,2nr | awk '!s[$1]++' \
+            | awk -v OFS='\\t' 'NR==FNR {{if(/^>/){{a=substr($1,2); sp[a]=$2" "$3}} next}} {{print $1, $2, $3, sp[$1]}}' {output.db} - \
+            > {output.hits}
+        # best identity and number of records per species
+        awk -F'\\t' -v OFS='\\t' '!($4 in b) {{b[$4]=$2}} {{n[$4]++}} END{{for(s in b) print s, b[s], n[s]}}' {output.hits} \
+            | sort -t$'\\t' -k2,2nr > {output.summary}
+        """

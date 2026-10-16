@@ -46,6 +46,8 @@ rule all:
         "results/mito/mito_genome.fasta",
         "results/mito/mitos/result.gff",
         "results/mito/mito_summary.txt",
+        "results/mito/qc/mito_qc.txt",
+        "results/mito/qc/cox1_barcode_by_species.tsv",
 
 rule combine_reads:
     input:

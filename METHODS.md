@@ -75,7 +75,7 @@ purge_dups flagged 1.17 Gb of sequence, as follows:
 | Low-coverage junk | 417 | 3.4 Mb |
 | High-coverage | 54 | 0.7 Mb |
 
-The removed sequence (1.16 Gb) was kept as a separate haplotig set.
+The removed sequence (1.16 Gb) was kept as a separate haplotig set. The high-coverage class included the mitochondrial genome, which Flye had assembled as a 47.5 kb contig at 558× depth; it was reassembled separately (see *Mitochondrial genome*).
 
 ## Assembly results
 
@@ -117,9 +117,62 @@ Two hundred contigs were randomly sampled from each class. Pileups were generate
 
 For each SNP site, the alternate-allele frequency was computed from the most common non-reference allele. Sites were kept if their depth was within 0.6–1.4× of the class median and they had ≥ 3 alternate reads. Scripts are in `ploidy_check/`.
 
+## Mitochondrial genome
+
+The mitochondrial genome was assembled separately from the nuclear assembly (`snakemake/rules/mito.smk`).
+
+**Seed contig.** The two published *Girardia* mitogenomes (MW972220.1, *G. tigrina*; KP090061.1, *Girardia* sp.) were compared with BLAST+ 2.16.0 (`blastn -task dc-megablast`, E ≤ 1e-10) against the 61 nuclear Flye contigs with depth ≥ 300×. The contig with the highest summed bitscore (contig_110383; 47.5 kb, 558×) was used as the seed.
+
+**Read selection and assembly.**
+1. Filtered reads were mapped to the seed with minimap2 2.30 (`-x map-ont`).
+2. Reads were kept if they were ≥ 3 kb and ≥ 80% of their length aligned to the seed. This excludes reads from nuclear mitochondrial insertions (NUMTs) that carry nuclear flanking sequence. The resulting set had 19,782 reads (175.6 Mb).
+3. Filtlong 0.3.1 selected the longest, highest-quality reads up to 4 Mb (152 reads, mean 26.3 kb).
+4. These were assembled with Flye 2.9.6 (`--nano-hq --genome-size 16k --iterations 3`).
+
+Flye produced two circular contigs:
+- a 21.8 kb contig
+- a 44.9 kb contig that is a head-to-tail dimer of the first (~99% identity over both copies)
+
+The monomer was kept.
+
+**Polishing and orientation.**
+1. The monomer was polished with Medaka 2.1.1 (model `r1041_e82_400bps_sup_v4.3.0`) using the 4 Mb read subset.
+2. It was rotated to start at *cox1* on the forward strand. The *cox1* position was found by BLAST of the reference *cox1* genes against the sequence doubled end-to-end (`scripts/mito_rotate.py`).
+3. It was polished again with Medaka so that the original circle junction was polished in the interior of the sequence.
+
+**Annotation.** The genome was annotated with MITOS2 2.1.9 (RefSeq 89 Metazoa reference data, genetic code 9).
+
+**Validation** (rule `mito_qc`):
+- All 19,782 mitochondrial reads were mapped to the final sequence with minimap2, and depth was computed with samtools 1.22.1.
+- Very long reads (≥ 50 kb) were searched for repeated *cox1* copies; the distance between consecutive copies estimates the genome length directly from single reads.
+- A third Medaka round was run to test whether the consensus had converged.
+- For species confirmation (rule `mito_barcode`), the *cox1* gene was compared by BLAST with all *Girardia* COI records in GenBank (318 records; retrieved 2026-10-16).
+
+### Mitochondrial genome results
+
+The mitochondrial genome is a circular molecule of 22,455 bp with 31.5% GC.
+
+**Read support for the length.**
+- Mean read depth was 7,312× (median of 500 bp windows; range 5,937–8,345×), with no gaps or drops in depth.
+- 174 reads aligned contiguously across ≥ 20 kb of the sequence.
+- In reads ≥ 50 kb, the most common spacing between consecutive *cox1* copies was 22.0–23.0 kb (6 of 13 spacings).
+
+The genome is therefore substantially longer than the two published *Girardia* mitogenomes (15.9 kb). The extra length is in non-coding regions.
+
+**Annotation.** MITOS2 identified:
+- all 12 protein-coding genes expected for flatworms (*atp8* is absent in Platyhelminthes)
+- *rrnL* and *rrnS* (*rrnS* in two fragments)
+- 19 of 22 tRNAs; *trnD*, *trnY* and *trnS1* were not found
+
+All genes are on one strand.
+
+**Consensus stability.** A third Medaka round changed 12 substitutions and 12 indels (+14 bp). These changes, and most positions where < 80% of reads agree with the consensus, lie in two non-coding regions (~2.0–3.5 kb and ~12.0–12.5 kb). These regions share a 570 bp repeat (85% identity). Their sequence is less certain than the rest of the genome and may include length heteroplasmy.
+
+**Species identity.** The *cox1* gene is 100% identical to 29 *G. dorotocephala* COI records (Benítez-Álvarez et al. 2023), and ≤ 92% identical to all other *Girardia* species (*G. sinensis*, *G. tigrina* and *Girardia* spp.: 91.4–91.6%). This confirms the species identity of the sequenced line. Identity to the two published *Girardia* mitogenomes is low (66–72% over local alignments of 0.6–1.4 kb). Both belong to the *G. tigrina* lineage, so this is, to our knowledge, the first mitochondrial genome for *G. dorotocephala*.
+
 ## Data availability
 
-The project is registered at NCBI as BioProject PRJNA1545025, and the sequenced sample as BioSample SAMN64250158. The locus_tag prefix is ADAYWY. Accessions for the raw reads (SRA) and the genome assembly are pending; both records stay private until publication.
+The project is registered at NCBI as BioProject PRJNA1545025, and the sequenced sample as BioSample SAMN64250158. The locus_tag prefix is ADAYWY. Accessions for the raw reads (SRA), the genome assembly and the mitochondrial genome are pending; all records stay private until publication.
 
 ## Code availability
 
@@ -137,6 +190,10 @@ The workflow (Snakefile, configuration and executor profile) is at https://githu
 - Manni M, Berkeley MR, Seppey M, Simão FA, Zdobnov EM (2021). BUSCO update. *Mol Biol Evol* 38:4647–4654.
 - Mölder F, Jablonski KP, Letcher B, et al. (2021). Sustainable data analysis with Snakemake. *F1000Research* 10:33.
 - Medaka, Oxford Nanopore Technologies, https://github.com/nanoporetech/medaka
+- Benítez-Álvarez L, Sluys R, Leal-Zanchet AM, Leria L, Riutort M (2023). First molecular phylogeny of the freshwater planarian genus *Girardia* (Platyhelminthes: Tricladida) unveils hidden taxonomic diversity and initiates resolution of its historical biogeography. *Zool J Linn Soc*. doi:10.1093/zoolinnean/zlac065
+- Donath A, Jühling F, Al-Arab M, et al. (2019). Improved annotation of protein-coding genes boundaries in metazoan mitochondrial genomes. *Nucleic Acids Res* 47:10543–10552. (MITOS2)
+- Camacho C, Coulouris G, Avagyan V, et al. (2009). BLAST+: architecture and applications. *BMC Bioinformatics* 10:421.
+- Filtlong, R. Wick, https://github.com/rrwick/Filtlong
 
 ---
 
@@ -158,3 +215,4 @@ The workflow (Snakefile, configuration and executor profile) is at https://githu
 - **Racon** had no measurable effect on BUSCO and can probably be dropped or described briefly.
 - **Ploidy and genotype mixture are unresolved.** The two read-depth peaks are at a ~1:4 ratio rather than the 1:2 expected for a diploid. The allele-frequency analysis could not separate real variants from ONT systematic error. A single-animal Illumina k-mer analysis (GenomeScope/Smudgeplot) would resolve this, if unused aliquots (10, 20, 30, 1 mg) are still at the UWBC.
 - **No genome-size estimate exists for *G. dorotocephala*.** Related species range from 0.78 to 1.56 Gb in assemblies, and *G. tigrina* has C-values of 1.40–1.88 pg.
+- **Mitochondrial annotation needs curation before GenBank submission.** MITOS2 did not find *trnD*, *trnY* or *trnS1*, split *rrnS* into two pieces and gave a short *rrnL* (~700 bp). Check tRNAs with ARWEN or tRNAscan-SE (organellar mode, flatworm code) and set rRNA boundaries by alignment to other triclad mitogenomes. Check volume and pages for Benítez-Álvarez et al. (published online 2022).
