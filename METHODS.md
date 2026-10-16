@@ -117,6 +117,10 @@ Two hundred contigs were randomly sampled from each class. Pileups were generate
 
 For each SNP site, the alternate-allele frequency was computed from the most common non-reference allele. Sites were kept if their depth was within 0.6–1.4× of the class median and they had ≥ 3 alternate reads. Scripts are in `ploidy_check/`.
 
+## Data availability
+
+The project is registered at NCBI as BioProject PRJNA1545025, and the sequenced sample as BioSample SAMN64250158. The locus_tag prefix is ADAYWY. Accessions for the raw reads (SRA) and the genome assembly are pending; both records stay private until publication.
+
 ## Code availability
 
 The workflow (Snakefile, configuration and executor profile) is at https://github.com/wheelerlab-uwec/Planaria-Genome-Project (branch `nic-pipeline`).
