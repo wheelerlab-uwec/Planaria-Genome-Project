@@ -61,9 +61,22 @@ mito:
   genetic_code: 9   # echinoderm and flatworm mitochondrial code
   mitos_refseq: "refseq89m"
   seq_name: "Gdor_MA-C2_mito"
+  # Sequence ID in the GenBank files (table2asn flags IDs containing "mito")
+  submission_id: "Gdor_MA-C2_MT"
   # QC (rule mito_qc): reads at least this long are searched for repeated
   # cox1 copies; alignments at least this long count as spanning the circle
   qc_long_read: 50000
   qc_span: 20000
+  # Annotated planarian mitogenomes used to place rRNA ends (rule mito_rrna)
+  annot_references: ["NC_022448.1", "AB618487.1", "AB618488.1"]
   # Species check (rule mito_barcode): GenBank COI records to compare cox1 against
   barcode_query: "Girardia[Organism] AND (COI[Gene] OR cox1[Gene] OR COX1[Gene] OR cytochrome oxidase subunit I[Title] OR cytochrome c oxidase subunit I[Title])"
+
+ncbi:
+  # Registered with BioProject PRJNA1545025 / BioSample SAMN64250158
+  locus_tag_prefix: "ADAYWY"
+  # database tag for protein_id qualifiers (gnl|<tag>|<locus_tag>)
+  protein_db: "WheelerUWEC"
+  template: "../ncbi_submission/template.sbt"
+  organism: "Girardia dorotocephala"
+  isolate: "MA-C2"

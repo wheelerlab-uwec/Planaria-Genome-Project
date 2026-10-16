@@ -381,3 +381,122 @@ rule mito_barcode:
         awk -F'\\t' -v OFS='\\t' '!($4 in b) {{b[$4]=$2}} {{n[$4]++}} END{{for(s in b) print s, b[s], n[s]}}' {output.hits} \
             | sort -t$'\\t' -k2,2nr > {output.summary}
         """
+
+
+# ---- Curation and GenBank submission files ----------------------------------
+# MITOS2 misses some tRNAs and places rRNA ends poorly, so the annotation is
+# curated before table2asn: tRNAs are checked with ARAGORN and tRNAscan-SE, and
+# rRNA ends are projected from annotated planarian mitogenomes. ARAGORN,
+# tRNAscan-SE and table2asn live in envs/mito_annot.yaml (mito-annot-env).
+
+MITO_SUB = f"{MITO}/submission"
+
+
+rule mito_annot_references:
+    # Dugesiidae mitogenomes with rRNA annotation (the two Girardia records
+    # have their 12S/16S labels swapped, so they are not used here)
+    output:
+        "resources/mito/annot_references.gb"
+    params:
+        ids = ",".join(config["mito"]["annot_references"])
+    log:
+        "logs/mito_annot_references/run.log"
+    shell:
+        """
+        curl -sSf "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id={params.ids}&rettype=gb&retmode=text" \
+            > {output} 2> {log}
+        grep -E "^(ACCESSION|  ORGANISM)" {output} >> {log}
+        """
+
+
+rule mito_rrna:
+    input:
+        fasta = f"{MITO}/mito_genome.fasta",
+        gb = "resources/mito/annot_references.gb",
+        bed = f"{MITO}/mitos/result.bed"
+    output:
+        f"{MITO}/curation/rrna_bounds.tsv"
+    params:
+        workdir = f"{MITO}/curation/rrna"
+    log:
+        "logs/mito_rrna/run.log"
+    shell:
+        """
+        python scripts/mito_rrna.py --fasta {input.fasta} --genbank {input.gb} --bed {input.bed} \
+               --workdir {params.workdir} --out {output} 2> {log}
+        """
+
+
+rule mito_trna:
+    # Second and third opinions on tRNAs (circular sequence, flatworm code)
+    input:
+        f"{MITO}/mito_genome.fasta"
+    output:
+        aragorn = f"{MITO}/curation/aragorn.txt",
+        trnascan = f"{MITO}/curation/trnascan.txt",
+        structs = f"{MITO}/curation/trnascan_structures.txt"
+    params:
+        code = config["mito"]["genetic_code"]
+    log:
+        "logs/mito_trna/run.log"
+    shell:
+        """
+        conda run -n mito-annot-env aragorn -t -mt -gc{params.code} -c -w -o {output.aragorn} {input} 2> {log}
+        conda run -n mito-annot-env tRNAscan-SE -O -q --forceow -o {output.trnascan} -f {output.structs} {input} >> {log} 2>&1
+        """
+
+
+rule mito_feature_table:
+    input:
+        fasta = f"{MITO}/mito_genome.fasta",
+        bed = f"{MITO}/mitos/result.bed",
+        rrna = f"{MITO}/curation/rrna_bounds.tsv",
+        aragorn = f"{MITO}/curation/aragorn.txt",
+        trnascan = f"{MITO}/curation/trnascan.txt"
+    output:
+        tbl = f"{MITO_SUB}/mito.tbl",
+        report = f"{MITO}/curation/curation_report.txt"
+    params:
+        seqid = config["mito"]["submission_id"],
+        prefix = config["ncbi"]["locus_tag_prefix"],
+        protein_db = config["ncbi"]["protein_db"]
+    log:
+        "logs/mito_feature_table/run.log"
+    shell:
+        """
+        python scripts/mito_feature_table.py --fasta {input.fasta} --seqid {params.seqid} \
+               --mitos-bed {input.bed} --rrna {input.rrna} --aragorn {input.aragorn} \
+               --trnascan {input.trnascan} --locus-prefix {params.prefix} --protein-db {params.protein_db} \
+               --tbl {output.tbl} --report {output.report} 2> {log}
+        """
+
+
+rule mito_table2asn:
+    # .sqn for GenBank, plus the validation (.val) and discrepancy (.dr) reports
+    # and a GenBank flatfile (.gbf) for reading
+    input:
+        fasta = f"{MITO}/mito_genome.fasta",
+        tbl = f"{MITO_SUB}/mito.tbl",
+        template = config["ncbi"]["template"]
+    output:
+        fsa = f"{MITO_SUB}/mito.fsa",
+        sqn = f"{MITO_SUB}/mito.sqn",
+        val = f"{MITO_SUB}/mito.val",
+        gbf = f"{MITO_SUB}/mito.gbf"
+    params:
+        outdir = MITO_SUB,
+        seqid = config["mito"]["submission_id"],
+        organism = config["ncbi"]["organism"],
+        isolate = config["ncbi"]["isolate"],
+        code = config["mito"]["genetic_code"]
+    log:
+        "logs/mito_table2asn/run.log"
+    shell:
+        """
+        seqkit replace -p '.*' \
+            -r '{params.seqid} [organism={params.organism}] [isolate={params.isolate}] [location=mitochondrion] [topology=circular] [completeness=complete] [mgcode={params.code}]' \
+            {input.fasta} > {output.fsa} 2> {log}
+        conda run -n mito-annot-env table2asn -i {output.fsa} -f {input.tbl} -t {input.template} \
+            -o {output.sqn} -a s -V vb -Z -euk >> {log} 2>&1
+        cat {output.val} >> {log}
+        """

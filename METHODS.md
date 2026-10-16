@@ -140,7 +140,11 @@ The monomer was kept.
 2. It was rotated to start at *cox1* on the forward strand. The *cox1* position was found by BLAST of the reference *cox1* genes against the sequence doubled end-to-end (`scripts/mito_rotate.py`).
 3. It was polished again with Medaka so that the original circle junction was polished in the interior of the sequence.
 
-**Annotation.** The genome was annotated with MITOS2 2.1.9 (RefSeq 89 Metazoa reference data, genetic code 9).
+**Annotation.** The genome was annotated with MITOS2 2.1.9 (RefSeq 89 Metazoa reference data, genetic code 9). The annotation was then curated (rules `mito_rrna`, `mito_trna`, `mito_feature_table`; `scripts/mito_feature_table.py`):
+- **tRNAs.** tRNAs were also predicted with ARAGORN 1.2.41 (`-mt -gc9 -c`) and tRNAscan-SE 2.0 (`-O`). A tRNA that MITOS2 missed was added from these predictions if it overlapped no protein-coding or rRNA gene, or other tRNA, by more than 10 bp. MITOS2 tRNAs longer than 90 bp were replaced by the overlapping ARAGORN prediction for the same tRNA.
+- **rRNAs.** The rRNA genes of three annotated Dugesiidae mitogenomes (*S. mediterranea* NC_022448.1, *Dugesia japonica* AB618487.1, *D. ryukyuensis* AB618488.1) were aligned to the sequence (`blastn -task dc-megablast`). Each hit was extended to the full length of the reference gene. Where at least two references hit, the boundary is the median of the projections; otherwise it is the union of the MITOS2 call and the projection. rRNAs were then trimmed so they do not overlap neighbouring genes. The two *Girardia* mitogenomes were not used: their 12S and 16S labels are swapped relative to the other planarian records.
+- **Start codons.** Protein-coding genes whose start codon is not ATG or GTG (the start codons of genetic code 9) were annotated as 5′ partial with the note "start codon not determined", as in the *S. mediterranea* and *Dugesia* records.
+- The GenBank submission file was built with table2asn 1.28 and checked with its validator and discrepancy report (rule `mito_table2asn`).
 
 **Validation** (rule `mito_qc`):
 - All 19,782 mitochondrial reads were mapped to the final sequence with minimap2, and depth was computed with samtools 1.22.1.
@@ -159,12 +163,17 @@ The mitochondrial genome is a circular molecule of 22,455 bp with 31.5% GC.
 
 The genome is therefore substantially longer than the two published *Girardia* mitogenomes (15.9 kb). The extra length is in non-coding regions.
 
-**Annotation.** MITOS2 identified:
-- all 12 protein-coding genes expected for flatworms (*atp8* is absent in Platyhelminthes)
-- *rrnL* and *rrnS* (*rrnS* in two fragments)
-- 19 of 22 tRNAs; *trnD*, *trnY* and *trnS1* were not found
+**Annotation.** The curated annotation contains:
+- all 12 protein-coding genes expected for flatworms (*atp8* is absent in Platyhelminthes). All 12 are open reading frames with no internal stop codons. *cox1* (ATT) and *nad5* (TTG) have no ATG or GTG start nearby and are annotated as 5′ partial.
+- *rrnS* (14,257–14,976; 720 bp) and *rrnL* (15,643–16,601; 959 bp). MITOS2 had split *rrnS* into two fragments and placed the start of *rrnL* about 280 bp too far downstream. All three Dugesiidae references agree on the *rrnL* ends; *rrnS* is supported by only one reference and its ends are less certain.
+- 21 of 22 tRNAs:
+  - 19 from MITOS2
+  - *trnD* (4,948–5,003) and *trnS1* (15,206–15,279), added from ARAGORN; both lie in gaps between other genes
+  - *trnR*, shortened from MITOS2's 103 bp to ARAGORN's 65 bp
 
-All genes are on one strand.
+  *trnY* was not found by MITOS2, ARAGORN (including its low-score mode) or tRNAscan-SE, nor by aligning the *trnY* genes of the reference mitogenomes.
+
+All genes are on one strand. table2asn reported no errors. Its only warnings concern the two 5′-partial genes.
 
 **Consensus stability.** A third Medaka round changed 12 substitutions and 12 indels (+14 bp). These changes, and most positions where < 80% of reads agree with the consensus, lie in two non-coding regions (~2.0–3.5 kb and ~12.0–12.5 kb). These regions share a 570 bp repeat (85% identity). Their sequence is less certain than the rest of the genome and may include length heteroplasmy.
 
@@ -194,6 +203,8 @@ The workflow (Snakefile, configuration and executor profile) is at https://githu
 - Donath A, Jühling F, Al-Arab M, et al. (2019). Improved annotation of protein-coding genes boundaries in metazoan mitochondrial genomes. *Nucleic Acids Res* 47:10543–10552. (MITOS2)
 - Camacho C, Coulouris G, Avagyan V, et al. (2009). BLAST+: architecture and applications. *BMC Bioinformatics* 10:421.
 - Filtlong, R. Wick, https://github.com/rrwick/Filtlong
+- Laslett D, Canbäck B (2004). ARAGORN, a program to detect tRNA genes and tmRNA genes in nucleotide sequences. *Nucleic Acids Res* 32:11–16.
+- Chan PP, Lin BY, Mak AJ, Lowe TM (2021). tRNAscan-SE 2.0: improved detection and functional classification of transfer RNA genes. *Nucleic Acids Res* 49:9077–9096.
 
 ---
 
@@ -215,4 +226,4 @@ The workflow (Snakefile, configuration and executor profile) is at https://githu
 - **Racon** had no measurable effect on BUSCO and can probably be dropped or described briefly.
 - **Ploidy and genotype mixture are unresolved.** The two read-depth peaks are at a ~1:4 ratio rather than the 1:2 expected for a diploid. The allele-frequency analysis could not separate real variants from ONT systematic error. A single-animal Illumina k-mer analysis (GenomeScope/Smudgeplot) would resolve this, if unused aliquots (10, 20, 30, 1 mg) are still at the UWBC.
 - **No genome-size estimate exists for *G. dorotocephala*.** Related species range from 0.78 to 1.56 Gb in assemblies, and *G. tigrina* has C-values of 1.40–1.88 pg.
-- **Mitochondrial annotation needs curation before GenBank submission.** MITOS2 did not find *trnD*, *trnY* or *trnS1*, split *rrnS* into two pieces and gave a short *rrnL* (~700 bp). Check tRNAs with ARWEN or tRNAscan-SE (organellar mode, flatworm code) and set rRNA boundaries by alignment to other triclad mitogenomes. Check volume and pages for Benítez-Álvarez et al. (published online 2022).
+- **Mitochondrial annotation.** *trnY* is still unannotated, and the *rrnS* ends rest on one reference. The submission template (`ncbi_submission/template.sbt`) lists N.J. Wheeler as the only author; update it before submission. Check volume and pages for Benítez-Álvarez et al. (published online 2022).
