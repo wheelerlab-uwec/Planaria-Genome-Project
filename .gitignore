@@ -26,3 +26,13 @@ ploidy_check/*.out
 ploidy_check/*.tsv
 ploidy_check/*.txt
 ploidy_check/*.png
+
+# One-off Dorado vs Medaka polish comparison: keep scripts only
+polish_test/*
+!polish_test/run_polish_test.sbatch
+!polish_test/contigs.txt
+
+# S. mediterranea BUSCO baseline: keep scripts only
+smed_baseline/*
+!smed_baseline/download.sh
+!smed_baseline/run_busco.sbatch

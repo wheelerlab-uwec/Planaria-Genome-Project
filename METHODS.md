@@ -124,6 +124,7 @@ The workflow (Snakefile, configuration and executor profile) is at https://githu
 ## References
 
 - Grohme MA, Schloissnig S, Rozanski A, et al. (2018). The genome of *Schmidtea mediterranea* and the evolution of core cellular mechanisms. *Nature* 554:56–61.
+- Ivanković M, Brand JN, Pandolfini L, et al. (2024). A comparative analysis of planarian genomes reveals regulatory conservation in the face of rapid structural divergence. *Nat Commun* 15:8215.
 - Kolmogorov M, Yuan J, Lin Y, Pevzner PA (2019). Assembly of long, error-prone reads using repeat graphs. *Nat Biotechnol* 37:540–546. (Flye)
 - Vaser R, Sović I, Nagarajan N, Šikić M (2017). Fast and accurate de novo genome assembly from long uncorrected reads. *Genome Res* 27:737–746. (Racon)
 - Li H (2018). Minimap2: pairwise alignment for nucleotide sequences. *Bioinformatics* 34:3094–3100.
@@ -137,7 +138,16 @@ The workflow (Snakefile, configuration and executor profile) is at https://githu
 ## Notes for revision (internal; not for publication)
 
 - **Medaka model mismatch.** Reads were basecalled with `sup@v4.3.0`, but Medaka used `r1041_e82_400bps_sup_g615`. If Medaka is rerun, use the model that matches v4.3.0. Medaka also ran on the CPU: Slurm job 349398 held a GPU for 2 d 13 h but did not use it.
-- **Residual frameshifts.** The share of BUSCO matches with internal stop codons (~33%) is the same after Flye, Racon and Medaka, so none of the long-read polishing removed the indel errors. Short-read polishing or re-basecalling would be needed before gene annotation.
+- **BUSCO internal stop codons are a method artifact, not assembly error.** About 33% of complete BUSCOs contain internal stop codons at every stage. Re-polishing a 164 Mb BUSCO-bearing subset with Dorado polish (sup@v4.3.0 model; `polish_test/`) gave the same BUSCO result as Medaka. The *S. mediterranea* references run through the same BUSCO setup (`smed_baseline/`) show an even higher rate:
+
+  | Reference | BUSCO C | S | D | M | Complete with internal stops |
+  |---|---|---|---|---|---|
+  | schMedS3h1 (HiFi + Illumina, chromosome-level) | 70.4% | 65.2% | 5.2% | 27.6% | 41.8% |
+  | ASM260089v1 (PacBio CLR, 2018) | 69.7% | 51.4% | 18.3% | 28.2% | 40.8% |
+
+  This is consistent with the stop-codon flag reflecting miniprot alignment on planarian genes, so it should not be read as a measure of base accuracy, and planarian BUSCO completeness tops out near 70%. A true base-level QV needs short reads (Merqury).
+
+  These reference numbers are our own runs; neither *S. mediterranea* genome paper reports a stop-codon rate (BUSCO v5.0, which they used, predates the miniprot-based count). Ivanković et al. (2024) do report that "transcriptome or gene model-based BUSCO scores were consistently better than genome-mode BUSCO assessments … indicating that the detection method used by BUSCO is sub-optimal for planarian genomes," and that the "comparatively high number of 'missing' BUSCOs reflects a high proportion of genuine gene losses in planarians." Their genome-mode scores for *S. polychroa*, *S. nova* and *S. lugubris* were 602, 592 and 597 complete of 954 (~62–63%; BUSCO v5.0.0, metazoa_odb10; their Fig. 3c). Grohme et al. (2018) did not use BUSCO.
 - **Residual duplication.** 12.1% of BUSCOs are still duplicated after purging. These may be divergent haplotigs or real gene copies; this has not been checked.
 - **Flye read mode.** `--nano-raw` was used. `--nano-hq` is the recommended mode for Q18 SUP reads. Rerunning Flye is not planned because of the ~28-day runtime.
 - **Racon** had no measurable effect on BUSCO and can probably be dropped or described briefly.
