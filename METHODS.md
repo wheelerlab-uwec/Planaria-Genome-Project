@@ -105,6 +105,19 @@ The Flye, Racon, Medaka and purged assemblies were each evaluated with:
 
 Reports were compiled with MultiQC 1.31.
 
+## Contamination screening
+
+The purged primary assembly was screened with NCBI's Foreign Contamination Screen tools (`ncbi_submission/screen/`), as NCBI does for genome submissions:
+- **FCS-adaptor** (`--euk`) screened for adaptor and vector sequence.
+- **FCS-GX 0.5.5** screened for foreign organisms (database build 2023-01-24, taxid 135777).
+
+The results were applied with `clean_assembly.py`:
+- **FCS-GX** flagged 7 contigs (79.3 kb) for removal. One was a 37.8 kb contig with bacteriophage hits, one an 18.3 kb contig with ciliate (*Paramecium*) hits, and five were 1.8–7.5 kb contigs with arthropod hits.
+- **FCS-adaptor** found Oxford Nanopore adaptor sequence at 37 contig ends (25–45 bp each), which was trimmed. It also found 8 internal adaptor spans in 6 contigs. Each contig was split at the adaptor, which was removed, because an internal adaptor marks a chimeric join; the resulting pieces were 1.7–292 kb.
+- 100 leading Ns on one contig, left by purging at a scaffold gap, were trimmed.
+
+The cleaned assembly has 21,046 sequences totalling 1,465,632,406 bp (N50 131.7 kb). Rescreening it with both tools found no adaptor or foreign sequence.
+
 ## Exploratory analysis of allele frequencies
 
 To investigate the two read-depth peaks, we computed allele frequencies with bcftools 1.22 / samtools 1.22.1. Reads came from Medaka's read alignment to the Racon-polished assembly (minimap2, primary alignments only).

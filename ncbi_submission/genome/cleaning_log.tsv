@@ -1,0 +1,68 @@
+# input: 21045 sequences, 1465713240 bp
+# output: 21046 sequences, 1465632406 bp
+# action	sequence	length	detail
+ADAPTOR	contig_43413_1	8333	removed 8298..8333
+EXCLUDE	contig_40356_1	4739	anml:insects; Camponotus floridanus
+ADAPTOR	contig_122037_1	75393	removed 75357..75393
+ADAPTOR	contig_104698_1	13271	removed 13241..13271
+ADAPTOR	contig_33420_1	22431	removed 22398..22431
+ADAPTOR	contig_34417_1	73651	removed 32591..32616
+SPLIT	contig_34417_1_s1	32590	piece 1 of 2
+SPLIT	contig_34417_1_s2	41035	piece 2 of 2
+ADAPTOR	contig_115434_1	15652	removed 15620..15652
+ADAPTOR	contig_56300_1	8913	removed 8890..8913
+ADAPTOR	contig_57067_1	7203	removed 7173..7203
+ADAPTOR	contig_84753_1	16456	removed 16422..16456
+ADAPTOR	contig_28059_1	269285	removed 1..28
+ADAPTOR	contig_110674_1	18403	removed 18361..18403
+ADAPTOR	contig_70170_1	6699	removed 6665..6699
+ADAPTOR	contig_118783_1	8991	removed 1..38
+ADAPTOR	contig_58403_1	10863	removed 10830..10863
+EXCLUDE	contig_69626_1	1770	anml:insects; Centruroides sculpturatus
+ADAPTOR	contig_121743_1	16579	removed 1..32
+ADAPTOR	contig_112983_1	26221	removed 26196..26221
+EXCLUDE	contig_99052_1	37836	virs:prokaryotic viruses; Microvirga alba
+EXCLUDE	contig_76876_1	4675	anml:insects; Dufourea novaeangliae
+ADAPTOR	contig_108654_1	51328	removed 1..37
+ADAPTOR	contig_106619_1	13485	removed 13453..13485
+ADAPTOR	contig_23252_1	367512	removed 1..32
+ADAPTOR	contig_122133_1	51910	removed 51878..51910
+ADAPTOR	contig_19682_1	64884	removed 52433..52459
+SPLIT	contig_19682_1_s1	52432	piece 1 of 2
+SPLIT	contig_19682_1_s2	12425	piece 2 of 2
+ADAPTOR	contig_81366_1	64228	removed 64193..64228
+ADAPTOR	contig_100263_1	58230	removed 58200..58230
+ADAPTOR	contig_113466_1	28674	removed 28642..28674
+ADAPTOR	contig_25634_1	330740	removed 292406..292432
+SPLIT	contig_25634_1_s1	292405	piece 1 of 2
+SPLIT	contig_25634_1_s2	38308	piece 2 of 2
+ADAPTOR	contig_2472_1	198821	removed 197096..197124
+SPLIT	contig_2472_1_s1	197095	piece 1 of 2
+SPLIT	contig_2472_1_s2	1697	piece 2 of 2
+ADAPTOR	contig_122530_1	19990	removed 19963..19990
+ADAPTOR	contig_98713_1	10722	removed 10690..10722
+ADAPTOR	contig_57152_1	138151	removed 4698..4723;8117..8142
+SPLIT	contig_57152_1_s1	4697	piece 1 of 3
+SPLIT	contig_57152_1_s2	3393	piece 2 of 3
+SPLIT	contig_57152_1_s3	130009	piece 3 of 3
+NTRIM	scaffold_65397_1	31961	trimmed 100 terminal N
+ADAPTOR	contig_33140_1	6233	removed 6196..6233
+ADAPTOR	contig_13231_1	14035	removed 14001..14035
+EXCLUDE	contig_121772_1	18331	prst:alveolates; Paramecium sonneborni
+ADAPTOR	contig_102836_1	8390	removed 8364..8390
+ADAPTOR	contig_46095_1	19053	removed 19027..19053
+ADAPTOR	contig_70_1	165569	removed 165534..165569
+ADAPTOR	contig_48486_1	100325	removed 17585..17618;21037..21061
+SPLIT	contig_48486_1_s1	17584	piece 1 of 3
+SPLIT	contig_48486_1_s2	3418	piece 2 of 3
+SPLIT	contig_48486_1_s3	79264	piece 3 of 3
+EXCLUDE	contig_79957_1	7516	anml:insects; Centruroides sculpturatus
+ADAPTOR	contig_121728_1	7352	removed 7323..7352
+ADAPTOR	contig_131591_1	80788	removed 80754..80788
+ADAPTOR	contig_109342_1	17604	removed 17573..17604
+ADAPTOR	contig_33225_1	16036	removed 16003..16036
+ADAPTOR	contig_32605_1	10671	removed 10635..10671
+EXCLUDE	contig_135993_1	4422	anml:insects; Pararge aegeria
+ADAPTOR	contig_28590_1	16971	removed 16941..16971
+ADAPTOR	contig_137953_1	69549	removed 69515..69549
+ADAPTOR	contig_5145_1	176907	removed 1..35

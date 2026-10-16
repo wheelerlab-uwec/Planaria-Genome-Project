@@ -43,3 +43,6 @@ snakemake/resources/
 # NCBI submission: keep scripts and metadata only
 ncbi_submission/**/*.out
 ncbi_submission/screen/results/
+ncbi_submission/genome/*.fsa
+ncbi_submission/genome/*.fasta
+ncbi_submission/genome/*.gz
