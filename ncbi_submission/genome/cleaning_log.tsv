@@ -1,5 +1,5 @@
 # input: 21045 sequences, 1465713240 bp
-# output: 21046 sequences, 1465632406 bp
+# output: 21035 sequences, 1465624171 bp
 # action	sequence	length	detail
 ADAPTOR	contig_43413_1	8333	removed 8298..8333
 EXCLUDE	contig_40356_1	4739	anml:insects; Camponotus floridanus
@@ -11,6 +11,7 @@ SPLIT	contig_34417_1_s1	32590	piece 1 of 2
 SPLIT	contig_34417_1_s2	41035	piece 2 of 2
 ADAPTOR	contig_115434_1	15652	removed 15620..15652
 ADAPTOR	contig_56300_1	8913	removed 8890..8913
+SHORT	contig_120114_1	784	piece dropped (< 1000 bp)
 ADAPTOR	contig_57067_1	7203	removed 7173..7203
 ADAPTOR	contig_84753_1	16456	removed 16422..16456
 ADAPTOR	contig_28059_1	269285	removed 1..28
@@ -27,11 +28,13 @@ ADAPTOR	contig_108654_1	51328	removed 1..37
 ADAPTOR	contig_106619_1	13485	removed 13453..13485
 ADAPTOR	contig_23252_1	367512	removed 1..32
 ADAPTOR	contig_122133_1	51910	removed 51878..51910
+SHORT	contig_44713_1	832	piece dropped (< 1000 bp)
 ADAPTOR	contig_19682_1	64884	removed 52433..52459
 SPLIT	contig_19682_1_s1	52432	piece 1 of 2
 SPLIT	contig_19682_1_s2	12425	piece 2 of 2
 ADAPTOR	contig_81366_1	64228	removed 64193..64228
 ADAPTOR	contig_100263_1	58230	removed 58200..58230
+SHORT	contig_76533_1	807	piece dropped (< 1000 bp)
 ADAPTOR	contig_113466_1	28674	removed 28642..28674
 ADAPTOR	contig_25634_1	330740	removed 292406..292432
 SPLIT	contig_25634_1_s1	292405	piece 1 of 2
@@ -66,3 +69,11 @@ EXCLUDE	contig_135993_1	4422	anml:insects; Pararge aegeria
 ADAPTOR	contig_28590_1	16971	removed 16941..16971
 ADAPTOR	contig_137953_1	69549	removed 69515..69549
 ADAPTOR	contig_5145_1	176907	removed 1..35
+SHORT	contig_6491_1	714	piece dropped (< 1000 bp)
+SHORT	contig_59744_1	517	piece dropped (< 1000 bp)
+SHORT	contig_3240_1	522	piece dropped (< 1000 bp)
+SHORT	contig_975_1	882	piece dropped (< 1000 bp)
+SHORT	contig_1426_1	606	piece dropped (< 1000 bp)
+SHORT	contig_756_1	960	piece dropped (< 1000 bp)
+SHORT	contig_64109_1	763	piece dropped (< 1000 bp)
+SHORT	contig_2594_1	848	piece dropped (< 1000 bp)

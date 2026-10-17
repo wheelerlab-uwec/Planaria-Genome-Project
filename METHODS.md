@@ -115,8 +115,9 @@ The results were applied with `clean_assembly.py`:
 - **FCS-GX** flagged 7 contigs (79.3 kb) for removal. One was a 37.8 kb contig with bacteriophage hits, one an 18.3 kb contig with ciliate (*Paramecium*) hits, and five were 1.8–7.5 kb contigs with arthropod hits.
 - **FCS-adaptor** found Oxford Nanopore adaptor sequence at 37 contig ends (25–45 bp each), which was trimmed. It also found 8 internal adaptor spans in 6 contigs. Each contig was split at the adaptor, which was removed, because an internal adaptor marks a chimeric join; the resulting pieces were 1.7–292 kb.
 - 100 leading Ns on one contig, left by purging at a scaffold gap, were trimmed.
+- 11 sequences shorter than 1 kb (517–999 bp; 8.2 kb in total) were removed, following the INSDC minimum sequence length that applies to genome submissions from 2027.
 
-The cleaned assembly has 21,046 sequences totalling 1,465,632,406 bp (N50 131.7 kb). Rescreening it with both tools found no adaptor or foreign sequence.
+The cleaned assembly has 21,035 sequences totalling 1,465,624,171 bp (N50 131.7 kb; shortest 1,037 bp). Rescreening it with both tools found no adaptor or foreign sequence. (The rescreen was run before the 1 kb filter; removing sequences cannot add contamination.)
 
 ## Exploratory analysis of allele frequencies
 

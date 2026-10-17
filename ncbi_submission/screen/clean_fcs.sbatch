@@ -5,7 +5,8 @@
 #SBATCH --mem=600G
 #SBATCH --time=1-00:00:00
 #SBATCH --output=fcs_clean-%j.out
-# Apply the FCS results (run_fcs.sbatch) to the purged primary assembly and
+# Apply the FCS results (run_fcs.sbatch) to the purged primary assembly (dropping
+# sequences under 1 kb, the INSDC minimum from 2027) and
 # rescreen the cleaned file with FCS-adaptor and FCS-GX to confirm it is clean.
 set -eo pipefail
 module load apptainer python-libs
@@ -21,7 +22,7 @@ mkdir -p $OUT $RES/recheck/adaptor $RES/recheck/gx
 python3 $SCR/clean_assembly.py --fasta $ASM \
     --gx-report $RES/gx/purged_assembly.135777.fcs_gx_report.txt \
     --adaptor-report $RES/adaptor/fcs_adaptor_report.txt \
-    --skipped-trims $RES/adaptor/skipped_trims.jsonl \
+    --skipped-trims $RES/adaptor/skipped_trims.jsonl --min-len 1000 \
     --out $OUT/Gdor_MA-C2_primary.fsa --contam-out $OUT/removed_contaminants.fasta \
     --log $OUT/cleaning_log.tsv
 head -3 $OUT/cleaning_log.tsv
