@@ -155,7 +155,7 @@ The monomer was kept.
 3. It was polished again with Medaka so that the original circle junction was polished in the interior of the sequence.
 
 **Annotation.** The genome was annotated with MITOS2 2.1.9 (RefSeq 89 Metazoa reference data, genetic code 9). The annotation was then curated (rules `mito_rrna`, `mito_trna`, `mito_feature_table`; `scripts/mito_feature_table.py`):
-- **tRNAs.** tRNAs were also predicted with ARAGORN 1.2.41 (`-mt -gc9 -c`) and tRNAscan-SE 2.0 (`-O`). A tRNA that MITOS2 missed was added from these predictions if it overlapped no protein-coding or rRNA gene, or other tRNA, by more than 10 bp. MITOS2 tRNAs longer than 90 bp were replaced by the overlapping ARAGORN prediction for the same tRNA.
+- **tRNAs.** tRNAs were also predicted with ARAGORN 1.2.41 (`-mt -gc9 -c`) and tRNAscan-SE 2.0 (`-O`). A tRNA that MITOS2 missed was added from these predictions if it overlapped no protein-coding or rRNA gene, or other tRNA, by more than 10 bp. MITOS2 tRNAs longer than 90 bp were replaced by the overlapping ARAGORN prediction for the same tRNA. A tRNA still missing after this was taken from a relaxed ARAGORN run (`-ps80`) only if it had the expected anticodon, lay on the same strand as the other genes and fell in a gap between genes; the highest-scoring such candidate was used.
 - **rRNAs.** The rRNA genes of three annotated Dugesiidae mitogenomes (*S. mediterranea* NC_022448.1, *Dugesia japonica* AB618487.1, *D. ryukyuensis* AB618488.1) were aligned to the sequence (`blastn -task dc-megablast`). Each hit was extended to the full length of the reference gene. Where at least two references hit, the boundary is the median of the projections; otherwise it is the union of the MITOS2 call and the projection. rRNAs were then trimmed so they do not overlap neighbouring genes. The two *Girardia* mitogenomes were not used: their 12S and 16S labels are swapped relative to the other planarian records.
 - **Start codons.** Protein-coding genes whose start codon is not ATG or GTG (the start codons of genetic code 9) were annotated as 5′ partial with the note "start codon not determined", as in the *S. mediterranea* and *Dugesia* records.
 - The GenBank submission file was built with table2asn 1.28 and checked with its validator and discrepancy report (rule `mito_table2asn`).
@@ -180,12 +180,11 @@ The genome is therefore substantially longer than the two published *Girardia* m
 **Annotation.** The curated annotation contains:
 - all 12 protein-coding genes expected for flatworms (*atp8* is absent in Platyhelminthes). All 12 are open reading frames with no internal stop codons. *cox1* (ATT) and *nad5* (TTG) have no ATG or GTG start nearby and are annotated as 5′ partial.
 - *rrnS* (14,257–14,976; 720 bp) and *rrnL* (15,643–16,601; 959 bp). MITOS2 had split *rrnS* into two fragments and placed the start of *rrnL* about 280 bp too far downstream. All three Dugesiidae references agree on the *rrnL* ends; *rrnS* is supported by only one reference and its ends are less certain.
-- 21 of 22 tRNAs:
+- all 22 tRNAs:
   - 19 from MITOS2
   - *trnD* (4,948–5,003) and *trnS1* (15,206–15,279), added from ARAGORN; both lie in gaps between other genes
+  - *trnY* (5,150–5,224; anticodon GTA), from the relaxed ARAGORN run. It lies in the gap between *trnD* and *trnL2* and folds into a complete cloverleaf, but was missed at the default threshold, by MITOS2 and by tRNAscan-SE, so it is the least certain tRNA.
   - *trnR*, shortened from MITOS2's 103 bp to ARAGORN's 65 bp
-
-  *trnY* was not found by MITOS2, ARAGORN (including its low-score mode) or tRNAscan-SE, nor by aligning the *trnY* genes of the reference mitogenomes.
 
 All genes are on one strand. table2asn reported no errors. Its only warnings concern the two 5′-partial genes.
 
@@ -240,4 +239,4 @@ The workflow (Snakefile, configuration and executor profile) is at https://githu
 - **Racon** had no measurable effect on BUSCO and can probably be dropped or described briefly.
 - **Ploidy and genotype mixture are unresolved.** The two read-depth peaks are at a ~1:4 ratio rather than the 1:2 expected for a diploid. The allele-frequency analysis could not separate real variants from ONT systematic error. A single-animal Illumina k-mer analysis (GenomeScope/Smudgeplot) would resolve this, if unused aliquots (10, 20, 30, 1 mg) are still at the UWBC.
 - **No genome-size estimate exists for *G. dorotocephala*.** Related species range from 0.78 to 1.56 Gb in assemblies, and *G. tigrina* has C-values of 1.40–1.88 pg.
-- **Mitochondrial annotation.** *trnY* is still unannotated, and the *rrnS* ends rest on one reference. The submission template (`ncbi_submission/template.sbt`) lists N.J. Wheeler as the only author; update it before submission. Check volume and pages for Benítez-Álvarez et al. (published online 2022).
+- **Mitochondrial annotation.** *trnY* comes from a relaxed ARAGORN search (added after GenBank flagged it as missing), and the *rrnS* ends rest on one reference. The submission template (`ncbi_submission/template.sbt`) lists N.J. Wheeler as the only author; update it before submission. Check volume and pages for Benítez-Álvarez et al. (published online 2022).

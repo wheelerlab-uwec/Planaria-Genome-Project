@@ -5,7 +5,10 @@ Sources:
 - protein-coding genes and tRNAs: MITOS2 (result.bed)
 - tRNAs that MITOS2 missed: ARAGORN (-mt) and tRNAscan-SE (-O), added only when
   the prediction does not overlap a protein-coding or rRNA gene, or another tRNA,
-  by more than --max-overlap bp
+  by more than --max-overlap bp. Any tRNA still missing after that is taken
+  from a relaxed ARAGORN run (--aragorn-relaxed; -ps80), only if it has the
+  expected anticodon, lies on the same strand as the other genes and sits in
+  a gap between genes
 - rRNA boundaries: scripts/mito_rrna.py (reference-projected, median over
   references), merged with the MITOS2 calls and trimmed so they do not run into
   neighbouring genes
@@ -87,15 +90,16 @@ def parse_aragorn(path):
     """ARAGORN -w output lines such as '1   tRNA-Asp   c[1234,1300]   34   (gtc)'."""
     out = []
     for line in open(path):
-        m = re.match(r"\s*\d+\s+m?tRNA-(\w+)\s+(c?)\[(-?\d+),(\d+)\]\s+\S+\s+\((\w+)\)", line)
+        m = re.match(r"\s*\d+\s+m?tRNA-(\w+)\s+(c?)\[(-?\d+),(\d+)\]\s+(\S+)\s+\((\w+)\)", line)
         if not m:
             continue
-        aa3, comp, s, e, ac = m.groups()
+        aa3, comp, s, e, score, ac = m.groups()
         aa = AA1.get(aa3.upper()[:3])
         if not aa:
             continue
         out.append(dict(s=int(s), e=int(e), strand="-" if comp else "+",
-                        label=trna_label(aa, ac), anticodon=ac.lower(), source="ARAGORN"))
+                        label=trna_label(aa, ac), anticodon=ac.lower(), source="ARAGORN",
+                        score=float(score)))
     return out
 
 
@@ -124,6 +128,7 @@ def main():
     ap.add_argument("--rrna", required=True)
     ap.add_argument("--aragorn", required=True)
     ap.add_argument("--trnascan", required=True)
+    ap.add_argument("--aragorn-relaxed", help="ARAGORN -w output at a relaxed score threshold")
     ap.add_argument("--locus-prefix", required=True)
     ap.add_argument("--max-overlap", type=int, default=10)
     ap.add_argument("--max-trna-len", type=int, default=90)
@@ -222,6 +227,32 @@ def main():
                 added = True
             else:
                 report.append(f"  {lab}: also predicted {desc}")
+
+    # last resort for tRNAs still missing: relaxed ARAGORN, expected anticodon only
+    expected_ac = {"A": "tgc", "C": "gca", "D": "gtc", "E": "ttc", "F": "gaa", "G": "tcc", "H": "gtg",
+                   "I": "gat", "K": "ctt", "L1": "tag", "L2": "taa", "M": "cat", "N": "gtt", "P": "tgg",
+                   "Q": "ttg", "R": "tcg", "S1": "tct", "S2": "tga", "T": "tgt", "V": "tac", "W": "tca",
+                   "Y": "gta"}
+    still = [x for x in EXPECTED if x not in {t["label"] for t in trna}]
+    if still and a.aragorn_relaxed:
+        main_strand = max("+-", key=lambda s: sum(1 for x in pcg if x["strand"] == s))
+        relaxed = parse_aragorn(a.aragorn_relaxed)
+        for lab in still:
+            cands = [c for c in relaxed if c["label"] == lab and c["anticodon"] == expected_ac[lab]
+                     and c["strand"] == main_strand]
+            best = None
+            for c in sorted(cands, key=lambda c: -c["score"]):
+                cov = span(c["s"], c["e"], n)
+                if len(cov & occupied_strict) or len(cov & occupied_trna) > a.max_overlap:
+                    continue
+                best = best or c
+            if best:
+                best["source"] = "ARAGORN (relaxed, -ps80)"
+                trna.append(best)
+                occupied_trna |= span(best["s"], best["e"], n)
+                report.append(f"  {lab}: added from relaxed ARAGORN {best['s']}-{best['e']} ({best['strand']}) anticodon {best['anticodon']}")
+            else:
+                report.append(f"  {lab}: no relaxed ARAGORN candidate with anticodon {expected_ac[lab]} in a gap")
 
     feats = []
     for x in pcg:

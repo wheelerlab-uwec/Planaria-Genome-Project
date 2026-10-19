@@ -433,6 +433,7 @@ rule mito_trna:
         f"{MITO}/mito_genome.fasta"
     output:
         aragorn = f"{MITO}/curation/aragorn.txt",
+        aragorn_relaxed = f"{MITO}/curation/aragorn_ps80.txt",
         trnascan = f"{MITO}/curation/trnascan.txt",
         structs = f"{MITO}/curation/trnascan_structures.txt"
     params:
@@ -442,6 +443,8 @@ rule mito_trna:
     shell:
         """
         conda run -n mito-annot-env aragorn -t -mt -gc{params.code} -c -w -o {output.aragorn} {input} 2> {log}
+        # relaxed threshold, used only for tRNAs found nowhere else
+        conda run -n mito-annot-env aragorn -t -mt -gc{params.code} -c -ps80 -w -o {output.aragorn_relaxed} {input} 2>> {log}
         conda run -n mito-annot-env tRNAscan-SE -O -q --forceow -o {output.trnascan} -f {output.structs} {input} >> {log} 2>&1
         """
 
@@ -452,6 +455,7 @@ rule mito_feature_table:
         bed = f"{MITO}/mitos/result.bed",
         rrna = f"{MITO}/curation/rrna_bounds.tsv",
         aragorn = f"{MITO}/curation/aragorn.txt",
+        aragorn_relaxed = f"{MITO}/curation/aragorn_ps80.txt",
         trnascan = f"{MITO}/curation/trnascan.txt"
     output:
         tbl = f"{MITO_SUB}/mito.tbl",
@@ -466,7 +470,7 @@ rule mito_feature_table:
         """
         python scripts/mito_feature_table.py --fasta {input.fasta} --seqid {params.seqid} \
                --mitos-bed {input.bed} --rrna {input.rrna} --aragorn {input.aragorn} \
-               --trnascan {input.trnascan} --locus-prefix {params.prefix} --protein-db {params.protein_db} \
+               --trnascan {input.trnascan} --aragorn-relaxed {input.aragorn_relaxed} --locus-prefix {params.prefix} --protein-db {params.protein_db} \
                --tbl {output.tbl} --report {output.report} 2> {log}
         """
 
