@@ -1,0 +1,15 @@
+# braker-env: BRAKER3 only (it cannot share planaria-env, which is on Python 3.12).
+#   mamba env create -n braker-env -f envs/braker.yaml
+# GeneMark-ETP is not on bioconda; it is cloned into the env (commit 8b3dbc2,
+# Apr 2025; CC BY-NC-SA 4.0) and put on PATH by an activation script:
+#   git clone --depth 1 https://github.com/gatech-genemark/GeneMark-ETP.git \
+#       $CONDA_PREFIX/share/genemark-etp
+#   $CONDA_PREFIX/etc/conda/activate.d/genemark-etp.sh exports
+#       GENEMARK_PATH=$CONDA_PREFIX/share/genemark-etp/bin and adds its bin/ and
+#       tools/ to PATH (deactivate.d restores PATH)
+#   cd $CONDA_PREFIX/share/genemark-etp && perl check_install.pl   # passes
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - braker3=3.0.8

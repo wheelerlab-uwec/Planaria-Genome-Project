@@ -56,6 +56,11 @@ rule all:
         "results/annotation/repeats/repeat_landscape.html",
         "results/annotation/rnaseq/rnaseq_merged.bam",
         "results/annotation/rnaseq/mapping_summary.tsv",
+        "results/annotation/genes/gene_stats.tsv",
+        "results/annotation/genes/busco/short_summary.txt",
+        "results/annotation/genes/omark/proteins.sum",
+        "results/annotation/genes/eggnog/Gdor.emapper.annotations",
+        "results/annotation/genes/interproscan/Gdor.interproscan.tsv",
 
 rule combine_reads:
     input:
@@ -564,3 +569,4 @@ rule report:
 
 include: "rules/mito.smk"
 include: "rules/annotation.smk"
+include: "rules/annotation_genes.smk"
