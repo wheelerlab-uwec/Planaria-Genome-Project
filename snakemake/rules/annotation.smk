@@ -164,7 +164,9 @@ rule star_index:
 
 
 rule star_align:
-    # Two-pass mapping; intronMotif strand tags are what BRAKER/GeneMark expect
+    # Two-pass mapping; intronMotif strand tags are what BRAKER/GeneMark expect.
+    # BAM sorting opens threads x 50 temporary files, more than the default
+    # 1,024 open-file limit on the compute nodes, so the soft limit is raised.
     input:
         index = f"{ANN}/rnaseq/star_index",
         r1 = f"{ANN}/rnaseq/trimmed/{{run}}_1.fastq.gz",
@@ -182,6 +184,8 @@ rule star_align:
         "logs/star_align/{run}.log"
     shell:
         """
+        ulimit -n 16384
+        rm -rf {params.prefix}_STARtmp
         STAR --runThreadN {threads} --genomeDir {input.index} \
              --readFilesIn {input.r1} {input.r2} --readFilesCommand zcat \
              --twopassMode Basic --outSAMtype BAM SortedByCoordinate \

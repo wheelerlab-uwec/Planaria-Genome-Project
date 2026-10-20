@@ -194,7 +194,7 @@ All genes are on one strand. table2asn reported no errors. Its only warnings con
 
 ## Data availability
 
-The project is registered at NCBI as BioProject PRJNA1545025, and the sequenced sample as BioSample SAMN64250158. The locus_tag prefix is ADAYWY. This Whole Genome Shotgun project has been deposited at DDBJ/ENA/GenBank under the accession JCFHDI000000000; the version described here is JCFHDI010000000. Accessions for the raw reads (SRA) and the mitochondrial genome are pending. All records stay private until publication.
+The project is registered at NCBI as BioProject PRJNA1545025, and the sequenced sample as BioSample SAMN64250158. The locus_tag prefix is ADAYWY. This Whole Genome Shotgun project has been deposited at DDBJ/ENA/GenBank under the accession JCFHDI000000000; the version described here is JCFHDI010000000. The mitochondrial genome is GenBank QB207629. Accessions for the raw reads (SRA) are pending. All records stay private until publication.
 
 ## Code availability
 
