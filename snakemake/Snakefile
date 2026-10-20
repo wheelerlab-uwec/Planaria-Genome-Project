@@ -51,6 +51,12 @@ rule all:
         "results/mito/curation/curation_report.txt",
         "results/mito/submission/mito.sqn",
 
+        # Nuclear annotation (rules/annotation.smk)
+        "results/annotation/repeats/genome.fa.masked",
+        "results/annotation/repeats/repeat_landscape.html",
+        "results/annotation/rnaseq/rnaseq_merged.bam",
+        "results/annotation/rnaseq/mapping_summary.tsv",
+
 rule combine_reads:
     input:
         list_fastqs(FC1) + list_fastqs(FC2)
@@ -557,3 +563,4 @@ rule report:
 
 
 include: "rules/mito.smk"
+include: "rules/annotation.smk"

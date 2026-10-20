@@ -80,3 +80,15 @@ ncbi:
   template: "../ncbi_submission/template.sbt"
   organism: "Girardia dorotocephala"
   isolate: "MA-C2"
+
+annotation:
+  # Cleaned primary assembly as submitted to NCBI (WGS JCFHDI000000000)
+  genome: "../ncbi_submission/genome/Gdor_MA-C2_primary.fsa"
+  # MA-C2 RNA-seq from PRJNA317859 (Almazan et al. 2018); run: sample
+  rnaseq:
+    SRR3479052: "intact"
+    SRR3479045: "1dpa"
+    SRR3479046: "4dpa"
+    SRR3479048: "auricle"
+  # Longest intron / mate gap allowed in STAR alignments
+  max_intron: 100000
