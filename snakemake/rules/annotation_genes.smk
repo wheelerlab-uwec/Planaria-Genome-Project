@@ -41,17 +41,32 @@ rule annot_db_omark:
 
 
 rule annot_db_eggnog:
+    # Direct download: download_eggnog_data.py (2.1.15) still points at
+    # eggnogdb.embl.de, which no longer resolves
     output:
         db = f"{ADB}/eggnog/eggnog.db",
+        taxa = f"{ADB}/eggnog/eggnog.taxa.db",
         dmnd = f"{ADB}/eggnog/eggnog_proteins.dmnd"
     params:
-        outdir = f"{ADB}/eggnog"
+        outdir = f"{ADB}/eggnog",
+        url = config["annotation"]["eggnog_url"]
+    threads: 4
     resources:
         mem_mb = 8000
     log:
         "logs/annot_db_eggnog/run.log"
     shell:
-        "download_eggnog_data.py -y --data_dir {params.outdir} > {log} 2>&1"
+        """
+        cd {params.outdir}
+        rm -f eggnog.db.gz eggnog.taxa.tar.gz eggnog_proteins.dmnd.gz
+        log=$(readlink -f ../../../{log})
+        for f in eggnog.db.gz eggnog.taxa.tar.gz eggnog_proteins.dmnd.gz; do
+            curl -sSfL --retry 5 -o $f {params.url}/$f 2>> $log
+        done
+        pigz -d -p {threads} eggnog.db.gz eggnog_proteins.dmnd.gz
+        tar -xzf eggnog.taxa.tar.gz && rm eggnog.taxa.tar.gz
+        ls -l >> $log
+        """
 
 
 rule annot_db_interproscan:

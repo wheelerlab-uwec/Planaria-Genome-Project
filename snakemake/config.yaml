@@ -97,3 +97,4 @@ annotation:
   orthodb_url: "https://bioinf.uni-greifswald.de/bioinf/partitioned_odb12/Metazoa.fa.gz"
   omark_db_url: "https://omabrowser.org/All/LUCA.h5"
   interproscan_version: "5.78-109.0"
+  eggnog_url: "http://eggnog5.embl.de/download/emapperdb-5.0.2"
