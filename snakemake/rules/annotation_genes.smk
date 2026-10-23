@@ -129,6 +129,7 @@ rule braker3:
             braker.pl --genome=$genome --bam=$bam --prot_seq=$prot \
                       --species={params.species} --threads={threads} --gff3 \
                       --GENEMARK_PATH=\\$GENEMARK_PATH \
+                      --PROTHINT_PATH=\\$PROTHINT_PATH \
                       --AUGUSTUS_CONFIG_PATH=$wd/augustus_config --workingdir=$wd
         " > {log} 2>&1
         """

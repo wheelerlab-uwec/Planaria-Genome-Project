@@ -5,11 +5,16 @@
 #   git clone --depth 1 https://github.com/gatech-genemark/GeneMark-ETP.git \
 #       $CONDA_PREFIX/share/genemark-etp
 #   $CONDA_PREFIX/etc/conda/activate.d/genemark-etp.sh exports
-#       GENEMARK_PATH=$CONDA_PREFIX/share/genemark-etp/bin and adds its bin/ and
-#       tools/ to PATH (deactivate.d restores PATH)
+#       GENEMARK_PATH=$CONDA_PREFIX/share/genemark-etp/bin and
+#       PROTHINT_PATH=$CONDA_PREFIX/share/genemark-etp/bin/gmes/ProtHint/bin (ProtHint
+#       ships inside GeneMark-ETP), and adds bin/, tools/ and ProtHint to PATH
+#       (deactivate.d restores PATH)
 #   cd $CONDA_PREFIX/share/genemark-etp && perl check_install.pl   # passes
 channels:
   - conda-forge
   - bioconda
 dependencies:
   - braker3=3.0.8
+  # bioconda AUGUSTUS 3.5.0 is linked against Boost 1.85; without this pin the
+  # solver can pull Boost 1.73 from defaults and augustus will not start
+  - libboost=1.85
