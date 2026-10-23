@@ -94,7 +94,7 @@ rule repeat_landscape:
         "logs/repeat_landscape/run.log"
     shell:
         """
-        export PERL5LIB="$(dirname $(readlink -f $(which RepeatMasker)))/../share/RepeatMasker${{PERL5LIB:+:$PERL5LIB}}"
+        export PERL5LIB="$(dirname $(readlink -f $(which RepeatMasker)))${{PERL5LIB:+:$PERL5LIB}}"
         calcDivergenceFromAlign.pl -s {output.divsum} {input.align} > {log} 2>&1
         size=$(awk '{{s+=$2}} END{{print s}}' {input.fai})
         createRepeatLandscape.pl -div {output.divsum} -g $size > {output.html} 2>> {log}
