@@ -79,7 +79,9 @@ rule repeatmasker:
 
 
 rule repeat_landscape:
-    # Kimura divergence summary and landscape plot (HTML)
+    # Kimura divergence summary and landscape plot (HTML). The bioconda
+    # wrappers for these scripts cannot find RepeatMaskerConfig.pm, so
+    # RepeatMasker's share directory is added to PERL5LIB.
     input:
         align = f"{ANN}/repeats/genome.fa.align",
         fai = f"{ANN}/genome/genome.fa.fai"
@@ -92,6 +94,7 @@ rule repeat_landscape:
         "logs/repeat_landscape/run.log"
     shell:
         """
+        export PERL5LIB="$(dirname $(readlink -f $(which RepeatMasker)))/../share/RepeatMasker${{PERL5LIB:+:$PERL5LIB}}"
         calcDivergenceFromAlign.pl -s {output.divsum} {input.align} > {log} 2>&1
         size=$(awk '{{s+=$2}} END{{print s}}' {input.fai})
         createRepeatLandscape.pl -div {output.divsum} -g $size > {output.html} 2>> {log}
