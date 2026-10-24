@@ -115,17 +115,23 @@ rule braker3:
     resources:
         partition = "month",
         mem_mb = 200000
+    # No automatic retry: a failed BRAKER run is diagnosed and restarted by
+    # hand, and an earlier version of this rule deleted the working directory
+    # (including the trained models) at the start of each attempt.
+    retries: 0
     log:
         "logs/braker3/run.log"
     shell:
-        # A private copy of the AUGUSTUS config keeps training files out of the env
+        # A private copy of the AUGUSTUS config keeps training files out of the
+        # env. An existing working directory is kept, not deleted; a fresh run
+        # needs it moved aside first.
         """
-        rm -rf {params.workdir} && mkdir -p {params.workdir}
+        mkdir -p {params.workdir}
         genome=$(readlink -f {input.genome}); bam=$(readlink -f {input.bam})
         prot=$(readlink -f {input.prot}); wd=$(readlink -f {params.workdir})
         conda run -n braker-env bash -c "
             set -e
-            cp -r \\$CONDA_PREFIX/config $wd/augustus_config
+            [ -d $wd/augustus_config ] || cp -r \\$CONDA_PREFIX/config $wd/augustus_config
             braker.pl --genome=$genome --bam=$bam --prot_seq=$prot \
                       --species={params.species} --threads={threads} --gff3 \
                       --GENEMARK_PATH=\\$GENEMARK_PATH \
