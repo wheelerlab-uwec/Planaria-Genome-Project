@@ -100,3 +100,5 @@ annotation:
   omark_db_url: "https://omabrowser.org/All.May2026/LUCA.h5"
   interproscan_version: "5.78-109.0"
   eggnog_url: "http://eggnog5.embl.de/download/emapperdb-5.0.2"
+  # UniProtKB release for Swiss-Prot product names (rules/annotation_ncbi.smk)
+  swissprot_release: "2026_03"

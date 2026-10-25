@@ -1,15 +1,62 @@
 # Nuclear genome annotation, part 3: GenBank submission files for the
 # annotation of WGS JCFHDI000000000 (same contigs as the submitted FASTA).
-# Products come from eggNOG; BRAKER models are given ADAYWY locus tags and NCBI
-# ids, and table2asn builds the .sqn with validation (.val) and discrepancy
+# Product names follow the International Protein Nomenclature Guidelines:
+# Swiss-Prot names of eggNOG orthologs, then eggNOG protein names, then InterPro
+# family and domain names, else "hypothetical protein" (see
+# scripts/annot_ncbi_products.py). BRAKER models are given ADAYWY locus tags and
+# NCBI ids, and table2asn builds the .sqn with validation (.val) and discrepancy
 # (.dr) reports. Everything runs from planaria-env.
 
 NCBI_ANN = f"{ANN}/ncbi"
+IPR_RELEASE = config["annotation"]["interproscan_version"].split("-")[1]
+
+
+rule annot_db_swissprot_names:
+    # Reviewed metazoan UniProtKB entries: gene symbol -> protein name. The REST
+    # API only serves the current release, so the rule stops if it is not the
+    # release in config.
+    output:
+        f"{ADB}/uniprot/swissprot_metazoa_names.tsv"
+    params:
+        release = config["annotation"]["swissprot_release"],
+        url = ("https://rest.uniprot.org/uniprotkb/stream?query=(reviewed:true)"
+               "+AND+(taxonomy_id:33208)&fields=accession,gene_primary,"
+               "protein_name,organism_id&format=tsv&compressed=true")
+    resources:
+        mem_mb = 4000
+    log:
+        "logs/annot_db_swissprot_names/run.log"
+    shell:
+        """
+        curl -sSfL -D {output}.headers "{params.url}" 2> {log} | gunzip -c > {output}
+        grep -i "x-uniprot-release:" {output}.headers | tee -a {log} | grep -q "{params.release}" \
+            || {{ echo "UniProt release is not {params.release}" >> {log}; rm {output}; exit 1; }}
+        rm {output}.headers
+        """
+
+
+rule annot_db_interpro_entries:
+    # InterPro entry types (Family, Domain, Repeat, ...) for the release that
+    # InterProScan uses
+    output:
+        f"{ADB}/interpro/entry.list"
+    params:
+        url = f"https://ftp.ebi.ac.uk/pub/databases/interpro/releases/{IPR_RELEASE}/entry.list"
+    log:
+        "logs/annot_db_interpro_entries/run.log"
+    shell:
+        """
+        curl -sSfL -o {output} {params.url} 2> {log}
+        """
 
 
 rule annot_ncbi_products:
     input:
+        script = "scripts/annot_ncbi_products.py",
         eggnog = f"{GENES}/eggnog/Gdor.emapper.annotations",
+        sprot = f"{ADB}/uniprot/swissprot_metazoa_names.tsv",
+        ipr = f"{GENES}/interproscan/Gdor.interproscan.tsv",
+        entries = f"{ADB}/interpro/entry.list",
         gff = f"{GENES}/braker/braker.gff3"
     output:
         f"{NCBI_ANN}/products.tsv"
@@ -17,7 +64,8 @@ rule annot_ncbi_products:
         "logs/annot_ncbi_products/run.log"
     shell:
         """
-        python scripts/annot_ncbi_products.py {input.eggnog} {input.gff} {output} 2> {log}
+        python {input.script} {input.eggnog} {input.sprot} {input.ipr} \
+               {input.entries} {input.gff} {output} 2> {log}
         """
 
 
@@ -25,6 +73,7 @@ rule annot_ncbi_gff:
     # Locus tags, NCBI ids and partial ends; drops proteins < 30 aa and
     # incomplete models that do not reach a contig end
     input:
+        script = "scripts/annot_ncbi_gff.py",
         gff = f"{GENES}/braker/braker.gff3",
         products = f"{NCBI_ANN}/products.tsv",
         genome = config["annotation"]["genome"]
@@ -40,7 +89,7 @@ rule annot_ncbi_gff:
     shell:
         """
         seqkit fx2tab -nl {input.genome} > {output.lengths} 2> {log}
-        python scripts/annot_ncbi_gff.py {input.gff} {input.products} {params.prefix} \
+        python {input.script} {input.gff} {input.products} {params.prefix} \
                {params.db} {output.lengths} {output.gff} {output.tags} 30 2>> {log}
         """
 
