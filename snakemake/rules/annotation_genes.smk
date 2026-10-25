@@ -204,11 +204,15 @@ rule annot_omark:
         mem_mb = 64000
     log:
         "logs/annot_omark/run.log"
+    # omark-env (envs/omark.yaml): OMArk 0.5.0 does not solve into planaria-env
     shell:
         """
-        omamer search --db {input.db} --query {input.faa} --out {output.omamer} \
-                      --nthreads {threads} > {log} 2>&1
-        omark -f {output.omamer} -d {input.db} -o {params.outdir} >> {log} 2>&1
+        conda run -n omark-env bash -c "
+            set -e
+            omamer search --db {input.db} --query {input.faa} --out {output.omamer} \
+                          --nthreads {threads}
+            omark -f {output.omamer} -d {input.db} -o {params.outdir}
+        " > {log} 2>&1
         """
 
 
