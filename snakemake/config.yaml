@@ -95,6 +95,8 @@ annotation:
   # Gene prediction and function (rules/annotation_genes.smk)
   braker_species: "Gdor_MAC2"
   orthodb_url: "https://bioinf.uni-greifswald.de/bioinf/partitioned_odb12/Metazoa.fa.gz"
-  omark_db_url: "https://omabrowser.org/All/LUCA.h5"
+  # OMA All.May2026 release (OMAmer 2.1.0 format; Zenodo record 20814376).
+  # The unversioned All/LUCA.h5 link always serves the newest release.
+  omark_db_url: "https://omabrowser.org/All.May2026/LUCA.h5"
   interproscan_version: "5.78-109.0"
   eggnog_url: "http://eggnog5.embl.de/download/emapperdb-5.0.2"

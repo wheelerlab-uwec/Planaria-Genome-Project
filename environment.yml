@@ -54,13 +54,13 @@ dependencies:
   - bzip2=1.0.8=hda65f42_8
   - c-ares=1.34.5=hb9d3cd8_0
   - c-blosc2=2.17.1=h4257ac4_0
-  - ca-certificates=2026.10.19=hbd8a1cb_0
+  - ca-certificates=2026.10.23=hbd8a1cb_0
   - cached-property=1.5.2=hd8ed1ab_1
   - cached_property=1.5.2=pyha770c72_1
   - cairo=1.18.4=h3394656_0
   - cd-hit=4.8.1=h5ca1c30_13
   - cdbtools=0.99=h077b44d_12
-  - certifi=2026.10.19=pyhd8ed1ab_0
+  - certifi=2026.10.23=pyhd8ed1ab_0
   - cffi=2.0.0=py312h35888ee_0
   - charset-normalizer=3.4.4=pyhd8ed1ab_0
   - circos=0.69.9=hdfd78af_0
@@ -125,6 +125,7 @@ dependencies:
   - genometools-genometools=1.6.5=py312h16aaebc_2
   - gettext=0.25.1=h3f43e3d_1
   - gettext-tools=0.25.1=h3f43e3d_1
+  - gffread=0.12.9=hf426362_0
   - gflags=2.2.2=h5888daf_1005
   - gfortran_impl_linux-64=15.2.0=h1b0a18f_7
   - giflib=5.2.2=hd590300_0
@@ -159,6 +160,7 @@ dependencies:
   - immutables=0.21=py312h4c3975b_2
   - importlib-metadata=8.7.0=pyhe01879c_1
   - importlib_metadata=8.7.0=h40b2b14_1
+  - infernal=1.1.5=pl5321h7b50bb2_4
   - iniconfig=2.3.0=pyhd8ed1ab_0
   - intervaltree=3.1.0=pyhd8ed1ab_1
   - ipykernel=7.1.0=pyha191276_0
@@ -298,7 +300,7 @@ dependencies:
   - libxml2=2.15.1=h26afc86_0
   - libxml2-16=2.15.1=ha9997c6_0
   - libxslt=1.1.43=h711ed8c_1
-  - libzlib=1.3.1=hb9d3cd8_2
+  - libzlib=1.3.2=h25fd6f3_3
   - links=2.0.1=h4ac6f70_5
   - llvmlite=0.45.1=py312h7424e68_0
   - logmuse=0.2.8=pyhd8ed1ab_1
@@ -657,6 +659,7 @@ dependencies:
   - suitesparse=7.10.1=h5b2951e_7100101
   - sympy=1.14.0=pyh2585a3b_105
   - sysroot_linux-64=2.28=h4ee821c_8
+  - table2asn=1.28.1179=he45da00_1
   - tabulate=0.9.0=pyhd8ed1ab_2
   - tar=1.35=h3b78370_0
   - tbb=2022.2.0=hb60516a_1
@@ -673,6 +676,7 @@ dependencies:
   - tqdm=4.67.1=pyhd8ed1ab_1
   - traitlets=5.14.3=pyhd8ed1ab_1
   - trf=4.10.0rc2=h7b50bb2_0
+  - trnascan-se=2.0.13=pl5321hab16a5f_0
   - typeguard=4.4.4=pyhd8ed1ab_0
   - typer=0.20.0=pyhefaf540_1
   - typer-slim=0.20.0=pyhcf101f3_1
@@ -731,7 +735,7 @@ dependencies:
   - zarr=3.1.3=pyhcf101f3_0
   - zeromq=4.3.5=h387f397_9
   - zipp=3.23.0=pyhd8ed1ab_0
-  - zlib=1.3.1=hb9d3cd8_2
+  - zlib=1.3.2=h25fd6f3_3
   - zlib-ng=2.0.7=h0b41bf4_0
   - zstandard=0.25.0=py312h5253ce2_0
   - zstd=1.5.7=hb8e6e7a_2

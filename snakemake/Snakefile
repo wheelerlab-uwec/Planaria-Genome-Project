@@ -61,6 +61,7 @@ rule all:
         "results/annotation/genes/omark/proteins.sum",
         "results/annotation/genes/eggnog/Gdor.emapper.annotations",
         "results/annotation/genes/interproscan/Gdor.interproscan.tsv",
+        "results/annotation/ncbi/Gdor.sqn",
 
 rule combine_reads:
     input:
@@ -570,3 +571,4 @@ rule report:
 include: "rules/mito.smk"
 include: "rules/annotation.smk"
 include: "rules/annotation_genes.smk"
+include: "rules/annotation_ncbi.smk"

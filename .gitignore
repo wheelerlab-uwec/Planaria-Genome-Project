@@ -17,6 +17,8 @@ snakemake/dag.pdf
 snakemake/multiqc_data/
 snakemake/multiqc_report.html
 snakemake/reads/
+# NCBI taxonomy dump fetched by ete3 (OMArk)
+snakemake/taxdump.tar.gz
 
 # stray outputs
 /-/
