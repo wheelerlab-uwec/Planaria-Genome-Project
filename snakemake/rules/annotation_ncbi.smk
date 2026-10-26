@@ -4,8 +4,10 @@
 # Swiss-Prot names of eggNOG orthologs, then eggNOG protein names, then InterPro
 # family and domain names, else "hypothetical protein" (see
 # scripts/annot_ncbi_products.py). BRAKER models are given ADAYWY locus tags and
-# NCBI ids, and table2asn builds the .sqn with validation (.val) and discrepancy
-# (.dr) reports. Everything runs from planaria-env.
+# NCBI ids, tRNAscan-SE adds the high-confidence tRNA genes, and table2asn
+# builds the .sqn with validation (.val) and discrepancy (.dr) reports.
+# Everything runs from planaria-env except table2asn, which is NCBI's prebuilt
+# binary (annot_db_table2asn).
 
 NCBI_ANN = f"{ANN}/ncbi"
 IPR_RELEASE = config["annotation"]["interproscan_version"].split("-")[1]
@@ -50,6 +52,25 @@ rule annot_db_interpro_entries:
         """
 
 
+rule annot_db_table2asn:
+    # Dated NCBI release, checked against the SHA-256 in config
+    output:
+        f"{ADB}/table2asn/{config['ncbi']['table2asn_release']}/table2asn"
+    params:
+        url = ("https://ftp.ncbi.nlm.nih.gov/asn1-converters/versions/"
+               f"{config['ncbi']['table2asn_release']}/by_program/table2asn/linux64.table2asn.gz"),
+        sha256 = config["ncbi"]["table2asn_sha256"]
+    log:
+        "logs/annot_db_table2asn/run.log"
+    shell:
+        """
+        curl -sSfL -o {output}.gz {params.url} 2> {log}
+        echo "{params.sha256}  {output}.gz" | sha256sum -c >> {log} 2>&1
+        gunzip -c {output}.gz > {output} && rm {output}.gz && chmod +x {output}
+        {output} -version >> {log} 2>&1
+        """
+
+
 rule annot_ncbi_products:
     input:
         script = "scripts/annot_ncbi_products.py",
@@ -69,13 +90,43 @@ rule annot_ncbi_products:
         """
 
 
+rule annot_trnascan:
+    # Eukaryotic tRNA search on the submitted genome (unmasked: RepeatMasker
+    # masks many tRNAs), then EukHighConfidenceFilter removes the pseudogenes
+    # and tRNA-derived repeats (it needs the model score breakdown from -H)
+    input:
+        genome = config["annotation"]["genome"]
+    output:
+        raw = f"{NCBI_ANN}/trnascan/trnascan.out",
+        ss = f"{NCBI_ANN}/trnascan/trnascan.ss",
+        stats = f"{NCBI_ANN}/trnascan/trnascan.stats",
+        hc = f"{NCBI_ANN}/trnascan/hc/trnascan_hc.out"
+    params:
+        outdir = f"{NCBI_ANN}/trnascan"
+    threads: 32
+    resources:
+        partition = "week",
+        mem_mb = 64000
+    log:
+        "logs/annot_trnascan/run.log"
+    shell:
+        """
+        tRNAscan-SE -E -I -H --detail --thread {threads} -Q \
+                    -o {output.raw} -f {output.ss} -m {output.stats} \
+                    {input.genome} > {log} 2>&1
+        EukHighConfidenceFilter -i {output.raw} -s {output.ss} -r \
+                    -o {params.outdir}/hc -p trnascan_hc >> {log} 2>&1
+        """
+
+
 rule annot_ncbi_gff:
     # Locus tags, NCBI ids and partial ends; drops proteins < 30 aa and
-    # incomplete models that do not reach a contig end
+    # incomplete models that do not reach a contig end; adds tRNA genes
     input:
         script = "scripts/annot_ncbi_gff.py",
         gff = f"{GENES}/braker/braker.gff3",
         products = f"{NCBI_ANN}/products.tsv",
+        trna = f"{NCBI_ANN}/trnascan/hc/trnascan_hc.out",
         genome = config["annotation"]["genome"]
     output:
         lengths = f"{NCBI_ANN}/contig_lengths.tsv",
@@ -90,7 +141,7 @@ rule annot_ncbi_gff:
         """
         seqkit fx2tab -nl {input.genome} > {output.lengths} 2> {log}
         python {input.script} {input.gff} {input.products} {params.prefix} \
-               {params.db} {output.lengths} {output.gff} {output.tags} 30 2>> {log}
+               {params.db} {output.lengths} {input.trna} {output.gff} {output.tags} 30 2>> {log}
         """
 
 
@@ -98,6 +149,7 @@ rule annot_table2asn:
     # -T looks up the taxonomy remotely (lineage and genetic code); without it
     # the discrepancy report treats the genome as bacterial
     input:
+        table2asn = rules.annot_db_table2asn.output[0],
         genome = config["annotation"]["genome"],
         gff = f"{NCBI_ANN}/Gdor.gff3",
         template = config["ncbi"]["template"]
@@ -118,7 +170,7 @@ rule annot_table2asn:
     shell:
         """
         cp {input.genome} {output.fsa}
-        table2asn -M n -J -c w -euk -T -t {input.template} \
+        {input.table2asn} -M n -J -c w -euk -T -t {input.template} \
             -j "[organism={params.organism}] [isolate={params.isolate}] [gcode=1]" \
             -i {output.fsa} -f {input.gff} -o {output.sqn} -Z > {log} 2>&1
         cat {output.stats} >> {log}

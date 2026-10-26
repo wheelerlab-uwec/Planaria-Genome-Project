@@ -13,13 +13,38 @@
   shorter than --min-aa, when a missing start/stop is not within 3 bp of a
   contig end (an incomplete model, not a gene cut off by the assembly), or
   when a gene repeats another gene's exact coding structure
+- tRNA genes from tRNAscan-SE's high-confidence set (EukHighConfidenceFilter)
+  are added after the protein-coding genes, continuing the locus tags. Rows
+  the filter writes without "high confidence set" (isotype mismatches etc.),
+  Undet and suppressor tRNAs, and any overlapping a kept CDS, are left out.
 
 Usage: annot_ncbi_gff.py braker.gff3 products.tsv PREFIX DB contig_lengths.tsv
-                         out.gff3 locus_tags.tsv [min_aa]
+                         trnascan_hc.out out.gff3 locus_tags.tsv [min_aa]
 """
+import bisect
 import re
 import sys
 from collections import defaultdict
+
+TRNA_SKIP = {"Undet", "Sup"}
+
+
+def read_trnas(path):
+    """tRNAscan-SE tabular output -> (contig, start, end, strand, type, anticodon, intron, hc)"""
+    out = []
+    with open(path) as fh:
+        for line in fh:
+            f = line.rstrip("\n").split("\t")
+            if len(f) < 9 or not f[1].strip().isdigit():
+                continue                    # header lines
+            seq, b, e, typ, ac = f[0].strip(), int(f[2]), int(f[3]), f[4].strip(), f[5].strip()
+            ib, ie = int(f[6]), int(f[7])
+            strand = "+" if b <= e else "-"
+            start, end = min(b, e), max(b, e)
+            intron = (min(ib, ie), max(ib, ie)) if ib and ie else None
+            hc = "high confidence set" in f[-1]
+            out.append((seq, start, end, strand, typ, ac, intron, hc))
+    return out
 
 
 def attrs(col):
@@ -36,8 +61,8 @@ def fmt(a):
 
 
 def main():
-    gff, products, prefix, db, lengths, out, mapping = sys.argv[1:8]
-    min_aa = int(sys.argv[8]) if len(sys.argv) > 8 else 30
+    gff, products, prefix, db, lengths, trna_file, out, mapping = sys.argv[1:9]
+    min_aa = int(sys.argv[9]) if len(sys.argv) > 9 else 30
     contig_len = {}
     with open(lengths) as fh:
         for line in fh:
@@ -103,6 +128,7 @@ def main():
         genes[gid][4] = str(max(int(k[4]) for k in kept))
 
     n_partial = 0
+    dropped_trna = defaultdict(int)
     with open(out, "w") as o, open(mapping, "w") as m:
         o.write("##gff-version 3\n")
         m.write("braker_gene\tlocus_tag\tproduct\n")
@@ -154,6 +180,58 @@ def main():
             o.write("\t".join(g[:8] + [fmt(ga)]) + "\n")
             for r in lines:
                 o.write("\t".join(r) + "\n")
+
+        # tRNA genes, skipping any that overlap a kept CDS
+        cds_iv = defaultdict(list)
+        for gid in order:
+            for mid in by_gene[gid]:
+                for r in children[mid]:
+                    if r[2] == "CDS":
+                        cds_iv[r[0]].append((int(r[3]), int(r[4])))
+        for c in cds_iv:
+            cds_iv[c].sort()
+        longest = max((e - s for v in cds_iv.values() for s, e in v), default=0)
+
+        def overlaps_cds(c, s, e):
+            iv = cds_iv.get(c, [])
+            i = bisect.bisect_left(iv, (s - longest, 0))
+            while i < len(iv) and iv[i][0] <= e:
+                if iv[i][1] >= s:
+                    return True
+                i += 1
+            return False
+
+        n_trna = 0
+        locus_i = len(order)
+        for c, s, e, strand, typ, ac, intron, hc in read_trnas(trna_file):
+            if not hc:
+                dropped_trna["not in the high-confidence set"] += 1
+                continue
+            if typ in TRNA_SKIP:
+                dropped_trna["Undet/Sup"] += 1
+                continue
+            if overlaps_cds(c, s, e):
+                dropped_trna["overlaps a CDS"] += 1
+                continue
+            locus_i += 1
+            n_trna += 1
+            locus = f"{prefix}_{locus_i * 10:06d}"
+            gid, tid = f"trna{n_trna}", f"trna{n_trna}.t1"
+            prod = "tRNA-Sec" if typ == "SeC" else f"tRNA-{typ}"
+            m.write(f"{gid}\t{locus}\t{prod}\n")
+            src = ["tRNAscan-SE"]
+            o.write("\t".join([c] + src + ["gene", str(s), str(e), ".", strand, ".",
+                                         fmt({"ID": gid, "locus_tag": locus})]) + "\n")
+            o.write("\t".join([c] + src + ["tRNA", str(s), str(e), ".", strand, ".",
+                                         fmt({"ID": tid, "Parent": gid, "product": prod,
+                                              "note": f"anticodon {ac}"})]) + "\n")
+            exons = [(s, intron[0] - 1), (intron[1] + 1, e)] if intron else [(s, e)]
+            for k, (xs, xe) in enumerate(exons, 1):
+                o.write("\t".join([c] + src + ["exon", str(xs), str(xe), ".", strand, ".",
+                                             fmt({"ID": f"{tid}.exon{k}", "Parent": tid})]) + "\n")
+    print(f"{n_trna} tRNA genes added", file=sys.stderr)
+    for why, n in dropped_trna.items():
+        print(f"  left out {n} tRNAs: {why}", file=sys.stderr)
     print(f"{len(order)} genes kept of {n_genes}; "
           f"{sum(len(v) for v in by_gene.values())} mRNAs kept of {len(mrnas)}; "
           f"{n_partial} partial models", file=sys.stderr)

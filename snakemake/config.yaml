@@ -80,6 +80,11 @@ ncbi:
   template: "../ncbi_submission/template.sbt"
   organism: "Girardia dorotocephala"
   isolate: "MA-C2"
+  # NCBI prebuilt table2asn (bioconda stops at the 2024-10-23 release); dated
+  # release under ftp.ncbi.nlm.nih.gov/asn1-converters/versions/, SHA-256 of
+  # linux64.table2asn.gz recorded at first download (NCBI publishes none)
+  table2asn_release: "2025-09-16"
+  table2asn_sha256: "785bed9880856b208ed84d9765ca094b7c7d12d2225781c2a1854b650d3984bf"
 
 annotation:
   # Cleaned primary assembly as submitted to NCBI (WGS JCFHDI000000000)
