@@ -48,6 +48,6 @@ The workflow runs it from `./racon/build/bin/racon`.
 - RNA-seq for annotation: four MA-C2 runs from BioProject PRJNA317859 (Almazan et al. 2018).
 
 ## NCBI
-BioProject **PRJNA1545025**, BioSample **SAMN64250158**, locus_tag prefix **ADAYWY**. Genome assembly: WGS **JCFHDI000000000** (this version JCFHDI010000000), with annotation. Mitochondrial genome: GenBank **QB207629**. SRA accessions are pending. All records are private until 2027-10-16 or publication. Submission steps: [ncbi_submission/README.md](ncbi_submission/README.md).
+BioProject **PRJNA1545025**, BioSample **SAMN64250158**, locus_tag prefix **ADAYWY**. Genome assembly: WGS **JCFHDI000000000** (this version JCFHDI010000000), with annotation. Mitochondrial genome: GenBank **QB207629**. Raw reads: SRA **SRR41252593** (3 files). All records are private until 2027-10-16 or publication. Submission steps: [ncbi_submission/README.md](ncbi_submission/README.md).
 
 Full methods: [METHODS.md](METHODS.md). One-off ploidy check: `ploidy_check/`.

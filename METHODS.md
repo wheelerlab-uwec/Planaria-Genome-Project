@@ -135,7 +135,7 @@ OMArk placed the proteome closest to *Schmidtea mediterranea*. The 40.4% "unknow
 
 ## Data availability
 
-The project is registered at NCBI as BioProject PRJNA1545025, and the sequenced sample as BioSample SAMN64250158 (locus_tag prefix ADAYWY). This Whole Genome Shotgun project has been deposited at DDBJ/ENA/GenBank under the accession JCFHDI000000000; the version described here is JCFHDI010000000. The gene and tRNA annotation was submitted with the WGS record. The mitochondrial genome is GenBank QB207629. Accessions for the raw reads (SRA) are pending. All records stay private until publication.
+The project is registered at NCBI as BioProject PRJNA1545025, and the sequenced sample as BioSample SAMN64250158 (locus_tag prefix ADAYWY). This Whole Genome Shotgun project has been deposited at DDBJ/ENA/GenBank under the accession JCFHDI000000000; the version described here is JCFHDI010000000. The gene and tRNA annotation was submitted with the WGS record. The mitochondrial genome is GenBank QB207629. The raw reads are in the Sequence Read Archive as run SRR41252593. All records stay private until publication.
 
 ## Code availability
 

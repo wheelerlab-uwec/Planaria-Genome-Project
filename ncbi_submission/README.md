@@ -11,7 +11,7 @@ records are held until 2027-10-16 or publication, whichever is first.
 | BioProject | PRJNA1545025 | | 2026-10-16 |
 | BioSample | SAMN64250158 (Invertebrate.1.0, isolate MA-C2) | | 2026-10-16 |
 | Locus tag prefix | ADAYWY | | 2026-10-16 |
-| SRA (ONT reads) | pending | SUB16565902 | 2026-10-19 |
+| SRA (ONT reads) | SRR41252593 (library Gdor_MA-C2_LSK114_1, 3 files) | SUB16565902 | 2026-10-19 |
 | Nuclear genome (WGS) | JCFHDI000000000 (cite JCFHDI010000000) | SUB16566354 | 2026-10-19, annotation added 2026-10-29 |
 | Mitochondrial genome | QB207629 | SUB16566882 | 2026-10-16, revised 2026-10-19 |
 
