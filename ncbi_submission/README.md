@@ -12,7 +12,7 @@ records are held until 2027-10-16 or publication, whichever is first.
 | BioSample | SAMN64250158 (Invertebrate.1.0, isolate MA-C2) | | 2026-10-16 |
 | Locus tag prefix | ADAYWY | | 2026-10-16 |
 | SRA (ONT reads) | pending | SUB16565902 | 2026-10-19 |
-| Nuclear genome (WGS) | JCFHDI000000000 (cite JCFHDI010000000) | SUB16566354 | 2026-10-19 |
+| Nuclear genome (WGS) | JCFHDI000000000 (cite JCFHDI010000000) | SUB16566354 | 2026-10-19, annotation added 2026-10-29 |
 | Mitochondrial genome | QB207629 | SUB16566882 | 2026-10-16, revised 2026-10-19 |
 
 ## SRA (`sra/`)
@@ -52,10 +52,19 @@ records are held until 2027-10-16 or publication, whichever is first.
   and the corrected files were sent through the portal's Fix option on
   2026-10-19.
 
-## Nuclear annotation (not yet submitted)
+## Nuclear annotation (`genome/`)
 
-- Built by `snakemake/rules/annotation_ncbi.smk`: eggNOG-derived product
-  names, ADAYWY locus tags and `table2asn` (`.sqn`, `.val`, `.dr`) under
-  `snakemake/results/annotation/ncbi/`.
-- To be sent as annotation for JCFHDI after checking the submission status with
-  NCBI (genomes@ncbi.nlm.nih.gov).
+- Built by `snakemake/rules/annotation_ncbi.smk`: 21,116 protein-coding genes
+  and 2,245 tRNA genes with ADAYWY locus tags, product names, and `table2asn`
+  1.29.324 (`.sqn`, `.val`, `.dr`) under `snakemake/results/annotation/ncbi/`.
+  Validation: 0 errors, 211 warnings (short exons, identical gene spans).
+- NCBI held the WGS submission for release (2027-10-16 or publication) and,
+  when asked by email, said to send the annotation with the
+  portal's Fix option. They set the submission to Error ("upload annotated sqn
+  file") to enable it.
+- `genome/upload_annotation.sbatch`: gzips `Gdor.sqn` to
+  `Gdor_MA-C2_annotated.sqn.gz` and uploads it to preload folder
+  `gdor_ma-c2_annotation`.
+- Portal: Fix on SUB16566354, Files step with the new preload folder (it
+  replaces the FASTA), Assignment answered No to chromosome, organelle and
+  plasmid, other fields unchanged, resubmitted 2026-10-29 (status Submitted).

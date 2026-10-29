@@ -45,6 +45,25 @@ The mitochondrial genome is absent from the primary assembly: purge_dups removed
    - Protein-coding genes without an ATG or GTG start were marked 5′ partial.
    - The GenBank file was built and validated with table2asn 1.28.
 
+### Nuclear genome annotation
+
+The submitted primary assembly was annotated with the workflow in `snakemake/rules/annotation*.smk`.
+
+1. **Repeats.** A species-specific repeat library was built with RepeatModeler 2.0.8 (`-LTRStruct`). The genome was soft-masked with RepeatMasker 4.2.3 (`-xsmall`) using that library.
+2. **RNA-seq.** Four paired-end Illumina RNA-seq runs from the same clonal line (MA-C2; BioProject PRJNA317859, Almazan et al. 2018) were used: intact animals (SRR3479052), regenerates at 1 and 4 days post-amputation (SRR3479045, SRR3479046) and auricles (SRR3479048). Reads were downloaded with SRA Toolkit 3.4.1 and trimmed with fastp 1.4.0 (`--detect_adapter_for_pe`). They were aligned with STAR 2.7.11b in two-pass mode (`--twopassMode Basic`, introns and mate gaps ≤ 100 kb, non-canonical junctions removed), and the four alignments were merged.
+3. **Gene prediction.** Protein-coding genes were predicted with BRAKER 3.0.8 (GeneMark-ETP, AUGUSTUS 3.5.0) on the soft-masked genome, using the merged RNA-seq alignments and the Metazoa partition of OrthoDB 12 as protein evidence.
+4. **Functional annotation.** Proteins were annotated with eggNOG-mapper 2.1.15 (eggNOG 5.0.2, DIAMOND 2.1.13) and InterProScan 5.78-109.0 (InterPro 109.0, with GO terms). Product names follow the International Protein Nomenclature Guidelines used by NCBI, assigned in this order:
+   1. the Swiss-Prot recommended name (UniProtKB 2026_03, reviewed Metazoa entries) for the eggNOG gene symbol, when the eggNOG ortholog group was at the Metazoa level or below and no more than three genes shared the symbol;
+   2. the eggNOG description, if it was a protein name;
+   3. the name of the InterPro family hit;
+   4. the name of the InterPro domain or repeat hit with the greatest coverage (as "… domain-containing protein");
+   5. otherwise, "hypothetical protein".
+
+   Names were then cleaned to NCBI style (EC numbers, species, "homolog" and similar words removed; American spelling; lower case except for acronyms).
+5. **tRNAs.** tRNA genes were predicted with tRNAscan-SE 2.0.13 in eukaryotic mode (`-E -I -H`, Infernal 1.1.5) on the unmasked genome. Pseudogenes and tRNA-derived repeats were removed with EukHighConfidenceFilter, keeping only the high-confidence set. Undetermined and suppressor tRNAs, and any tRNA overlapping a coding sequence, were excluded.
+6. **GenBank submission.** Models were given ADAYWY locus tags. Transcripts were removed when the protein was shorter than 30 aa, when a missing start or stop codon was not at a contig end, or when they repeated another gene's coding structure. Genes running off a contig end were marked partial. The GenBank file was built and validated with NCBI table2asn 1.29.324 (release 2025-09-16).
+7. **Completeness.** The longest protein per gene was assessed with BUSCO 6.0.0 (protein mode, metazoa_odb10) and OMArk 0.5.0 (OMAmer 2.1.2, OMA All.May2026 database).
+
 ## Data validation and quality control
 
 ### Nuclear assembly
@@ -82,9 +101,41 @@ The mitochondrial genome is a circular molecule of 22,455 bp (31.5% GC). It is l
 - **Consensus stability.** A third Medaka round changed 24 positions. Most fall in two non-coding regions that share a 570 bp repeat, so the sequence there is less certain.
 - **Species identity.** *cox1* is 100% identical to 29 *G. dorotocephala* COI records (Benítez-Álvarez et al. 2023) and ≤ 92% identical to other *Girardia* species. To our knowledge this is the first *G. dorotocephala* mitogenome.
 
+### Nuclear annotation
+
+**Repeats.** 69.8% of the assembly (1.02 Gb) was masked.
+
+| Class | % of genome |
+|---|---|
+| LTR retrotransposons | 24.5 (Gypsy 16.6, BEL/Pao 1.2) |
+| DNA transposons | 21.9 (Tc1/mariner 10.5, hAT 3.8, MULE 1.3) |
+| LINEs | 5.9 |
+| Unclassified | 15.2 |
+
+**RNA-seq alignment.** 69.2–75.8% of read pairs from each run mapped uniquely and 8.7–9.0% mapped to multiple loci.
+
+**Gene models.**
+- BRAKER3 predicted 21,181 genes (25,016 transcripts; 1.18 per gene). Transcripts average 5.55 exons; 5,470 are single-exon. The median coding sequence is 909 bp and the median intron 123 bp.
+- After filtering, the GenBank annotation has 21,116 protein-coding genes (24,939 mRNAs, 95 partial at contig ends). 62 transcripts were removed as < 30 aa and 15 as incomplete away from a contig end.
+- 15,656 genes (74.1%) received a functional name; the rest are "hypothetical protein".
+- table2asn reported no errors. Its 211 warnings are 207 short internal coding exons and 4 pairs of genes with identical spans.
+
+**Completeness of the gene set.**
+
+| Assessment | Result |
+|---|---|
+| BUSCO, metazoa_odb10 (n = 954), proteins | C 75.5% [S 63.7%, D 11.7%], F 4.3%, M 20.2% |
+| BUSCO, same lineage, genome mode (above) | C 66.1% |
+| OMArk, Platyhelminthes conserved HOGs (n = 2,828) | S 60.5%, D 14.8% [unexpected 12.8%, expected 2.0%], M 24.7% |
+| OMArk proteome consistency (21,174 proteins) | consistent 46.4%, inconsistent 11.7%, contaminant 1.5%, unknown 40.4% |
+
+OMArk placed the proteome closest to *Schmidtea mediterranea*. The 40.4% "unknown" proteins have no OMA family hit, as is common for planarian-specific genes.
+
+**tRNAs.** tRNAscan-SE predicted 2,584 tRNAs, including 68 pseudogenes. The high-confidence set has 2,245, all added to the GenBank annotation (none overlapped a coding sequence). Isotype counts are very uneven (Arg 376, Ser 341, Leu 307, Asn 268 [all GTT], Pro 255, Trp 153, but Ile 9, Phe 5, Met/iMet 4, Thr 2, Cys 1), and the raw predictions show the same pattern, so the large families probably include tRNA-derived repeat copies that pass the filter.
+
 ## Data availability
 
-The project is registered at NCBI as BioProject PRJNA1545025, and the sequenced sample as BioSample SAMN64250158 (locus_tag prefix ADAYWY). This Whole Genome Shotgun project has been deposited at DDBJ/ENA/GenBank under the accession JCFHDI000000000; the version described here is JCFHDI010000000. The mitochondrial genome is GenBank QB207629. Accessions for the raw reads (SRA) are pending. All records stay private until publication.
+The project is registered at NCBI as BioProject PRJNA1545025, and the sequenced sample as BioSample SAMN64250158 (locus_tag prefix ADAYWY). This Whole Genome Shotgun project has been deposited at DDBJ/ENA/GenBank under the accession JCFHDI000000000; the version described here is JCFHDI010000000. The gene and tRNA annotation was submitted with the WGS record. The mitochondrial genome is GenBank QB207629. Accessions for the raw reads (SRA) are pending. All records stay private until publication.
 
 ## Code availability
 
@@ -107,7 +158,7 @@ The workflow (Snakemake rules, scripts, configuration and environment files) is 
 - Vaser R, Sović I, Nagarajan N, Šikić M (2017). Fast and accurate de novo genome assembly from long uncorrected reads. *Genome Res* 27:737–746. (Racon)
 - Filtlong, R. Wick, https://github.com/rrwick/Filtlong
 - Medaka, Oxford Nanopore Technologies, https://github.com/nanoporetech/medaka
-- Still to cite: FCS (Astashyn et al. 2024), NanoPlot, QUAST, SeqKit, Dorado.
+- Still to cite: FCS (Astashyn et al. 2024), NanoPlot, QUAST, SeqKit, Dorado; for the annotation, RepeatModeler2 (Flynn et al. 2020), RepeatMasker, SRA Toolkit, fastp (Chen et al. 2018), STAR (Dobin et al. 2013), BRAKER3 (Gabriel et al. 2024), GeneMark-ETP (Brůna et al. 2024), AUGUSTUS (Stanke et al. 2008), OrthoDB (Tegenfeldt et al. 2025), eggNOG-mapper 2 (Cantalapiedra et al. 2021), eggNOG 5 (Huerta-Cepas et al. 2019), DIAMOND (Buchfink et al. 2021), InterProScan (Jones et al. 2014), InterPro (Blum et al. 2025), UniProt (UniProt Consortium 2025), tRNAscan-SE 2 (Chan et al. 2021), Infernal (Nawrocki & Eddy 2013), OMArk (Nevers et al. 2025), OMAmer (Rossier et al. 2021). Check years and add full entries.
 
 ---
 
@@ -124,4 +175,7 @@ The workflow (Snakemake rules, scripts, configuration and environment files) is 
 - **Removed from the methods text** (kept in the lab records and repo): sample-collection dates, aliquot table, the failed Nanobind extraction, flow-cell/run labels, the Flye runtime, the purge_dups class table, the allele-frequency method, and the step-by-step mito curation rules.
 - Check volume and pages for Benítez-Álvarez et al. (published online 2022).
 - The submission template (`ncbi_submission/template.sbt`) lists N.J. Wheeler as the only author.
-- **Annotation** (repeats, RNA-seq mapping, BRAKER3, functional) will be added when finished. STAR mapping rates of the four MA-C2 RNA-seq runs: 69–76% unique, 9% multi-mapped.
+- **Annotation naming choices.** A Swiss-Prot name is used only when ≤ 3 genes share the eggNOG symbol, so large paralog families get family-level names instead of one gene's name (e.g. 58 genes were all "TRAF6"). Be ready to explain this.
+- **OMArk contamination line.** OMArk flags 342 proteins (1.6%) as Formicidae (ants); the FCS-GX rescreen of the cleaned assembly found no foreign sequence. Not investigated.
+- **tRNA isotype skew** (see validation): mention if a tRNA count is quoted.
+- **GigaByte checklist (2026-10-28).** Still needed: GigaDB dataset (readme.txt + md5) for reviewer access; LICENSE, merge `nic-pipeline` to `main`, tagged release with a DOI; abstract, introduction, Context, Re-use potential, abbreviations, declarations (funding, CRediT, acknowledgements), author list, cover letter; numbered references; specimen voucher. APC $535.
