@@ -486,6 +486,7 @@ rule quast:
         report = "results/reports/quast/report.html"
     params:
         outdir = "results/reports/quast/"
+    threads: 8
     log:
         "logs/quast/run.log"
     shell:
@@ -555,7 +556,6 @@ rule multiqc_report:
                 --filename multiqc_report.html \
                 --comment "Complete pipeline QC including NanoPlot and BUSCO results" 2> {log}
         """
-
 
 rule report:
     input:
