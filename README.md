@@ -7,7 +7,7 @@ Genome assembly and annotation of the planarian *Girardia dorotocephala* (clonal
 - Nuclear assembly: 1.47 Gb, 21,035 contigs, N50 131.7 kb. Submitted as WGS JCFHDI000000000.
 - Annotation: 21,116 protein-coding genes and 2,245 tRNA genes. Added to the WGS submission on 2026-10-29.
 - Mitochondrial genome: 22,455 bp, GenBank QB207629.
-- Manuscript: drafting for a GigaByte Data Release ([METHODS.md](METHODS.md); checklist in its internal notes).
+- Manuscript: drafting for a GigaByte Data Release ([METHODS.md](METHODS.md)).
 
 ## Workflow
 Everything runs from `snakemake/` with Snakemake on the BOSE Slurm cluster:
