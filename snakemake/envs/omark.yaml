@@ -1,0 +1,10 @@
+# omark-env: OMArk only. planaria-env is stuck on OMArk 0.3.1, which finds no
+# conserved HOGs in the current OMA LUCA.h5 and crashes (ZeroDivisionError);
+# 0.5.0 will not solve into planaria-env.
+#   mamba env create -n omark-env -f envs/omark.yaml
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - omark=0.5.0
+  - omamer>=2.1.2

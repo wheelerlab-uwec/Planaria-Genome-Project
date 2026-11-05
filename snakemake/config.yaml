@@ -1,5 +1,7 @@
 # Input data
-input_reads: "/data/groups/wheelenj/sequencing/20250916_M009242/planaria_all_reads.fastq.gz"
+flowcell1_dir: "/data/groups/wheelenj/sequencing/20250916_M009242/4650P/Planaria1/20250909_1219_3B_PBE82635_fbdcc6f4/fastq_pass"
+flowcell2_dir: "/data/groups/wheelenj/sequencing/20250916_M009242/4651P/Planaria2/20250909_1354_3C_PBE69031_20f7cd5b/fastq_pass"
+input_reads: "reads/planaria_all_reads.fastq.gz"
 
 # Genome parameters
 genome_size: "1g"
@@ -12,7 +14,8 @@ filtlong:
 
 flye:
   iterations: 2
-
+  asm-coverage: 80
+  
 medaka:
   model: "r1041_e82_400bps_sup_g615" 
   batch_size: 100
@@ -20,19 +23,87 @@ medaka:
 racon:
   rounds: 3
 
+purge_dups:
+  # Manual read-depth cutoffs for calcuts; set all to null to let calcuts pick.
+  # Check results/final/purge_dups/PB.cov.png before changing.
+  cutoffs:
+    lower: 5
+    mid: 86
+    upper: 306
+
 busco:
   lineage: "metazoa_odb10"
 
 threads:
-  flye: 64
+  flye: 48
   medaka: 64
   racon: 64
   busco: 32
   purge_dups: 32
   seqkit: 32
 
-memory:  # in MB
-  flye: 200000
-  medaka: 128000
-  racon: 128000
+mito:
+  # Published Girardia mitogenomes used to find, orient and check ours
+  # (G. tigrina; Girardia sp. ER-2015)
+  references: ["MW972220.1", "KP090061.1"]
+  # Nuclear Flye contigs at or above this depth are searched for the mitogenome
+  seed_min_depth: 300
+  # Reads must be this mitochondrial (aligned fraction) and this long
+  min_aligned_frac: 0.8
+  min_read_length: 3000
+  # Longest/best reads up to ~250x of a 16 kb genome
+  target_bases: 4000000
+  genome_size: "16k"
+  # Plausible length range for the circular contig
+  min_length: 12000
+  max_length: 30000
+  medaka_model: "r1041_e82_400bps_sup_v4.3.0"
+  genetic_code: 9   # echinoderm and flatworm mitochondrial code
+  mitos_refseq: "refseq89m"
+  seq_name: "Gdor_MA-C2_mito"
+  # Sequence ID in the GenBank files (table2asn flags IDs containing "mito")
+  submission_id: "Gdor_MA-C2_MT"
+  # QC (rule mito_qc): reads at least this long are searched for repeated
+  # cox1 copies; alignments at least this long count as spanning the circle
+  qc_long_read: 50000
+  qc_span: 20000
+  # Annotated planarian mitogenomes used to place rRNA ends (rule mito_rrna)
+  annot_references: ["NC_022448.1", "AB618487.1", "AB618488.1"]
+  # Species check (rule mito_barcode): GenBank COI records to compare cox1 against
+  barcode_query: "Girardia[Organism] AND (COI[Gene] OR cox1[Gene] OR COX1[Gene] OR cytochrome oxidase subunit I[Title] OR cytochrome c oxidase subunit I[Title])"
 
+ncbi:
+  # Registered with BioProject PRJNA1545025 / BioSample SAMN64250158
+  locus_tag_prefix: "ADAYWY"
+  # database tag for protein_id qualifiers (gnl|<tag>|<locus_tag>)
+  protein_db: "WheelerUWEC"
+  template: "../ncbi_submission/template.sbt"
+  organism: "Girardia dorotocephala"
+  isolate: "MA-C2"
+  # NCBI prebuilt table2asn (bioconda stops at the 2024-10-23 release); dated
+  # release under ftp.ncbi.nlm.nih.gov/asn1-converters/versions/, SHA-256 of
+  # linux64.table2asn.gz recorded at first download (NCBI publishes none)
+  table2asn_release: "2025-09-16"
+  table2asn_sha256: "785bed9880856b208ed84d9765ca094b7c7d12d2225781c2a1854b650d3984bf"
+
+annotation:
+  # Cleaned primary assembly as submitted to NCBI (WGS JCFHDI000000000)
+  genome: "../ncbi_submission/genome/Gdor_MA-C2_primary.fsa"
+  # MA-C2 RNA-seq from PRJNA317859 (Almazan et al. 2018); run: sample
+  rnaseq:
+    SRR3479052: "intact"
+    SRR3479045: "1dpa"
+    SRR3479046: "4dpa"
+    SRR3479048: "auricle"
+  # Longest intron / mate gap allowed in STAR alignments
+  max_intron: 100000
+  # Gene prediction and function (rules/annotation_genes.smk)
+  braker_species: "Gdor_MAC2"
+  orthodb_url: "https://bioinf.uni-greifswald.de/bioinf/partitioned_odb12/Metazoa.fa.gz"
+  # OMA All.May2026 release (OMAmer 2.1.0 format; Zenodo record 20814376).
+  # The unversioned All/LUCA.h5 link always serves the newest release.
+  omark_db_url: "https://omabrowser.org/All.May2026/LUCA.h5"
+  interproscan_version: "5.78-109.0"
+  eggnog_url: "http://eggnog5.embl.de/download/emapperdb-5.0.2"
+  # UniProtKB release for Swiss-Prot product names (rules/annotation_ncbi.smk)
+  swissprot_release: "2026_03"
