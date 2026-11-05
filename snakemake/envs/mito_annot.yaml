@@ -1,10 +1,14 @@
+# mito-annot-env: ARAGORN, tRNAscan-SE and table2asn for the mitogenome
+# (rules/mito.smk).
+#   mamba env create -n mito-annot-env -f envs/mito_annot.yaml
+# Exact builds as installed: envs/exported/mito-annot-env.yml
 channels:
   - conda-forge
   - bioconda
 dependencies:
-  - aragorn
-  - trnascan-se
-  - table2asn
-  - blast
-  - seqkit
-  - biopython
+  - aragorn=1.2.41
+  - trnascan-se=2.0.13
+  - table2asn=1.28.1179
+  - blast=2.17.0
+  - seqkit=2.14.0
+  - biopython=1.88

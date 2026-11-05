@@ -32,6 +32,9 @@ Databases (OrthoDB, OMA, eggNOG, InterProScan, Swiss-Prot names, `table2asn`) ar
 - `planaria-env` (`environment.yml`): `mamba env create`. Most rules use it.
 - `braker-env` (`snakemake/envs/braker.yaml`): BRAKER3. GeneMark-ETP is not on bioconda; the file explains how it is cloned into the env.
 - `omark-env` (`snakemake/envs/omark.yaml`): OMArk 0.5.0, which does not solve into `planaria-env`.
+- `mitos-env` (`snakemake/envs/mitos.yaml`) and `mito-annot-env` (`snakemake/envs/mito_annot.yaml`): MITOS2, and ARAGORN / tRNAscan-SE / table2asn for the mitogenome.
+
+`environment.yml` is a full export of `planaria-env` with exact builds. For the other four, the files above are the specs to create them from, and `snakemake/envs/exported/` has full exports of the environments as installed on BOSE (linux-64).
 
 ### Install racon
 `mamba install gtest`

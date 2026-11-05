@@ -1,3 +1,6 @@
+# mitos-env: MITOS2 for mitogenome annotation (rules/mito.smk).
+#   mamba env create -n mitos-env -f envs/mitos.yaml
+# Exact builds as installed: envs/exported/mitos-env.yml
 channels:
   - conda-forge
   - bioconda
