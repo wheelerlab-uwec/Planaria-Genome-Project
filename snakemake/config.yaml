@@ -107,3 +107,23 @@ annotation:
   eggnog_url: "http://eggnog5.embl.de/download/emapperdb-5.0.2"
   # UniProtKB release for Swiss-Prot product names (rules/annotation_ncbi.smk)
   swissprot_release: "2026_03"
+
+comparison:
+  # Published triclad genomes compared with ours (rules/compare.smk): the
+  # current primary assembly of each species on NCBI as of 2026-11-05, plus
+  # the 2018 S. mediterranea assembly.
+  # accession: [species, family, published repeat %, source]
+  # Repeat % is null where no publication reports it for this assembly.
+  assemblies:
+    GCA_045838265.1: ["Schmidtea mediterranea", "Dugesiidae", 66.3, "Ivankovic et al. 2024, Fig. 4a source data (summed)"]
+    GCA_002600895.1: ["Schmidtea mediterranea", "Dugesiidae", 61.7, "Grohme et al. 2018"]
+    GCA_044892525.1: ["Schmidtea polychroa", "Dugesiidae", 66.3, "Ivankovic et al. 2024, Fig. 4a source data (summed)"]
+    GCA_044892505.1: ["Schmidtea nova", "Dugesiidae", 67.2, "Ivankovic et al. 2024, Fig. 4a source data (summed)"]
+    GCA_001938525.1: ["Dugesia japonica", "Dugesiidae", null, "unpublished assembly"]
+    GCA_001938485.1: ["Girardia tigrina", "Dugesiidae", null, "unpublished assembly"]
+    GCA_046269625.1: ["Hausera hauseri", "Dimarcusidae", null, "no publication"]
+    GCA_977020255.1: ["Obrimoposthia wandeli", "Uteriporidae", 67.9, "Shin & Kim 2025, Table 1"]
+    GCA_046118255.1: ["Sluysia triapertura", "Uteriporidae", null, "no publication"]
+    GCA_984798855.1: ["Diversibipalium multilineatum", "Geoplanidae", null, "no publication"]
+    GCA_037951405.1: ["Platydemus manokwari", "Geoplanidae", null, "no publication"]
+    GCA_037834085.1: ["Bipalium vagum", "Geoplanidae", null, "no publication"]

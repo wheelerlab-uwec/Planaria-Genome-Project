@@ -63,6 +63,11 @@ rule all:
         "results/annotation/genes/interproscan/Gdor.interproscan.tsv",
         "results/annotation/ncbi/Gdor.sqn",
 
+        # Assembly validation (rules/validation.smk)
+        "results/validation/read_mapping_summary.tsv",
+        "results/validation/reads/contig_coverage.tsv",
+        "results/comparison/planarian_genomes.tsv",
+
 rule combine_reads:
     input:
         list_fastqs(FC1) + list_fastqs(FC2)
@@ -572,3 +577,5 @@ include: "rules/mito.smk"
 include: "rules/annotation.smk"
 include: "rules/annotation_genes.smk"
 include: "rules/annotation_ncbi.smk"
+include: "rules/validation.smk"
+include: "rules/compare.smk"

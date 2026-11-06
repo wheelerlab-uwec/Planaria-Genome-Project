@@ -82,10 +82,16 @@ BUSCO 6.0.0, genome mode, metazoa_odb10 (n = 954; miniprot 0.18, HMMER 3.4). C =
 - **Purging** cut duplicated BUSCOs from 41.3% to 12.1%, while complete BUSCOs fell by only 2.3 percentage points.
 - **BUSCO completeness and stop codons.** About one-third of complete BUSCOs contained internal stop codons at every stage. This does not indicate consensus errors:
   - Re-polishing a 164 Mb BUSCO-bearing subset with Dorado polish (sup@v4.3.0) gave the same result as Medaka.
-  - Two *S. mediterranea* assemblies run through the same BUSCO setup scored 70.4% and 69.7% complete, with 41.8% and 40.8% of complete BUSCOs containing internal stops (schMedS3h1 and ASM260089v1).
+  - In the same BUSCO setup, 31–42% of complete BUSCOs contained internal stops in all 12 published triclad assemblies, including the chromosome-level *Schmidtea* genomes (see the comparison below); ours is 34.2%.
 
-  Genome-mode BUSCO is known to underperform on planarian genomes (Ivanković et al. 2024), so gene-level completeness will be assessed on the annotation.
+  Genome-mode BUSCO is known to underperform on planarian genomes (Ivanković et al. 2024), so gene-level completeness was assessed on the annotation (below).
 - **Contamination screening** removed 79.3 kb in 7 contigs (bacteriophage, ciliate and arthropod hits). It also trimmed adaptors at 37 contig ends and split 6 contigs at 8 internal adaptors. Rescreening the cleaned assembly with both tools found no adaptor or foreign sequence.
+- **Read mapping.** The filtered reads were mapped back to the submitted assembly with minimap2 2.30 (`-ax map-ont`, primary alignments only) and summarised with SAMtools 1.22.1 (`stats`, `coverage`, `depth -a`).
+  - 99.92% of reads (11.69 of 11.70 million) and 97.7% of read bases aligned.
+  - Mean depth was 95.8× (median 96×). 0.07% of the assembly had no coverage, 1.1% had < 10×, and 78.9% was within half to twice the median depth.
+- **Consensus accuracy.** No short reads are available for a k-mer QV. Instead, a random 0.2% of reads (23,340; SeqKit 2.11.0 `sample`, seed 11) were aligned at base level (minimap2 `-c`), and each read's divergence was taken from its longest primary alignment (gap-compressed, minimap2 `de` tag).
+  - Median read-to-assembly divergence was 1.50% (10th–90th percentile 0.60–4.58%). This is about the error rate expected of Q18–20 reads alone, so it is an upper bound on consensus error.
+  - Aligned to the purged haplotigs, 23.4% of reads were closer to a haplotig than to the primary assembly (by > 0.5 percentage points). Much of the high-divergence tail is therefore reads from the alternative haplotype.
 
 ### Mitochondrial genome
 
@@ -133,6 +139,32 @@ OMArk placed the proteome closest to *Schmidtea mediterranea*. The 40.4% "unknow
 
 **tRNAs.** tRNAscan-SE predicted 2,584 tRNAs, including 68 pseudogenes. The high-confidence set has 2,245, all added to the GenBank annotation (none overlapped a coding sequence). Isotype counts are very uneven (Arg 376, Ser 341, Leu 307, Asn 268 [all GTT], Pro 255, Trp 153, but Ile 9, Phe 5, Met/iMet 4, Thr 2, Cys 1), and the raw predictions show the same pattern, so the large families probably include tRNA-derived repeat copies that pass the filter.
 
+### Comparison with other triclad genomes
+
+The current primary assembly of every triclad species in NCBI (11 species, November 2026), plus the 2018 *S. mediterranea* assembly, was downloaded with the NCBI Datasets API and run through the same BUSCO setup as ours (genome mode). Size and contiguity are from the NCBI assembly reports. Repeat content is from each assembly's publication where one exists; methods differ between studies (ours: RepeatModeler2 + RepeatMasker).
+
+| Species (family) | Assembly | Data | Size (Mb) | Contig N50 (kb) | BUSCO C / D (%) | Repeats (%) |
+|---|---|---|---|---|---|---|
+| ***Girardia dorotocephala*** (Dugesiidae) | **this study** | ONT | **1,466** | **131.7** | **66.1 / 12.1** | **69.8** |
+| *Schmidtea mediterranea* (Dugesiidae) | schMedS3h1, GCA_045838265.1 | PacBio + Illumina | 840 | 9,624 | 70.4 / 5.2 | 66.3 ᵃ |
+| *Schmidtea mediterranea* (Dugesiidae) | ASM260089v1, GCA_002600895.1 | PacBio | 774 | 1,122 | 69.7 / 18.3 | 61.7 ᵇ |
+| *Schmidtea polychroa* (Dugesiidae) | GCA_044892525.1 | PacBio + Illumina | 781 | 8,460 | 71.3 / 6.7 | 66.3 ᵃ |
+| *Schmidtea nova* (Dugesiidae) | GCA_044892505.1 | PacBio + Illumina | 1,251 | 3,987 | 68.8 / 5.6 | 67.2 ᵃ |
+| *Dugesia japonica* (Dugesiidae) | GCA_001938525.1 | Illumina | 854 | 1.2 | 36.5 / 7.7 | – |
+| *Girardia tigrina* (Dugesiidae) | GCA_001938485.1 | Illumina | 1,428 | 5.1 | 46.6 / 11.2 | – |
+| *Hausera hauseri* (Dimarcusidae) | GCA_046269625.1 | Illumina | 869 | 1.0 | 25.9 / 2.3 | – |
+| *Obrimoposthia wandeli* (Uteriporidae) | GCA_977020255.1 | ONT | 1,351 | 344.1 | 67.9 / 10.2 | 67.9 ᶜ |
+| *Sluysia triapertura* (Uteriporidae) | GCA_046118255.1 | Illumina | 619 | 3.8 | 46.4 / 1.8 | – |
+| *Diversibipalium multilineatum* (Geoplanidae) | GCA_984798855.1 | PacBio + Hi-C | 847 | 16,230 | 69.8 / 9.3 | – |
+| *Platydemus manokwari* (Geoplanidae) | GCA_037951405.1 | Illumina | 911 | 0.4 | 60.5 / 4.5 | – |
+| *Bipalium vagum* (Geoplanidae) | GCA_037834085.1 | Illumina | 441 | 6.0 | 65.5 / 7.3 | – |
+
+ᵃ Ivanković et al. 2024: sum of all annotated repeat classes in the Fig. 4a source data (EDTA and RepeatExplorer2, including satellites). ᵇ Grohme et al. 2018. ᶜ Shin & Kim 2025. – : not reported for this assembly.
+
+- Ours is the largest triclad assembly in NCBI (the 1.50 Gb *S. lugubris* assembly of Ivanković et al. 2024 is not deposited there) and the first long-read assembly of a *Girardia* species. Its contig N50 is 26 times that of the *G. tigrina* short-read assembly, but below the PacBio assemblies and the other nanopore assembly (*O. wandeli*, 344 kb).
+- Genome-mode BUSCO completeness (66.1%) is close to the chromosome-level assemblies (68.8–71.3%). Duplicated BUSCOs (12.1%) are higher than in the 2024 *Schmidtea* assemblies (5.2–6.7%), consistent with residual haplotypic duplication after purging.
+- Repeat content (69.8%) is at the top of the published triclad range (61.7–67.9%).
+
 ## Data availability
 
 The project is registered at NCBI as BioProject PRJNA1545025, and the sequenced sample as BioSample SAMN64250158 (locus_tag prefix ADAYWY). This Whole Genome Shotgun project has been deposited at DDBJ/ENA/GenBank under the accession JCFHDI000000000; the version described here is JCFHDI010000000. The gene and tRNA annotation was submitted with the WGS record. The mitochondrial genome is GenBank QB207629. The raw reads are in the Sequence Read Archive as run SRR41252593. All records stay private until publication.
@@ -149,16 +181,17 @@ The workflow (Snakemake rules, scripts, configuration and environment files) is 
 - Donath A, Jühling F, Al-Arab M, et al. (2019). Improved annotation of protein-coding genes boundaries in metazoan mitochondrial genomes. *Nucleic Acids Res* 47:10543–10552. (MITOS2)
 - Grohme MA, Schloissnig S, Rozanski A, et al. (2018). The genome of *Schmidtea mediterranea* and the evolution of core cellular mechanisms. *Nature* 554:56–61.
 - Guan D, McCarthy SA, Wood J, et al. (2020). Identifying and removing haplotypic duplication in primary genome assemblies. *Bioinformatics* 36:2896–2898. (purge_dups)
-- Ivanković M, Brand JN, Pandolfini L, et al. (2024). A comparative analysis of planarian genomes reveals regulatory conservation in the face of rapid structural divergence. *Nat Commun* 15:8215.
+- Ivanković M, Brand JN, Pandolfini L, et al. (2024). A comparative analysis of planarian genomes reveals regulatory conservation in the face of rapid structural divergence. *Nat Commun* 15:8215. doi:10.1038/s41467-024-52380-9
 - Kolmogorov M, Yuan J, Lin Y, Pevzner PA (2019). Assembly of long, error-prone reads using repeat graphs. *Nat Biotechnol* 37:540–546. (Flye)
 - Laslett D, Canbäck B (2004). ARAGORN, a program to detect tRNA genes and tmRNA genes in nucleotide sequences. *Nucleic Acids Res* 32:11–16.
 - Li H (2018). Minimap2: pairwise alignment for nucleotide sequences. *Bioinformatics* 34:3094–3100.
 - Manni M, Berkeley MR, Seppey M, Simão FA, Zdobnov EM (2021). BUSCO update. *Mol Biol Evol* 38:4647–4654.
 - Mölder F, Jablonski KP, Letcher B, et al. (2021). Sustainable data analysis with Snakemake. *F1000Research* 10:33.
+- Shin SC, Kim S (2025). Draft genome and de novo transcriptome assembly of the Antarctic marine flatworm *Obrimoposthia wandeli*. *BMC Genomic Data* 27:2. doi:10.1186/s12863-025-01390-7
 - Vaser R, Sović I, Nagarajan N, Šikić M (2017). Fast and accurate de novo genome assembly from long uncorrected reads. *Genome Res* 27:737–746. (Racon)
 - Filtlong, R. Wick, https://github.com/rrwick/Filtlong
 - Medaka, Oxford Nanopore Technologies, https://github.com/nanoporetech/medaka
-- Still to cite: FCS (Astashyn et al. 2024), NanoPlot, QUAST, SeqKit, Dorado; for the annotation, RepeatModeler2 (Flynn et al. 2020), RepeatMasker, SRA Toolkit, fastp (Chen et al. 2018), STAR (Dobin et al. 2013), BRAKER3 (Gabriel et al. 2024), GeneMark-ETP (Brůna et al. 2024), AUGUSTUS (Stanke et al. 2008), OrthoDB (Tegenfeldt et al. 2025), eggNOG-mapper 2 (Cantalapiedra et al. 2021), eggNOG 5 (Huerta-Cepas et al. 2019), DIAMOND (Buchfink et al. 2021), InterProScan (Jones et al. 2014), InterPro (Blum et al. 2025), UniProt (UniProt Consortium 2025), tRNAscan-SE 2 (Chan et al. 2021), Infernal (Nawrocki & Eddy 2013), OMArk (Nevers et al. 2025), OMAmer (Rossier et al. 2021). Check years and add full entries.
+- Still to cite: FCS (Astashyn et al. 2024), NanoPlot, QUAST, SeqKit, Dorado, SAMtools (Danecek et al. 2021), NCBI Datasets (O'Leary et al. 2024); for the annotation, RepeatModeler2 (Flynn et al. 2020), RepeatMasker, SRA Toolkit, fastp (Chen et al. 2018), STAR (Dobin et al. 2013), BRAKER3 (Gabriel et al. 2024), GeneMark-ETP (Brůna et al. 2024), AUGUSTUS (Stanke et al. 2008), OrthoDB (Tegenfeldt et al. 2025), eggNOG-mapper 2 (Cantalapiedra et al. 2021), eggNOG 5 (Huerta-Cepas et al. 2019), DIAMOND (Buchfink et al. 2021), InterProScan (Jones et al. 2014), InterPro (Blum et al. 2025), UniProt (UniProt Consortium 2025), tRNAscan-SE 2 (Chan et al. 2021), Infernal (Nawrocki & Eddy 2013), OMArk (Nevers et al. 2025), OMAmer (Rossier et al. 2021). Check years and add full entries.
 
 ---
 
@@ -167,8 +200,8 @@ The workflow (Snakemake rules, scripts, configuration and environment files) is 
 - **Medaka model mismatch.** Reads were basecalled with `sup@v4.3.0`, but Medaka used `r1041_e82_400bps_sup_g615`. Rerun with the matching model, or justify the choice with the Dorado polish comparison (identical BUSCO).
 - **Flye read mode.** `--nano-raw` was used; `--nano-hq` is recommended for Q18 SUP reads. Rerunning Flye (~28 days) is not planned; be ready to justify this.
 - **Racon** had no measurable effect on BUSCO; consider describing it in one line or dropping it.
-- **Residual duplication.** 12.1% of BUSCOs are still duplicated after purging, either divergent haplotigs or real gene copies. Not yet checked.
-- **Ploidy and genotype mixture are unresolved.** The two read-depth peaks are at ~1:4 rather than the 1:2 expected for a diploid. An exploratory allele-frequency analysis (bcftools on contigs from both depth classes; `ploidy_check/`) could not separate real variants from ONT systematic error. A single-animal Illumina k-mer analysis (GenomeScope/Smudgeplot) would resolve this, and would also give a QV (Merqury) and a genome-size estimate, if unused aliquots (10, 20, 30, 1 mg) are still at the UWBC.
+- **Residual duplication.** 12.1% of BUSCOs are still duplicated after purging, either divergent haplotigs or real gene copies. Not checked per gene. For context: the 2024 *Schmidtea* assemblies have 5–7% duplicated, and 23.4% of reads are closer to a purged haplotig than to the primary assembly (so the second haplotype is largely, but not necessarily entirely, removed).
+- **Ploidy and genotype mixture are unresolved.** The two read-depth peaks are at ~1:4 rather than the 1:2 expected for a diploid. An exploratory allele-frequency analysis (bcftools on contigs from both depth classes; `ploidy_check/`) could not separate real variants from ONT systematic error. No short-read data will be generated (decided 2026-11-05), so ploidy, QV and genome size are reported as unresolved; read-to-assembly divergence (1.5% median, an upper bound) is the only accuracy measure. Do not quote the samtools NM "error rate" (13.9%): NM counts every base of long gaps and haplotype differences.
 - **No genome-size estimate exists for *G. dorotocephala*.** Related species range from 0.78 to 1.56 Gb in assemblies; *G. tigrina* C-values are 1.40–1.88 pg.
 - **BUSCO baseline detail** (for a supplementary table): schMedS3h1 C 70.4 / S 65.2 / D 5.2 / M 27.6%; ASM260089v1 C 69.7 / S 51.4 / D 18.3 / M 28.2%. These are our own runs; neither *S. mediterranea* paper reports a stop-codon rate. Ivanković et al. (2024) report genome-mode scores of ~62–63% for *S. polychroa*, *S. nova* and *S. lugubris* (BUSCO 5.0.0, their Fig. 3c).
 - **Mitochondrial annotation.** *trnY* was added after GenBank flagged it as missing.
