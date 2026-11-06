@@ -4,7 +4,7 @@
 Size and contiguity of the published assemblies come from their NCBI dataset
 reports; ours are computed from the .fai (no gaps, so contigs = sequences).
 BUSCO columns come from the short summaries of the same BUSCO run on every
-assembly. E is the share of complete BUSCOs with internal stop codons.
+assembly.
 Repeat % for published assemblies is the figure from their papers (methods
 differ between studies); ours is the masked share from RepeatMasker.
 
@@ -16,18 +16,18 @@ import re
 import sys
 
 BUSCO_RE = re.compile(
-    r"C:([\d.]+)%\[S:([\d.]+)%,D:([\d.]+)%\],F:([\d.]+)%,M:([\d.]+)%,n:\d+(?:,E:([\d.]+)%)?"
+    r"C:([\d.]+)%\[S:([\d.]+)%,D:([\d.]+)%\],F:([\d.]+)%,M:([\d.]+)%"
 )
 COLS = ["species", "family", "assembly", "accession", "released", "technology",
         "level", "size_Mb", "contigs", "contig_N50_kb", "scaffolds",
         "scaffold_N50_kb", "BUSCO_C", "BUSCO_S", "BUSCO_D", "BUSCO_F",
-        "BUSCO_M", "BUSCO_E", "repeat_pct", "repeat_source"]
+        "BUSCO_M", "repeat_pct", "repeat_source"]
 
 
 def busco(path):
     with open(path) as fh:
         m = BUSCO_RE.search(fh.read())
-    return [g or "" for g in m.groups()]
+    return list(m.groups())
 
 
 def n50(lengths):

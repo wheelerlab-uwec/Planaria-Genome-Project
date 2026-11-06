@@ -80,11 +80,7 @@ BUSCO 6.0.0, genome mode, metazoa_odb10 (n = 954; miniprot 0.18, HMMER 3.4). C =
 **Primary assembly as submitted** (after screening): 1,465,624,171 bp in 21,035 contigs; N50 131.7 kb (L50 3,399); N90 32.8 kb; longest contig 1.18 Mb; GC 30.5%; no gaps.
 
 - **Purging** cut duplicated BUSCOs from 41.3% to 12.1%, while complete BUSCOs fell by only 2.3 percentage points.
-- **BUSCO completeness and stop codons.** About one-third of complete BUSCOs contained internal stop codons at every stage. This does not indicate consensus errors:
-  - Re-polishing a 164 Mb BUSCO-bearing subset with Dorado polish (sup@v4.3.0) gave the same result as Medaka.
-  - In the same BUSCO setup, 31–42% of complete BUSCOs contained internal stops in all 12 published triclad assemblies, including the chromosome-level *Schmidtea* genomes (see the comparison below); ours is 34.2%.
-
-  Genome-mode BUSCO is known to underperform on planarian genomes (Ivanković et al. 2024), so gene-level completeness was assessed on the annotation (below).
+- **BUSCO completeness.** Genome-mode BUSCO is known to underperform on planarian genomes (Ivanković et al. 2024), so gene-level completeness was also assessed on the annotation (below). BUSCO flagged internal stop codons in 34.2% of complete BUSCOs, within the range for the 12 published triclad assemblies run the same way (31.2–41.8%; see the comparison below).
 - **Contamination screening** removed 79.3 kb in 7 contigs (bacteriophage, ciliate and arthropod hits). It also trimmed adaptors at 37 contig ends and split 6 contigs at 8 internal adaptors. Rescreening the cleaned assembly with both tools found no adaptor or foreign sequence.
 - **Read mapping.** The filtered reads were mapped back to the submitted assembly with minimap2 2.30 (`-ax map-ont`, primary alignments only) and summarised with SAMtools 1.22.1 (`stats`, `coverage`, `depth -a`).
   - 99.92% of reads (11.69 of 11.70 million) and 97.7% of read bases aligned.
@@ -203,7 +199,7 @@ The workflow (Snakemake rules, scripts, configuration and environment files) is 
 - **Residual duplication.** 12.1% of BUSCOs are still duplicated after purging, either divergent haplotigs or real gene copies. Not checked per gene. For context: the 2024 *Schmidtea* assemblies have 5–7% duplicated, and 23.4% of reads are closer to a purged haplotig than to the primary assembly (so the second haplotype is largely, but not necessarily entirely, removed).
 - **Ploidy and genotype mixture are unresolved.** The two read-depth peaks are at ~1:4 rather than the 1:2 expected for a diploid. An exploratory allele-frequency analysis (bcftools on contigs from both depth classes; `ploidy_check/`) could not separate real variants from ONT systematic error. No short-read data will be generated (decided 2026-11-05), so ploidy, QV and genome size are reported as unresolved; read-to-assembly divergence (1.5% median, an upper bound) is the only accuracy measure. Do not quote the samtools NM "error rate" (13.9%): NM counts every base of long gaps and haplotype differences.
 - **No genome-size estimate exists for *G. dorotocephala*.** Related species range from 0.78 to 1.56 Gb in assemblies; *G. tigrina* C-values are 1.40–1.88 pg.
-- **BUSCO baseline detail** (for a supplementary table): schMedS3h1 C 70.4 / S 65.2 / D 5.2 / M 27.6%; ASM260089v1 C 69.7 / S 51.4 / D 18.3 / M 28.2%. These are our own runs; neither *S. mediterranea* paper reports a stop-codon rate. Ivanković et al. (2024) report genome-mode scores of ~62–63% for *S. polychroa*, *S. nova* and *S. lugubris* (BUSCO 5.0.0, their Fig. 3c).
+- **BUSCO baseline detail** (for a supplementary table): schMedS3h1 C 70.4 / S 65.2 / D 5.2 / M 27.6%; ASM260089v1 C 69.7 / S 51.4 / D 18.3 / M 28.2%. These are our own runs. Ivanković et al. (2024) report genome-mode scores of ~62–63% for *S. polychroa*, *S. nova* and *S. lugubris* (BUSCO 5.0.0, their Fig. 3c).
 - **Mitochondrial annotation.** *trnY* was added after GenBank flagged it as missing.
 - **Removed from the methods text** (kept in the lab records and repo): sample-collection dates, aliquot table, the failed Nanobind extraction, flow-cell/run labels, the Flye runtime, the purge_dups class table, the allele-frequency method, and the step-by-step mito curation rules.
 - Check volume and pages for Benítez-Álvarez et al. (published online 2022).
